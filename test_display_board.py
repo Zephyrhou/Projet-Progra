@@ -11,3 +11,4 @@ def display_board(positions):
     implementation: Aude Lekeux (v.2 15/03/19)
     """
 
+

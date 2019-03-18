@@ -41,7 +41,8 @@ def create_heroes(classes):
     implementation: Aude Lekeux (v.2 15/03/19)
     """
 
-    # conditions syntax
+    # position respawn
+    # level d_points h_points
     # ask again while syntax is invalid
     player = {}
     invalid_syntax = True

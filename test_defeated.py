@@ -1,4 +1,4 @@
-def defeated(player, creature, positions):
+def defeated(player, nb_player, creature, positions):
     """Whenever a hero or a creature is defeated.
 
     Parameters:
@@ -24,10 +24,16 @@ def defeated(player, creature, positions):
     implementation: Aude Lekeux (v.2 15/03/19)
     """
 
-    if player[]
+    if player['life_points'] <= 0:
+        positions[player] = 'respawn' + nb_player
+        print('The player', player, 'is respawn')
+    if positions[creature] <= 0:
+        del positions[creature]
+        print('The creature', creature, 'is dead')
+
 
 player = {'Baz': 'barbarian', 'Lee': 'healer', 'May': 'mage', 'Rob': 'rogue'}
-positions = {(33,24): 'respawn1', (54, 12): 'respawn2'}
+positions = {(33, 24): 'respawn1', (54, 12): 'respawn2'}
 player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
                 'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
                 'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
