@@ -11,7 +11,6 @@ def initializaion():
                'rogue': {'reach': [[1, 0, 1], [2, 0, 1], [3, 0, 1], [4, 0, 1]],
                          'brust': [[1, 1, 1], [2, 2, 1], [3, 3, 1]]}}
 
-
     player1 = create_heroes(classes)
     # player2 = create_heroes(classes)
 
