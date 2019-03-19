@@ -5,7 +5,7 @@ def defeated(player, nb_player, creature, positions):
     -----------
     player: Information on the player's defeated hero who will respawn (dict)
     creature: Information on the creature that dies (dict)
-    position: Contains all the coordinates of the board (dict)
+    positions: Contains all the coordinates of the board (dict)
 
     Returns:
     --------
@@ -21,7 +21,7 @@ def defeated(player, nb_player, creature, positions):
     Version:
     --------
     specification: Aude Lekeux (v.5 04/03/2019)
-    implementation: Aude Lekeux (v.2 15/03/19)
+    implementation: Aude Lekeux (v.3 19/03/19)
     """
 
     if player['life_points'] <= 0:
@@ -31,10 +31,4 @@ def defeated(player, nb_player, creature, positions):
         del positions[creature]
         print('The creature', creature, 'is dead')
 
-
-player = {'Baz': 'barbarian', 'Lee': 'healer', 'May': 'mage', 'Rob': 'rogue'}
-positions = {(33, 24): 'respawn1', (54, 12): 'respawn2'}
-player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-                'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-                'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-                'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
+    return player, positions

@@ -1,7 +1,5 @@
 def initializaion():
 
-    positions = {(10, 24): 'Wolf', (35, 20): 'Lion'}
-
     classes = {'barbarian': {'energise': [[1, 1, 1], [2, 1, 1], [3, 2, 1], [4, 2, 1]],
                              'stun': [[1, 1, 1], [2, 2, 2], [3, 3, 1]]},
                'healer': {'invigorate': [[1, 1, 1], [2, 2, 1], [3, 3, 1], [4, 4, 1]],
@@ -17,14 +15,13 @@ def initializaion():
     print(player1)
 
 
-def create_heroes(classes):
+def create_heroes(classes, positions):
     """Takes the player's input, splits the information and stores it into a dictionary.
 
     Parameter:
     ----------
     positions: Contains all the coordinates of the board (dict)
-    classes:
-    hero_number:
+    classes: Different classes a hero can be (dict)
 
     Returns:
     --------
@@ -38,15 +35,13 @@ def create_heroes(classes):
     Version:
     --------
     specification: Zephyr Houyoux (v.3 09/03/19)
-    implementation: Aude Lekeux (v.2 15/03/19)
+    implementation: Aude Lekeux (v.4 19/03/19)
     """
 
-    # position respawn
-    # level d_points h_points
-    # ask again while syntax is invalid
     player = {}
     invalid_syntax = True
-    
+
+    # ask again while syntax is invalid and creates the dictionary of the player
     while invalid_syntax and len(player) < 4:
         invalid_syntax = False
         player_input = input(str('Enter your four heroes and their type[name:type]: '))
@@ -71,8 +66,22 @@ def create_heroes(classes):
                 player = {}
                 invalid_syntax = True
 
+        # initializes the data of the heroes
+        for key, value in player.items():
+            if value == 'barbarian':
+                player[key] = {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+            elif value == 'rogue':
+                player[key] = {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+            elif value == 'healer':
+                player[key] = {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+            elif value == 'mage':
+                player[key] = {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+
+        # puts the data of the heroes in position
+
     return player
 
 
 # Baz:barbarian Lee:healer May:mage Rob:rogue
 initializaion()
+
