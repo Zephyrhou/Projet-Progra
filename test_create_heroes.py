@@ -1,4 +1,4 @@
-def initializaion():
+def initialization():
 
     classes = {'barbarian': {'energise': [[1, 1, 1], [2, 1, 1], [3, 2, 1], [4, 2, 1]],
                              'stun': [[1, 1, 1], [2, 2, 2], [3, 3, 1]]},
@@ -9,9 +9,18 @@ def initializaion():
                'rogue': {'reach': [[1, 0, 1], [2, 0, 1], [3, 0, 1], [4, 0, 1]],
                          'brust': [[1, 1, 1], [2, 2, 1], [3, 3, 1]]}}
 
-    player1 = create_heroes(classes)
-    # player2 = create_heroes(classes)
+    positions = {'spawn_player_1': ('20', '3'), 'spawn_player_2': ('20', '38')}
 
+    player1 = create_heroes(classes, positions)
+    player2 = create_heroes(classes, positions)
+
+    # Puts heroes in positions with the right position
+    for hero in player1:
+        positions[hero] = positions['spawn_player_1']
+    for hero in player2:
+        positions[hero] = positions['spawn_player_2']
+
+    print(positions)
     print(player1)
 
 
@@ -77,11 +86,9 @@ def create_heroes(classes, positions):
             elif value == 'mage':
                 player[key] = {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
 
-        # puts the data of the heroes in position
-
     return player
 
 
 # Baz:barbarian Lee:healer May:mage Rob:rogue
-initializaion()
+initialization()
 
