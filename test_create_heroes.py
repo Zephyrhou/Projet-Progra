@@ -24,17 +24,15 @@ def initialization():
     print(player1)
 
 
-def create_heroes(classes, positions):
+def create_heroes(classes):
     """Takes the player's input, splits the information and stores it into a dictionary.
 
     Parameter:
     ----------
-    positions: Contains all the coordinates of the board (dict)
     classes: Different classes a hero can be (dict)
 
     Returns:
     --------
-    positions: Contains all the coordinates of the board and the heroes (dict)
     player: Level, number of point, etc. of the heroes of player (dict)
 
     Notes:
@@ -44,7 +42,7 @@ def create_heroes(classes, positions):
     Version:
     --------
     specification: Zephyr Houyoux (v.3 09/03/19)
-    implementation: Aude Lekeux (v.4 19/03/19)
+    implementation: Aude Lekeux (v.5 22/03/19)
     """
 
     player = {}
@@ -90,5 +88,6 @@ def create_heroes(classes, positions):
 
 
 # Baz:barbarian Lee:healer May:mage Rob:rogue
+# Buf:barbarian Lia:rogue Mey:mage Tob:rogue
 initialization()
 
