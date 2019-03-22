@@ -29,8 +29,34 @@ def initialization(board_file):
     Version:
     --------
     specification: Zephyr Houyoux (v.2 04/03/19)
-    implementation:
+    implementation: Aude Lekeux (v.2 22/03/19)
     """
+
+    classes = {'barbarian': {'energise': [[1, 1, 1], [2, 1, 1], [3, 2, 1], [4, 2, 1]],
+                             'stun': [[1, 1, 1], [2, 2, 2], [3, 3, 1]]},
+               'healer': {'invigorate': [[1, 1, 1], [2, 2, 1], [3, 3, 1], [4, 4, 1]],
+                          'immunise': [[1, 0, 1], [2, 0, 3], [3, 0, 3]]},
+               'mage': {'fulgura': [[1, 3, 1], [2, 3, 1], [3, 4, 1], [4, 4, 1]],
+                        'ovibus': [[1, 1, 3], [2, 2, 3], [3, 2, 3]]},
+               'rogue': {'reach': [[1, 0, 1], [2, 0, 1], [3, 0, 1], [4, 0, 1]],
+                         'brust': [[1, 1, 1], [2, 2, 1], [3, 3, 1]]}}
+
+    nb_ranges, nb_columns, nb_turns_wanted, positions, creatures = create_board("C:/Users/Aude/Desktop/board.txt")
+
+    player1 = create_heroes(classes, positions)
+    player2 = create_heroes(classes, positions)
+
+    # Puts heroes in positions with the right position
+    for hero in player1:
+        positions[hero] = positions['spawn_player_1']
+    for hero in player2:
+        positions[hero] = positions['spawn_player_2']
+
+    print(positions)
+    print(player1)
+
+    # Baz:barbarian Lee:healer May:mage Rob:rogue
+    # Buf:barbarian Lia:rogue Mey:mage Tob:rogue
 
 #Function 3
 def create_board(board_file):
@@ -44,50 +70,181 @@ def create_board(board_file):
     --------
     positions: Contains all the coordinates of the board (dict)
     nb_turns_wanted: Number of turns the heroes need to be on spur to win (int)
+    creatures: Has every information of each creature (dict)
+    nb_ranges: number of ranges of the board (int)
+    nb_columns: number of columns of the board (int)
 
     Version:
     --------
-    specification : Zephyr Houyoux (v.4 04/03/19)
-    implementation: Manon Michaux (v.2 15/02/19)
+    specification : Manon Michaux (v.5 04/03/19)
+    implementation: Manon Michaux (v.2 17/03/19)
     """
 
     b_file = open(board_file, 'r')
-    lecture = []
+    board = []
     lines = []
     lines += b_file.readlines()
 
     for line in lines:
         line = line.replace('\n', '')
+        line = line.replace(':', '')
         line = line.split(' ')
-        lecture += line
-    print(lecture)
+        board += line
+    print(board)
 
     b_file.close()
 
+    positions = {}
+    creatures = {}
+
+    nb_ranges = board[1]
+    nb_columns = board[2]
+    nb_turns_wanted = board[3]
+
+    positions['spawn_player_1'] = (board[5], board[6])
+    positions['spawn_player_2'] = (board[7], board[8])
+
+    # item = ''
+    # for index in range(9, len(board)):
+    #     while board[index+1]
+    #
+    #     if board[index] in ['spur', 'creatures']:
+    #         item = board[index]
+    #         temp = item
+    #
+    #         while item == temp:
+
+    spur_index = None
+    creatures_index = None
+
+    for index in range(9, len(board)):
+        if board[index] == 'spur':
+            spur_index = index
+        elif board[index] == 'creatures':
+            creatures_index = index
+
+    coordinates = []
+    for index in range(spur_index + 1, creatures_index, 2):
+        coordinates.append((board[index], board[index + 1]))
+
+    positions['spur'] = coordinates
+
+    creatures_type = []
+    for index in range(creatures_index + 1, len(board)):
+        if board[index].isalpha():
+            creatures_type.append(index)
+
+    coordinates = []
+    previous_creature = board[creatures_type[0]]
+    for creature in creatures_type:
+        current_creature = board[creature]
+        if current_creature == previous_creature:
+            for index in range(creature, creature + 5, 7):
+                coordinates.append((board[index + 1], board[index + 2]))
+                previous_creature = current_creature
+        else:
+            positions[previous_creature] = coordinates
+            coordinates = []
+            for index in range(creature, creature + 5, 7):
+                coordinates.append((board[index + 1], board[index + 2]))
+                previous_creature = current_creature
+
+    positions[previous_creature] = coordinates
+
+    # del board
+
+    print(positions)
+
+    # creatures[board[19]]['h_points'] = board[22]
+    # creatures[board[19]]['d_points'] = board[23]
+    # creatures[board[19]]['creature_wage'] = board[24]
+    # creatures[board[19]]['v_points'] = board[25]
+    # creatures[board[26]]['h_points'] = board[29]
+    # creatures[board[26]]['d_points'] = board[30]
+    # creatures[board[26]]['creature_wage'] = board[31]
+    # creatures[board[26]]['v_points'] = board[32]
+
+    # for item in range(board[19], board[25]):
+    #     creatures['h_points'] = item
+    #     creatures['d_points'] = board[23]
+    #     creatures['creature_wage'] = board[24]
+    #     creatures['v_points'] = board[25]
+    #
+    # for creatures in board[26]:
+    #     creatures['h_points'] = board[29]
+    #     creatures['d_points'] = board[30]
+    #     creatures['creature_wage'] = board[31]
+    #     creatures['v_points'] = board[32]
+
+    print(creatures)
+
+    return nb_ranges, nb_columns, nb_turns_wanted, positions, creatures
+
 
 #Function 4
-def create_heroes(positions):
+def create_heroes(classes):
     """Takes the player's input, splits the information and stores it into a dictionary.
 
     Parameter:
     ----------
-    positions: Contains all the coordinates of the board (dict)
+    classes: Different classes a hero can be (dict)
 
-    Returns: 
+    Returns:
     --------
-    positions: Contains all the coordinates of the board and the heroes(dict)
-    player1: Level, number of point, etc. of the heroes of player1 (dict)
-    player2: Level, number of point, etc. of the heroes of player2 (dict)
+    player: Level, number of point, etc. of the heroes of player (dict)
 
-    Notes: 
+    Notes:
     ------
     The names of the different heroes must all be unique and can't contain special characters.
 
     Version:
     --------
     specification: Zephyr Houyoux (v.3 09/03/19)
-    implementation: Aude Lekeux (v.1 08/03/19)
+    implementation: Aude Lekeux (v.5 22/03/19)
     """
+
+    player = {}
+    invalid_syntax = True
+
+    # ask again while syntax is invalid and creates the dictionary of the player
+    while invalid_syntax and len(player) < 4:
+        invalid_syntax = False
+        player_input = input(str('Enter your four heroes and their type[name:type]: '))
+        player_input = player_input.split(" ")
+
+        for sp in player_input:
+            name, type = sp.split(":")
+
+            if not name.isalpha():
+                print('The name ' + name + ' is not appropriated, it should contain only letters!')
+                invalid_syntax = True
+
+            elif type not in classes:
+                print('The type ' + type + ' of your hero is unknown!')
+                invalid_syntax = True
+
+            elif name not in player:
+                player[name] = type
+
+            elif name in player:
+                print('The name ' + name + ' is already taken!')
+                player = {}
+                invalid_syntax = True
+
+        # initializes the data of the heroes
+        for key, value in player.items():
+            if value == 'barbarian':
+                player[key] = {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0,
+                               'damage_points': 2}
+            elif value == 'rogue':
+                player[key] = {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+            elif value == 'healer':
+                player[key] = {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0,
+                               'damage_points': 2}
+            elif value == 'mage':
+                player[key] = {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+
+    return player
 
 #Function 5
 def display_board(positions):
@@ -129,27 +286,36 @@ def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity):
     """
 
 #Function 7
-def game(positions, nb_turns_wanted, player1, player2):
-    """Starts a new turn if the game is not finished.
+def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time):
+    """Checks whether the game is over or not.
 
     Parameters:
     -----------
-    positions: Contains all the coordinates of the board (dict)
     nb_turns_wanted: Number of turns the heroes need to be on spur to win (int)
-    player1: Level, number of point, etc. of the heroes of player1 (dict)
-    player2: Level, number of point, etc. of the heroes of player2 (dict)
-
-    Returns:
-    --------
     nb_turns1: Number of turns a hero of player1 stands on the spur (int)
     nb_turns2: Number of turns a hero of player2 stands on the spur (int)
-    inactivity: Number of turns no activity has been observed (int)
+    inactivity_time: Number of turns no activity has been observed (int)
+
+    Returns:
+    -------
+    game_over: Is the game over or not (bool)
+
+    Notes:
+    ------
+    A hero must stay for a given number of consecutive turns on the spur in order to win, this number is in board_file.
 
     Version:
     --------
-    specification: Zephyr Houyoux (v.4 15/03/19)
-    implementation:
+    specification: Aude Lekeux (v.4 04/03/2019)
+    implementation: Zéphyr Houyoux (v.2 21/03/2019)
     """
+
+    if nb_turns_wanted == nb_turns1 or nb_turns2:
+        return True
+    elif inactivity_time == 40:
+        return True
+    else:
+        return False
 
 #Function 8
 def creature_turn(positions, creatures, player1, player2):
@@ -178,6 +344,59 @@ def creature_turn(positions, creatures, player1, player2):
     specification: Aude Lekeux(v.4 04/03/2019)
     implementation:
     """
+
+
+def inactivity(positions, inactivity, incativity_time):
+    """Count the inactivity of the players.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board and the heroes(dict)
+    inactivity: Contains all the coordinates of the board and the heroes of the previous turn(dict)
+
+    Returns:
+    --------
+    inactivity: Contains all the coordinates of the board and the heroes of the previous turn(dict)
+    inactivity_time: Number of inactivity turn(int)
+
+    Versions:
+    ---------
+    specification: Zéphyr Houyoux (v.1 17/03/19)
+    implementation: Zéphyr Houyoux(v.2 21/03/19)
+    """
+
+    if positions == inactivity:
+        inactivity_time = + 1
+    inactivity = positions
+
+    return inactivity, inactivity_time
+
+
+def gap_calculator(positions, name_character1, name_character2):
+    """ Compute the gap between two things.
+
+    Parameter:
+    -----------
+    positions : Contains all the coordinates of the board (dict)    name_character1 :
+
+    Returns:
+    -------
+    gap : gap between two things (int)
+
+    Version:
+    --------
+    specification : Manon Michaux (v.1 08/03/19)
+    implementaion : Zéphyr Houyoux (v.1 17/03/19)
+    """
+
+    pos1h = positions[name_character1]['nb_rows']
+    pos1l = positions[name_character1]['nb_columns']
+    pos2h = positions[name_character2]['nb_rows']
+    pos2l = positions[name_character2]['nb_columns']
+    gap = ((pos1l - pos2l) ** 2 + (pos1h - pos2h) ** 2) ** 0.5
+
+    return gap
+
 
 #Function 9
 def defeated(player, creature):
