@@ -9,8 +9,14 @@ def launch(board_file):
     Version:
     --------
     specification: Zephyr Houyoux (v.2 04/03/19)
-    implementation:
+    implementation: Aude Lekeux (v.1 22/03/19)
     """
+
+    initialization(board_file)
+
+    while not is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time):
+        game()
+
 
 #Function 2
 def initialization(board_file):
@@ -41,7 +47,7 @@ def initialization(board_file):
                'rogue': {'reach': [[1, 0, 1], [2, 0, 1], [3, 0, 1], [4, 0, 1]],
                          'brust': [[1, 1, 1], [2, 2, 1], [3, 3, 1]]}}
 
-    nb_ranges, nb_columns, nb_turns_wanted, positions, creatures = create_board("C:/Users/Aude/Desktop/board.txt")
+    nb_ranges, nb_columns, nb_turns_wanted, positions, creatures = create_board(board_file)
 
     player1 = create_heroes(classes, positions)
     player2 = create_heroes(classes, positions)
@@ -52,11 +58,29 @@ def initialization(board_file):
     for hero in player2:
         positions[hero] = positions['spawn_player_2']
 
-    print(positions)
-    print(player1)
+    return positions, player1, player2, nb_turns_wanted
 
     # Baz:barbarian Lee:healer May:mage Rob:rogue
     # Buf:barbarian Lia:rogue Mey:mage Tob:rogue
+
+
+def game():
+    """Starts a new turn if the game is not finished.
+
+    Returns:
+    --------
+    nb_turns1: Number of turns a hero of player1 stands on the spur (int)
+    nb_turns2: Number of turns a hero of player2 stands on the spur (int)
+    inactivity: Number of turns no activity has been observed (int)
+
+    Version:
+    --------
+    specification: Zephyr Houyoux (v.3 04/03/19)
+    implementation:
+    """
+
+    return nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time
+
 
 #Function 3
 def create_board(board_file):
@@ -260,30 +284,6 @@ def display_board(positions):
     implementation: Aude Lekeux (v.2 15/03/19)
     """
 
-#Function 6
-def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity):
-    """Checks whether the game is over or not.
-
-    Parameters:
-    -----------
-    nb_turns_wanted: Number of turns the heroes need to be on spur to win (int)
-    nb_turns1: Number of turns a hero of player1 stands on the spur (int)
-    nb_turns2: Number of turns a hero of player2 stands on the spur (int)
-    inactivity: Number of turns no activity has been observed (int)
-
-    Returns:
-    -------
-    game_over: Is the game over or not (bool)
-
-    Notes:
-    ------
-    A hero must stay for a given number of consecutive turns on the spur in order to win, this number is in board_file.
-
-    Version:
-    --------
-    specification: Aude Lekeux (v.4 04/03/2019)
-    implementation:
-    """
 
 #Function 7
 def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time):
