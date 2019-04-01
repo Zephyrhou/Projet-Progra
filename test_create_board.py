@@ -16,7 +16,7 @@ def create_board(board_file):
     Version:
     --------
     specification : Manon Michaux (v.5 04/03/19)
-    implementation: Manon Michaux (v.2 17/03/19)
+    implementation: Manon Michaux (v.3 22/03/19)
     """
 
     b_file = open(board_file, 'r')
@@ -89,8 +89,6 @@ def create_board(board_file):
                 previous_creature = current_creature
 
     positions[previous_creature] = coordinates
-
-    # del board
 
     print(positions)
 

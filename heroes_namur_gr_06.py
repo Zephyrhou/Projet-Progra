@@ -47,7 +47,7 @@ def initialization(board_file):
                'rogue': {'reach': [[1, 0, 1], [2, 0, 1], [3, 0, 1], [4, 0, 1]],
                          'brust': [[1, 1, 1], [2, 2, 1], [3, 3, 1]]}}
 
-    nb_ranges, nb_columns, nb_turns_wanted, positions, creatures = create_board(board_file)
+    nb_rows, nb_columns, nb_turns_wanted, positions, creatures = create_board(board_file)
 
     player1 = create_heroes(classes, positions)
     player2 = create_heroes(classes, positions)
@@ -59,9 +59,6 @@ def initialization(board_file):
         positions[hero] = positions['spawn_player_2']
 
     return positions, player1, player2, nb_turns_wanted
-
-    # Baz:barbarian Lee:healer May:mage Rob:rogue
-    # Buf:barbarian Lia:rogue Mey:mage Tob:rogue
 
 
 def game():
@@ -114,14 +111,13 @@ def create_board(board_file):
         line = line.replace(':', '')
         line = line.split(' ')
         board += line
-    print(board)
 
     b_file.close()
 
     positions = {}
     creatures = {}
 
-    nb_ranges = board[1]
+    nb_rows = board[1]
     nb_columns = board[2]
     nb_turns_wanted = board[3]
 
@@ -177,8 +173,6 @@ def create_board(board_file):
 
     # del board
 
-    print(positions)
-
     # creatures[board[19]]['h_points'] = board[22]
     # creatures[board[19]]['d_points'] = board[23]
     # creatures[board[19]]['creature_wage'] = board[24]
@@ -200,9 +194,7 @@ def create_board(board_file):
     #     creatures['creature_wage'] = board[31]
     #     creatures['v_points'] = board[32]
 
-    print(creatures)
-
-    return nb_ranges, nb_columns, nb_turns_wanted, positions, creatures
+    return nb_rows, nb_columns, nb_turns_wanted, positions, creatures
 
 
 #Function 4
@@ -269,6 +261,7 @@ def create_heroes(classes):
                 player[key] = {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
 
     return player
+
 
 #Function 5
 def display_board(positions):

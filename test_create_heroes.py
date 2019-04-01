@@ -24,7 +24,7 @@ def initialization():
     print(player1)
 
 
-def create_heroes(classes):
+def create_heroes(classes, positions):
     """Takes the player's input, splits the information and stores it into a dictionary.
 
     Parameter:
