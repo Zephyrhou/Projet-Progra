@@ -25,7 +25,10 @@ def defeated(player, nb_player, creature, positions):
     """
 
     if player['life_points'] <= 0:
-        positions[player] = 'respawn' + nb_player
+        if nb_player == 1:
+            positions[player] = 'spawn_player_1'
+        if nb_player == 2:
+            positions[player] = 'spawn_player_2'
         print('The player', player, 'is respawn')
     if positions[creature] <= 0:
         del positions[creature]
