@@ -324,7 +324,8 @@ def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time):
     else:
         return False
 
-#Function 8
+
+# Function 8
 def creature_turn(positions, creatures, player1, player2):
     """Checks where a creature should attack or move depending on it's surrounding.
 
@@ -405,7 +406,7 @@ def gap_calculator(positions, name_character1, name_character2):
     return gap
 
 
-#Function 9
+# Function 9
 def defeated(player, nb_player, creature, positions):
     """Whenever a hero or a creature is defeated.
 
@@ -442,7 +443,7 @@ def defeated(player, nb_player, creature, positions):
     return player, positions
 
 
-#Function 10
+# Function 10
 def players_choice(choice, positions):
     """Translates the player's order into actions.
 
@@ -465,7 +466,8 @@ def players_choice(choice, positions):
     implementation:
     """
 
-#Function 11
+
+# Function 11
 def attack(name_attack, positions, player, creatures):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
@@ -487,7 +489,8 @@ def attack(name_attack, positions, player, creatures):
     implementation: 
     """
 
-#Function 12
+
+# Function 12
 def move(positions, movement):
     """Checks if the position he will end on is allowed. If the movement is ok, it's being executed.
 
@@ -512,14 +515,14 @@ def move(positions, movement):
     implementation:
     """
 
-#Function 13
-def level(player, classes):
+
+# Function 13
+def increase_level(player):
     """Checks if a hero can level up and upgrade their characteristics.
 
     Parameters:
     -----------
     player: All the data about the heroes (dict)
-    classes: The four classes of hero possible and their information (dict)
 
     Returns:
     --------
@@ -528,84 +531,91 @@ def level(player, classes):
     Version:
     --------
     specification: Manon Michaux (v.3 04/03/19)
-    implementation: Aude Lekeux (v.2 15/03/19)
+    implementation: Aude Lekeux (v.4 02/04/19)
     """
 
-    # level upgrade depending on the hero's victory points
+    # Level increase depending on the hero's victory points
     for hero in player:
-        if hero['victory_points'] < 100:
-            print('Hero ' + hero + ' does not have enough victory points in order to level up')
-        if hero['class'] == 'barbarian':
-            if hero['victory_points'] < 200:
-                hero['level'] = 2
-                hero['life_points'] = 13
-                hero['damage_points'] = 3
-            if hero['victory_points'] < 400:
-                hero['level'] = 3
-                hero['life_points'] = 16
-                hero['damage_points'] = 4
-            if hero['victory_points'] < 800:
-                hero['level'] = 4
-                hero['life_points'] = 19
-                hero['damage_points'] = 5
-            if hero['victory_points'] > 800:
-                hero['level'] = 5
-                hero['life_points'] = 22
-                hero['damage_points'] = 6
-        if hero['class'] == 'healer':
-            if hero['victory_points'] < 200:
-                hero['level'] = 2
-                hero['life_points'] = 11
-                hero['damage_points'] = 2
-            if hero['victory_points'] < 400:
-                hero['level'] = 3
-                hero['life_points'] = 12
-                hero['damage_points'] = 3
-            if hero['victory_points'] < 800:
-                hero['level'] = 4
-                hero['life_points'] = 13
-                hero['damage_points'] = 3
-            if hero['victory_points'] > 800:
-                hero['level'] = 5
-                hero['life_points'] = 14
-                hero['damage_points'] = 4
-        if hero['class'] == 'mage':
-            if hero['victory_points'] < 200:
-                hero['level'] = 2
-                hero['life_points'] = 12
-                hero['damage_points'] = 3
-            if hero['victory_points'] < 400:
-                hero['level'] = 3
-                hero['life_points'] = 14
-                hero['damage_points'] = 4
-            if hero['victory_points'] < 800:
-                hero['level'] = 4
-                hero['life_points'] = 16
-                hero['damage_points'] = 5
-            if hero['victory_points'] > 800:
-                hero['level'] = 5
-                hero['life_points'] = 18
-                hero['damage_points'] = 6
-        if hero['class'] == 'rogue':
-            if hero['victory_points'] < 200:
-                hero['level'] = 2
-                hero['life_points'] = 12
-                hero['damage_points'] = 3
-            if hero['victory_points'] < 400:
-                hero['level'] = 3
-                hero['life_points'] = 14
-                hero['damage_points'] = 4
-            if hero['victory_points'] < 800:
-                hero['level'] = 4
-                hero['life_points'] = 16
-                hero['damage_points'] = 5
-            if hero['victory_points'] > 800:
-                hero['level'] = 5
-                hero['life_points'] = 18
-                hero['damage_points'] = 6
+        # If hero is under 100 victory points
+        if player[hero]['victory_points'] < 100:
+            print('Hero ' + hero + ' remains on level 1')
+            player[hero]['level'] = 1
+            player[hero]['life_points'] = 10
+            player[hero]['damage_points'] = 2
+        # If hero is over 100 points
+        else:
+            if player[hero]['class'] == 'barbarian':
+                if player[hero]['victory_points'] < 200:
+                    player[hero]['level'] = 2
+                    player[hero]['life_points'] = 13
+                    player[hero]['damage_points'] = 3
+                elif player[hero]['victory_points'] < 400:
+                    player[hero]['level'] = 3
+                    player[hero]['life_points'] = 16
+                    player[hero]['damage_points'] = 4
+                elif player[hero]['victory_points'] < 800:
+                    player[hero]['level'] = 4
+                    player[hero]['life_points'] = 19
+                    player[hero]['damage_points'] = 5
+                elif player[hero]['victory_points'] > 800:
+                    player[hero]['level'] = 5
+                    player[hero]['life_points'] = 22
+                    player[hero]['damage_points'] = 6
+            elif player[hero]['class'] == 'healer':
+                if player[hero]['victory_points'] < 200:
+                    player[hero]['level'] = 2
+                    player[hero]['life_points'] = 11
+                    player[hero]['damage_points'] = 2
+                elif player[hero]['victory_points'] < 400:
+                    player[hero]['level'] = 3
+                    player[hero]['life_points'] = 12
+                    player[hero]['damage_points'] = 3
+                elif player[hero]['victory_points'] < 800:
+                    player[hero]['level'] = 4
+                    player[hero]['life_points'] = 13
+                    player[hero]['damage_points'] = 3
+                elif player[hero]['victory_points'] > 800:
+                    player[hero]['level'] = 5
+                    player[hero]['life_points'] = 14
+                    player[hero]['damage_points'] = 4
+            elif player[hero]['class'] == 'mage':
+                if player[hero]['victory_points'] < 200:
+                    player[hero]['level'] = 2
+                    player[hero]['life_points'] = 12
+                    player[hero]['damage_points'] = 3
+                elif player[hero]['victory_points'] < 400:
+                    player[hero]['level'] = 3
+                    player[hero]['life_points'] = 14
+                    player[hero]['damage_points'] = 4
+                elif player[hero]['victory_points'] < 800:
+                    player[hero]['level'] = 4
+                    player[hero]['life_points'] = 16
+                    player[hero]['damage_points'] = 5
+                elif player[hero]['victory_points'] > 800:
+                    player[hero]['level'] = 5
+                    player[hero]['life_points'] = 18
+                    player[hero]['damage_points'] = 6
+            elif player[hero]['class'] == 'rogue':
+                if player[hero]['victory_points'] < 200:
+                    player[hero]['level'] = 2
+                    player[hero]['life_points'] = 12
+                    player[hero]['damage_points'] = 3
+                elif player[hero]['victory_points'] < 400:
+                    player[hero]['level'] = 3
+                    player[hero]['life_points'] = 14
+                    player[hero]['damage_points'] = 4
+                elif player[hero]['victory_points'] < 800:
+                    player[hero]['level'] = 4
+                    player[hero]['life_points'] = 16
+                    player[hero]['damage_points'] = 5
+                elif player[hero]['victory_points'] > 800:
+                    player[hero]['level'] = 5
+                    player[hero]['life_points'] = 18
+                    player[hero]['damage_points'] = 6
+            print('Hero ' + hero + ' has increased to level ' + str(player[hero]['level']))
 
 
-#Function 14
+# Function 14
 def summarize(player, creatures, nb_turns):
     """Summarizes the state of the game.
 
