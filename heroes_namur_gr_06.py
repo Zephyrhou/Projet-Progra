@@ -54,6 +54,9 @@ def game():
     implementation:
     """
 
+    update_level(player_1)
+    update_level(player_2)
+
     return nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time
 
 
@@ -517,7 +520,7 @@ def move(positions, movement):
 
 
 # Function 13
-def increase_level(player):
+def update_level(player):
     """Checks if a hero can level up and upgrade their characteristics.
 
     Parameters:
@@ -613,6 +616,8 @@ def increase_level(player):
                     player[hero]['life_points'] = 18
                     player[hero]['damage_points'] = 6
             print('Hero ' + hero + ' has increased to level ' + str(player[hero]['level']))
+
+    return player
 
 
 # Function 14
