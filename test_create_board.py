@@ -12,11 +12,11 @@ def create_board(board_file):
     creatures: Has every information of each creature (dict)
     nb_ranges: number of ranges of the board (int)
     nb_columns: number of columns of the board (int)
-    
+
     Version:
     --------
     specification : Manon Michaux (v.5 04/03/19)
-    implementation: Manon Michaux (v.3 22/03/19)
+    implementation: Aude Lekeux (v.3 02/04/19)
     """
 
     b_file = open(board_file, 'r')
@@ -29,68 +29,38 @@ def create_board(board_file):
         line = line.replace(':', '')
         line = line.split(' ')
         board += line
-    print(board)
 
     b_file.close()
 
     positions = {}
     creatures = {}
 
-    nb_ranges = board[1]
+    nb_rows = board[1]
     nb_columns = board[2]
     nb_turns_wanted = board[3]
 
-    positions['spawn_player_1'] = (board[5], board[6])
-    positions['spawn_player_2'] = (board[7], board[8])
-
-    # item = ''
-    # for index in range(9, len(board)):
-    #     while board[index+1]
-    #
-    #     if board[index] in ['spur', 'creatures']:
-    #         item = board[index]
-    #         temp = item
-    #
-    #         while item == temp:
+    positions[(board[5], board[6])] = 'spawn_player_1'
+    positions[(board[7], board[8])] = 'spawn_player_2'
 
     spur_index = None
     creatures_index = None
 
+    # Determine a partir de ou commence les coordonnes du spur ou des creatures
     for index in range(9, len(board)):
         if board[index] == 'spur':
             spur_index = index
         elif board[index] == 'creatures':
             creatures_index = index
 
-    coordinates = []
+    # Stock le spur
     for index in range(spur_index + 1, creatures_index, 2):
-        coordinates.append((board[index], board[index + 1]))
+        positions[(board[index], board[index + 1])] = 'spur'
 
-    positions['spur'] = coordinates
+    # Stock les creatures
+    for index in range(creatures_index + 1, len(board), 7):
+        positions[(board[index + 1], board[index + 2])] = board[index]
 
-    creatures_type = []
-    for index in range(creatures_index + 1, len(board)):
-        if board[index].isalpha():
-            creatures_type.append(index)
-
-    coordinates = []
-    previous_creature = board[creatures_type[0]]
-    for creature in creatures_type:
-        current_creature = board[creature]
-        if current_creature == previous_creature:
-            for index in range(creature, creature + 5, 7):
-                coordinates.append((board[index + 1], board[index + 2]))
-                previous_creature = current_creature
-        else:
-            positions[previous_creature] = coordinates
-            coordinates = []
-            for index in range(creature, creature + 5, 7):
-                coordinates.append((board[index + 1], board[index + 2]))
-                previous_creature = current_creature
-
-    positions[previous_creature] = coordinates
-
-    print(positions)
+    # del board
 
     # creatures[board[19]]['h_points'] = board[22]
     # creatures[board[19]]['d_points'] = board[23]
@@ -113,12 +83,4 @@ def create_board(board_file):
     #     creatures['creature_wage'] = board[31]
     #     creatures['v_points'] = board[32]
 
-    print(creatures)
-
-    return nb_ranges, nb_columns, nb_turns_wanted, positions, creatures
-
-
-create_board("C:/Users/Aude/Desktop/board.txt")
-    
-
-
+    return nb_rows, nb_columns, nb_turns_wanted, positions, creatures

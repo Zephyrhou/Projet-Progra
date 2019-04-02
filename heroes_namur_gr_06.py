@@ -98,7 +98,7 @@ def create_board(board_file):
     Version:
     --------
     specification : Manon Michaux (v.5 04/03/19)
-    implementation: Manon Michaux (v.2 17/03/19)
+    implementation: Aude Lekeux (v.3 02/04/19)
     """
 
     b_file = open(board_file, 'r')
