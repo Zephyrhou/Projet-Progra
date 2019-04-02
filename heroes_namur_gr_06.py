@@ -79,7 +79,7 @@ def game():
     return nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time
 
 
-#Function 3
+# Function 3
 def create_board(board_file):
     """Creates the map and displays it.
 
@@ -121,55 +121,26 @@ def create_board(board_file):
     nb_columns = board[2]
     nb_turns_wanted = board[3]
 
-    positions['spawn_player_1'] = (board[5], board[6])
-    positions['spawn_player_2'] = (board[7], board[8])
-
-    # item = ''
-    # for index in range(9, len(board)):
-    #     while board[index+1]
-    #
-    #     if board[index] in ['spur', 'creatures']:
-    #         item = board[index]
-    #         temp = item
-    #
-    #         while item == temp:
+    positions[(board[5], board[6])] = 'spawn_player_1'
+    positions[(board[7], board[8])] = 'spawn_player_2'
 
     spur_index = None
     creatures_index = None
 
+    # Determine a partir de ou commence les coordonnes du spur ou des creatures
     for index in range(9, len(board)):
         if board[index] == 'spur':
             spur_index = index
         elif board[index] == 'creatures':
             creatures_index = index
 
-    coordinates = []
+    # Stock le spur
     for index in range(spur_index + 1, creatures_index, 2):
-        coordinates.append((board[index], board[index + 1]))
+        positions[(board[index], board[index + 1])] = 'spur'
 
-    positions['spur'] = coordinates
-
-    creatures_type = []
-    for index in range(creatures_index + 1, len(board)):
-        if board[index].isalpha():
-            creatures_type.append(index)
-
-    coordinates = []
-    previous_creature = board[creatures_type[0]]
-    for creature in creatures_type:
-        current_creature = board[creature]
-        if current_creature == previous_creature:
-            for index in range(creature, creature + 5, 7):
-                coordinates.append((board[index + 1], board[index + 2]))
-                previous_creature = current_creature
-        else:
-            positions[previous_creature] = coordinates
-            coordinates = []
-            for index in range(creature, creature + 5, 7):
-                coordinates.append((board[index + 1], board[index + 2]))
-                previous_creature = current_creature
-
-    positions[previous_creature] = coordinates
+    # Stock les creatures
+    for index in range(creatures_index + 1, len(board), 7):
+        positions[(board[index + 1], board[index + 2])] = board[index]
 
     # del board
 
@@ -197,7 +168,7 @@ def create_board(board_file):
     return nb_rows, nb_columns, nb_turns_wanted, positions, creatures
 
 
-#Function 4
+# Function 4
 def create_heroes(classes):
     """Takes the player's input, splits the information and stores it into a dictionary.
 
