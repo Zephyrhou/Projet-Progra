@@ -45,7 +45,7 @@ def display_board(positions, nb_rows, nb_columns):
         for column in range(nb_columns):
             character = get_content(positions, row, column)
             if character is None:
-                display_line += u"-"
+                display_line += '-'
             elif character == 'spawn_player_1':
                 display_line += '1'
             elif character == 'spawn_player_2':
@@ -53,13 +53,14 @@ def display_board(positions, nb_rows, nb_columns):
             elif character == 'spur':
                 display_line += '+'
             else:
-                display_line += str(character)
+                character = str(character[0])
+                display_line += character
         print(display_line)
 
 
 positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', ('20', '38'): 'spur', ('20', '39'): 'spur',
              ('21', '38'): 'spur', ('21', '39'): 'spur', ('10', '10'): 'bear', ('10', '20'): 'bear',
-             ('15', '10'): 'wolf', 'B': ('4', '3'), 'H': ('20', '6'), 'M': ('17', '3'), 'R': ('8', '11')}
+             ('15', '10'): 'wolf', 'Baz': ('4', '3'), 'Hat': ('20', '6'), 'May': ('17', '3'), 'Rob': ('8', '11')}
 
 players_positions = {'spawn_player_1': ('20', '3'), 'spawn_player_2': ('20', '38'), 'Baz': ('20', '3'),
                      'Hee': ('21', '3'), 'May': ('10', '3'), 'Rob': ('15', '5'), 'Buf': ('20', '30'),
