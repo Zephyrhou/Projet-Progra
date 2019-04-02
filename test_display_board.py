@@ -62,39 +62,7 @@ positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', ('20
              ('21', '38'): 'spur', ('21', '39'): 'spur', ('10', '10'): 'bear', ('10', '20'): 'bear',
              ('15', '10'): 'wolf', 'Baz': ('4', '3'), 'Hat': ('20', '6'), 'May': ('17', '3'), 'Rob': ('8', '11')}
 
-players_positions = {'spawn_player_1': ('20', '3'), 'spawn_player_2': ('20', '38'), 'Baz': ('20', '3'),
-                     'Hee': ('21', '3'), 'May': ('10', '3'), 'Rob': ('15', '5'), 'Buf': ('20', '30'),
-                     'Hia': ('18', '3'), 'Mey': ('2', '8'), 'Ran': ('21', '35')}
-
-
 print(display_board(positions, 25, 40))
-
-# print(get_content(positions, 20, 3))
 
 # u"\u2610"
 # []
-# for position in positions:
-#     for word in position:
-#         for letter in word:
-#             print(letter)
-
-# if positions['spur'] == [(row, column)]:
-#     character = '.'
-# elif positions['spawn_player_1'] == (row, column):
-#     character = '*'
-# elif positions['spawn_player_2'] == (row, column):
-#     character = '**'
-# elif positions['bear'] == [(row, column)]:
-#     character = 'b'
-# elif positions['wolf'] == [(row, column)]:
-#     character = 'w'
-# elif positions['B'] == (row, column):
-#     character = 'B'
-# elif positions['M'] == (row, column):
-#     character = 'M'
-# elif positions['R'] == (row, column):
-#     character = 'R'
-# elif positions['H'] == (row, column):
-#     character = 'H'
-# else:
-#     character = u"\u2610"
