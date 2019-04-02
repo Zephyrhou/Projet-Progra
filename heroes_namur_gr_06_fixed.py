@@ -63,6 +63,7 @@ def create_heroes():
 
     return player
 
+
 def create_board(board_file, player_1, player_2):
     b_file = open(board_file, 'r')
     board = []
