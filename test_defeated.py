@@ -94,32 +94,3 @@ def defeated(player, nb_player, positions, creatures):
                 print('The creature', value[0], 'is dead')
 
     return player, positions, creatures
-
-
-positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '4'), 'Lee': ('20', '3'),
-             'May': ('20', '3'), 'Rob': ('20', '3'), 'Buf': ('20', '37'), 'Lia': ('20', '37'), 'Mey': ('20', '37'),
-             'Tob': ('20', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
-             ('21', '39'): 'spur', ('10', '10'): ('bear', 0, 5, 3, 100), ('10', '20'): ('bear', 10, 5, 3, 100),
-             ('15', '10'): ('wolf', 10, 5, 3, 100)}
-
-player1 = {'Baz': {'class': 'barbarian', 'level': 2, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
-
-creatures = ['bear', 'bear', 'wolf']
-
-player1 = {'Baz': {'class': 'barbarian', 'level': 2, 'life_points': 0, 'victory_points': 0, 'damage_points': 2},
-           'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
-
-
-player1, positions, creatures = defeated(player1, 1, positions, creatures)
-
-print()
-print(player1)
-print()
-print(positions)
-print()
-print(creatures)

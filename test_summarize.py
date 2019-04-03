@@ -13,6 +13,5 @@ def summarize(player, creatures, nb_turns):
     implementation: Aude Lekeux (v.2 15/03/19)
     """
 
-    # cooldown
 
 

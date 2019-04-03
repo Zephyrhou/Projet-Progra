@@ -116,6 +116,8 @@ def create_board(board_file, player_1, player_2):
     for index in range(creatures_index + 1, len(board), 7):
         positions[(board[index + 1], board[index + 2])] = board[index]
 
+    print(positions)
+
     # creatures[board[19]]['h_points'] = board[22]
     # creatures[board[19]]['d_points'] = board[23]
     # creatures[board[19]]['creature_wage'] = board[24]

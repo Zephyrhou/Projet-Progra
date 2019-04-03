@@ -96,19 +96,3 @@ def increase_level(player):
             print('Hero ' + hero + ' has increased to level ' + str(player[hero]['level']))
 
     return player
-
-
-player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
-
-print(player1)
-
-player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 506, 'damage_points': 2},
-           'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 101, 'damage_points': 2},
-           'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 99, 'damage_points': 2},
-           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 467, 'damage_points': 2}}
-
-print(increase_level(player1))
-print(player1)
