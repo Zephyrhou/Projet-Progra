@@ -1,11 +1,14 @@
-def move(positions, movement, position_player):
+from gap import *
+
+
+def move(positions, hero, movement):
     """Checks if the position he will end on is allowed. Do it if it is allowed.
 
     Parameters:
     -----------
-    positions: Contains all the coordinates of the board (dict)    movement: Coordinates the hero will go (str)
-    movement: It is the positions that the heroe wants to go
-    position_player: It is the positions of the player that want to move
+    positions: Contains all the coordinates of the board (dict)
+    hero: Name of the hero who wants to move (str)
+    movement: Coordinates the hero wants to go to (tuple)
 
     Returns:
     --------
@@ -19,28 +22,31 @@ def move(positions, movement, position_player):
 
     Version:
     --------
-    specification: Zephyr Houyoux (v.4 25/03/19)
-    implementation: Zephyr Houyoux (v.1 25/03/19)
+    specification: Zephyr Houyoux (v.5 04/04/19)
+    implementation: Zephyr Houyoux (v.3 4/04/19)
     """
 
-    possible = gap_calculator(positions, movement, position_player)
+    position_hero = positions[hero]
+    # Computes the gap between the position of the hero and where he wants to go
+    gap = gap_calculator(movement, position_hero)
     error_message = 'You can\'t move there'
 
-    for things in positions:
-        iteration = str(things)
-        if positions[iteration]!=positions['spur'] or positions['spawn']!=positions[iteration]:
-            if positions[iteration]['nb_rows'] == positions['movement']['nb_rows']\
-                    and positions[iteration]['nb_columns'] == positions['movement']:
-                print(error_message)
-                return
-            else:
-                if possible < 1.5:
-                    positions[position_player] = positions[movement]
-                    return positions
-                else:
-                    print(error_message)
-                    return
+    # If the position the hero wants to go to is the same as where he is
+    if movement[0] == positions[hero][0] and movement[1] == positions[hero][1]:
+        return error_message
+    else:
+        # If the gap is less than 1.5 he can move
+        if gap < 1.5:
+            positions[hero] = movement
+            return positions
         else:
-                if possible < 1.5:
-                    positions[position_player] = positions[movement]
-                    return positions
+            return error_message
+
+
+positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('24', '3'),
+             'May': ('14', '6'), 'Rob': ('20', '17'), 'Buf': ('20', '17'), 'Lia': ('19', '7'), 'Mey': ('3', '3'),
+             'Tob': ('2', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
+             ('21', '39'): 'spur', ('10', '10'): ['bear', '20', '5', '3', '100'],
+             ('10', '20'): ['bear', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
+
+print(move(positions, 'Buf', ('20', '18')))

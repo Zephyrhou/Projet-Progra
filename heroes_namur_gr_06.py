@@ -367,14 +367,13 @@ def inactivity(positions, inactivity, incativity_time):
     return inactivity, inactivity_time
 
 
-def gap_calculator(positions, character_1, character_2):
+def gap_calculator(position_1, position_2):
     """Computes the gap between two characters.
 
     Parameter:
     -----------
-    positions: Contains all the coordinates of the board (dict)
-    character_1: Name of the first character (str)
-    character_2: Name of the second character (str)
+    position_1: Position of the first character (tuple)
+    position_2: Position of the second character (tuple)
 
     Returns:
     -------
@@ -382,16 +381,16 @@ def gap_calculator(positions, character_1, character_2):
 
     Version:
     --------
-    specification: Manon Michaux (v.2 04/04/19)
-    implementation: Zéphyr Houyoux (v.2 04/04/19)
+    specification: Manon Michaux (v.3 04/04/19)
+    implementation: Zéphyr Houyoux (v.3 04/04/19)
     """
 
-    pos1h = int(positions[character_1][0])
-    pos1l = int(positions[character_1][1])
-    pos2h = int(positions[character_2][0])
-    pos2l = int(positions[character_2][1])
+    pos1c = int(position_1[0])
+    pos1r = int(position_1[1])
+    pos2c = int(position_2[0])
+    pos2r = int(position_2[1])
 
-    gap = ((pos1l - pos2l) ** 2 + (pos1h - pos2h) ** 2) ** 0.5
+    gap = ((pos1r - pos2r) ** 2 + (pos1c - pos2c) ** 2) ** 0.5
 
     return gap
 
@@ -542,13 +541,14 @@ def attack(name_attack, positions, player, creatures):
 
 
 # Function 12
-def move(positions, movement):
-    """Checks if the position he will end on is allowed. If the movement is ok, it's being executed.
+def move(positions, hero, movement):
+    """Checks if the position he will end on is allowed. Do it if it is allowed.
 
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
-    movement: Coordinates the hero will go (str)
+    hero: Name of the hero who wants to move (str)
+    movement: Coordinates the hero wants to go to (tuple)
 
     Returns:
     --------
@@ -562,9 +562,27 @@ def move(positions, movement):
 
     Version:
     --------
-    specification: Zephyr Houyoux (v.3 04/03/19)
-    implementation:
+    specification: Zephyr Houyoux (v.5 04/04/19)
+    implementation: Zephyr Houyoux (v.3 4/04/19)
     """
+
+    # Coordinates of the hero depending on his name
+    position_hero = positions[hero]
+
+    # Computes the gap between the position of the hero and where he wants to go
+    gap = gap_calculator(movement, position_hero)
+    error_message = 'You can\'t move there'
+
+    # If the position the hero wants to go to is the same as where he is
+    if movement[0] == positions[hero][0] and movement[1] == positions[hero][1]:
+        return error_message
+    else:
+        # If the gap is less than 1.5 he can move
+        if gap < 1.5:
+            positions[hero] = movement
+            return positions
+        else:
+            return error_message
 
 
 # Function 13
