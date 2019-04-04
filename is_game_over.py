@@ -1,4 +1,4 @@
-def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time, inactivity_time):
+def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time):
     """Checks whether the game is over or not.
 
     Parameters:
@@ -21,6 +21,7 @@ def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time, inactiv
     specification: Aude Lekeux (v.4 04/03/2019)
     implementation: Zéphyr Houyoux (v.1 03/04/2019)
     """
+
     if nb_turns_wanted == nb_turns1 or nb_turns2:
         return True
     elif inactivity_time == 40:

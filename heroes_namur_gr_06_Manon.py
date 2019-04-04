@@ -325,7 +325,7 @@ def move(dico_positions, movement):
     implementation:
     """
 
-#Function 15
+# Function 15
 def level(dico_player):
     """Checks if a hero can level up and upgrade their characteristics.    Parameters:
     -----------
@@ -341,7 +341,7 @@ def level(dico_player):
     implementation: 
     """
 
-#Function 16
+# Function 16
 def summarize(dico_player, dico_creatures, nb_turns):
     """Summarize the state of the game.
 
@@ -356,8 +356,9 @@ def summarize(dico_player, dico_creatures, nb_turns):
     specification: Manon Michaux (v.2 25/02/19)
     implementation:
     """
-#Function 17
-def good_dict(hero_name):
+
+# Function 17
+def good(hero_name):
     """Check in which dictionary the hero is.
 
     Parameter:
@@ -373,8 +374,8 @@ def good_dict(hero_name):
     --------
     specification: Manon Michaux (v.3 24/03/19)
     implementation: Manon Michaux (v.3 24/03/19)
-
     """
+
     for heroes_names in dict_player1 :
         if heroes_names == hero_name:
             good_dict == dict_player1
@@ -386,6 +387,3 @@ def good_dict(hero_name):
                 else:
                     print("That hero doesn't exist")
     return good_dict, bad_dict
-                
-
-
