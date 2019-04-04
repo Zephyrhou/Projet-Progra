@@ -230,7 +230,7 @@ def get_content(row, column, positions):
     Version:
     --------
     specification: Aude Lekeux (v.1 02/04/19)
-    implementation: Aude Lekeux (v.2 02/04/19)
+    implementation: Aude Lekeux (v.3 04/04/19)
     """
 
     row = str(row)
@@ -238,7 +238,10 @@ def get_content(row, column, positions):
 
     for key in positions:
         if key == (row, column):
-            return positions[key]
+            if type(positions[key]) == list:
+                return positions[key][0]
+            else:
+                return positions[key]
         elif positions[key] == (row, column):
             return key
 
@@ -272,8 +275,7 @@ def display_board(ROWS, COLUMNS, positions):
             elif character == 'spur':
                 display_line += '+'
             else:
-                character = str(character[0])
-                display_line += character
+                display_line += character[0]
         print(display_line)
 
 

@@ -4,6 +4,7 @@ def launch(board_file):
 
 
 def initialization(board_file):
+
     player_1 = create_heroes()
     player_2 = create_heroes()
 
@@ -118,26 +119,28 @@ def create_board(board_file, player_1, player_2):
                                                            board[index + 5], board[index + 6]]
         creatures += [board[index]]
 
-    print(positions)
-    print(creatures)
-
     del board
     
     return ROWS, COLUMNS, NB_TURNS, positions, creatures
 
 
 def get_content(row, column, positions):
+
     row = str(row)
     column = str(column)
 
     for key in positions:
         if key == (row, column):
-            return positions[key]
+            if type(positions[key]) == list:
+                return positions[key][0]
+            else:
+                return positions[key]
         elif positions[key] == (row, column):
             return key
 
 
 def display_board(ROWS, COLUMNS, positions):
+
     for row in range(ROWS):
         display_line = ''
         for column in range(COLUMNS):
@@ -151,8 +154,7 @@ def display_board(ROWS, COLUMNS, positions):
             elif character == 'spur':
                 display_line += '+'
             else:
-                character = str(character[0])
-                display_line += character
+                display_line += character[0]
         print(display_line)
 
 

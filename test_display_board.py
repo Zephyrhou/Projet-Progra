@@ -22,7 +22,10 @@ def get_content(positions, row, column):
 
     for key in positions:
         if key == (row, column):
-            return positions[key]
+            if type(positions[key]) == list:
+                return positions[key][0]
+            else:
+                return positions[key]
         elif positions[key] == (row, column):
             return key
 
@@ -53,6 +56,14 @@ def display_board(positions, nb_rows, nb_columns):
             elif character == 'spur':
                 display_line += '+'
             else:
-                character = str(character[0])
-                display_line += character
+                display_line += character[0]
         print(display_line)
+
+
+positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('24', '3'),
+             'May': ('14', '6'), 'Rob': ('20', '17'), 'Buf': ('20', '17'), 'Lia': ('19', '7'), 'Mey': ('3', '3'),
+             'Tob': ('2', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
+             ('21', '39'): 'spur', ('10', '10'): ['bear', '20', '5', '3', '100'],
+             ('10', '20'): ['bear', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
+
+display_board(positions, 25, 40)
