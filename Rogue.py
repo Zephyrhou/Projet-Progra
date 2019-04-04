@@ -49,7 +49,7 @@ def reach_level(level, updated, hero_name, positions, coordinates, used):
     return updated, positions, used
 
 
-def reach(positions, hero_name, coordinates, modif):
+def reach(positions, hero_name, coordinates):
     """Teleports the hero using the attack if he is the first using reach this turn and if the target coordinates aren't occupied.
 
     Parameters:
@@ -57,18 +57,16 @@ def reach(positions, hero_name, coordinates, modif):
     positions: Contains all the coordinates of the board (dict)
     hero_name: Name of the hero (str)
     coordinates: Where the hero wants to use ovibus (tupl)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
 
     Returns:
     --------
     positions: Contains all the coordinates of the board (dict)
     updated: Updated dictionary of the player which hero is using this attack (dict)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
 
     Version:
     --------
     specification: Manon Michaux (v.2 03/04/19)
-    implementation: Manon Michaux (v.2 03/04/19)
+    implementation: Manon Michaux (v.3 04/04/19)
     """
 
     updated, bad_dict = good(hero_name)
@@ -89,7 +87,7 @@ def reach(positions, hero_name, coordinates, modif):
     else:
         print("You used stun but nothing happened ")
 
-    return positions, updated, modif
+    return positions, updated
 
 
 def burst_level(level, hero_name, positions, updated, creatures, used):
@@ -162,6 +160,7 @@ def burst_level(level, hero_name, positions, updated, creatures, used):
 
 def burst(positions, hero_name, creatures):
     """The creatures/ennemies in the hero's wage lose a given number of health points.
+
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
@@ -171,13 +170,13 @@ def burst(positions, hero_name, creatures):
     Returns:
     --------
     updated: Updated dictionary of the player which hero's using this attack.
-    good:  Updated dictionary of the player which hero is using this attack.
+    good: Updated dictionary of the player which hero is using this attack.
     creatures: All the data about creatures (dict)
 
     Version:
     --------
     specification: Manon Michaux (v.2 03/04/19)
-    implementation: Manon Michaux (v.1 03/04/19)
+    implementation: Manon Michaux (v.2 04/04/19)
     """
 
     good, updated = good(hero_name)

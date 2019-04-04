@@ -1,7 +1,7 @@
 from heroes_namur_gr_06 import *
 
 
-def fulgura(coordinates, player_1, player_2, creatures, hero_name, modif, positions):
+def fulgura(coordinates, creatures, hero_name, modif, positions):
     """ The creature / ennemy on the target coordinates loses a given number of health points.
 
     Parameters:
