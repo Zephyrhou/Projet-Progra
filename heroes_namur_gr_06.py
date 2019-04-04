@@ -38,7 +38,7 @@ def initialization(board_file):
     display_board(ROWS, COLUMNS, positions)
 
 
-def game():
+def game(player_1, player_2):
     """Starts a new turn if the game is not finished.
 
     Returns:
@@ -367,27 +367,30 @@ def inactivity(positions, inactivity, incativity_time):
     return inactivity, inactivity_time
 
 
-def gap_calculator(positions, name_character1, name_character2):
-    """ Compute the gap between two things.
+def gap_calculator(positions, character_1, character_2):
+    """Computes the gap between two characters.
 
     Parameter:
     -----------
-    positions : Contains all the coordinates of the board (dict)    name_character1 :
+    positions: Contains all the coordinates of the board (dict)
+    character_1: Name of the first character (str)
+    character_2: Name of the second character (str)
 
     Returns:
     -------
-    gap : gap between two things (int)
+    gap: Gap between two characters (int)
 
     Version:
     --------
-    specification : Manon Michaux (v.1 08/03/19)
-    implementaion : Zéphyr Houyoux (v.1 17/03/19)
+    specification: Manon Michaux (v.2 04/04/19)
+    implementation: Zéphyr Houyoux (v.2 04/04/19)
     """
 
-    pos1h = positions[name_character1]['nb_rows']
-    pos1l = positions[name_character1]['nb_columns']
-    pos2h = positions[name_character2]['nb_rows']
-    pos2l = positions[name_character2]['nb_columns']
+    pos1h = int(positions[character_1][0])
+    pos1l = int(positions[character_1][1])
+    pos2h = int(positions[character_2][0])
+    pos2l = int(positions[character_2][1])
+
     gap = ((pos1l - pos2l) ** 2 + (pos1h - pos2h) ** 2) ** 0.5
 
     return gap
