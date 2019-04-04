@@ -1,3 +1,6 @@
+from heroes_namur_gr_06 import *
+
+
 def reach(positions, hero_name, coordinates, player1, player2, creatures, modif):
     """Teleports the hero using the attack if he is the first using reach this turn and if the target coordinates aren't occupied.
 
@@ -21,98 +24,95 @@ def reach(positions, hero_name, coordinates, player1, player2, creatures, modif)
     --------
     specification: Manon Michaux (v.2 03/04/19)
     implementation: Manon Michaux (v.2 03/04/19)
-
     """
 
+    updated_dict, bad_dict = good(hero_name)
+    character_list = []
 
-updated_dict, bad_dict = good_dict(hero_name)
-character_list = []
+    # Level of the hero = 2
+    if updated_dict[hero_name][level] == 2:
+        if gap_calculator(positions, hero_name, coordinates) == 1:
+            # For the all the characters in positions
+            for characters in positions:
+                if gap_calculator(positions, coordinates, characters) == 0:
+                    print("%s is already on those coordinates right now" % characters)
+                else:
+                    unoccupied += 1
+                character_list += characters
+        else:
+            print("The coordinates you tried to reach are too far away right now")
 
-# Level of the hero = 2
-if updated_dict[hero_name][level] == 2:
-    if gap_calculator(positions, hero_name, coordinates) == 1:
-        # For the all the characters in positions
-        for characters in positions:
-            if gap_calculator(positions, coordinates, characters) == 0:
-                print("%s is already on those coordinates right now" % characters)
+        # if none of the characters are on the target coordinates
+        if unoccupied == len(character_list):
+            positions[hero_name] = coordinates
+            used += 1
 
-            else:
-                unoccupied += 1
-            character_list += characters
+    # Level of the hero = 3
+    if updated_dict[hero_name][level] == 3:
+        if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the all the characters in positions
+            for characters in positions:
+                if gap_calculator(positions, coordinates, characters) == 0:
+                    print("%s is already on those coordinates right now" % characters)
+
+                else:
+                    unoccupied += 1
+                character_list += characters
+        else:
+            print("The coordinates you tried to reach are too far away right now")
+
+        # if none of the characters are on the target coordinates
+        if unoccupied == len(character_list):
+            positions[hero_name] = coordinates
+            used += 1
+
+    # Level of the hero = 4
+    if updated_dict[hero_name][level] == 4:
+        if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the all the characters in positions
+            for characters in positions:
+                if gap_calculator(positions, coordinates, characters) == 0:
+                    print("%s is already on those coordinates right now" % characters)
+
+                else:
+                    unoccupied += 1
+                character_list += characters
+        else:
+            print("The coordinates you tried to reach are too far away right now")
+
+        # if none of the characters are on the target coordinates
+        if unoccupied == len(character_list):
+            positions[hero_name] = coordinates
+            used += 1
+
+    # Level of the hero = 5
+    if updated_dict[hero_name][level] == 5:
+        if gap_calculator(positions, hero_name, coordinates) <= 4:  # For the all the characters in positions
+            for characters in positions:
+                if gap_calculator(positions, coordinates, characters) == 0:
+                    print("%s is already on those coordinates right now" % characters)
+
+                else:
+                    unoccupied += 1
+                character_list += characters
+        else:
+            print("The coordinates you tried to reach are too far away right now")
+
+        # if none of the characters are on the target coordinates
+        if unoccupied == len(character_list):
+            positions[hero_name] = coordinates
+            used += 1
+
+
+    # Level of the hero = 1 or = 2
     else:
-        print("The coordinates you tried to reach are too far away right now")
+        print("You can't use this attack yet")
 
-    # if none of the characters are on the target coordinates
-    if unoccupied == len(character_list):
-        positions[hero_name] = coordinates
-        used += 1
-
-# Level of the hero = 3
-if updated_dict[hero_name][level] == 3:
-    if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the all the characters in positions
-        for characters in positions:
-            if gap_calculator(positions, coordinates, characters) == 0:
-                print("%s is already on those coordinates right now" % characters)
-
-            else:
-                unoccupied += 1
-            character_list += characters
+    # Adding the cooldown to the dictionary of the player if he attack has been used
+    if used == 1:
+        good_dict[hero_name][cooldown][ovibus] += 1
     else:
-        print("The coordinates you tried to reach are too far away right now")
+        print("You used stun but nothing happened ")
 
-    # if none of the characters are on the target coordinates
-    if unoccupied == len(character_list):
-        positions[hero_name] = coordinates
-        used += 1
-
-# Level of the hero = 4
-if updated_dict[hero_name][level] == 4:
-    if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the all the characters in positions
-        for characters in positions:
-            if gap_calculator(positions, coordinates, characters) == 0:
-                print("%s is already on those coordinates right now" % characters)
-
-            else:
-                unoccupied += 1
-            character_list += characters
-    else:
-        print("The coordinates you tried to reach are too far away right now")
-
-    # if none of the characters are on the target coordinates
-    if unoccupied == len(character_list):
-        positions[hero_name] = coordinates
-        used += 1
-
-# Level of the hero = 5
-if updated_dict[hero_name][level] == 5:
-    if gap_calculator(positions, hero_name, coordinates) <= 4:  # For the all the characters in positions
-        for characters in positions:
-            if gap_calculator(positions, coordinates, characters) == 0:
-                print("%s is already on those coordinates right now" % characters)
-
-            else:
-                unoccupied += 1
-            character_list += characters
-    else:
-        print("The coordinates you tried to reach are too far away right now")
-
-    # if none of the characters are on the target coordinates
-    if unoccupied == len(character_list):
-        positions[hero_name] = coordinates
-        used += 1
-
-
-# Level of the hero = 1 or = 2
-else:
-    print("You can't use this attack yet")
-
-# Adding the cooldown to the dictionary of the player if he attack has been used
-if used == 1:
-    good_dict[hero_name][cooldown][ovibus] += 1
-else:
-    print("You used stun but nothing happened ")
-
-return updated_dict, positions, modif
+    return updated_dict, positions, modif
 
 
 def burst(positions, hero_name, player1, player2, creatures, modif):
@@ -137,75 +137,77 @@ def burst(positions, hero_name, player1, player2, creatures, modif):
     --------
     specification: Manon Michaux (v.2 03/04/19)
     implementation: Manon Michaux (v.1 03/04/19)
-
     """
-    good_dict, updated_dict = good_dict(hero_name)
+
+    good, updated = good(hero_name)
 
     # Level of the hero = 3
-    if good_dict[hero_name][level] == 3:
+    if good[hero_name][level] == 3:
         # For heroes of the other player
-        for heroes in updated_dict:
+        for heroes in updated:
             if gap_calculator(positions, hero_name, heroes) == 1:
-                updated_dict[heroes][h_points] -= 1
+                updated[heroes][h_points] -= 1
                 used += 1
                 print("%s 's health points have been decreased by 1 " % heroes)
             else:
                 print("%s ' health points haven't been modified" % heroes)
         # For the creatures
-        for ennemies in creatures:
+        for enemies in creatures:
             if gap_calculator(positions, hero_name, enemies) == 1:
-                updated_dict[ennemies][h_points] -= 1
+                updated[enemies][h_points] -= 1
                 used += 1
-                print("%s 's health points have been decreased by 1 " % ennemies)
+                print("%s 's health points have been decreased by 1 " % enemies)
             else:
-                print("%s ' health points haven't been modified" % ennemies)
+                print("%s ' health points haven't been modified" % enemies)
 
     # Level of the hero = 4
-    elif good_dict[hero_name][level] == 4:
+    elif good[hero_name][level] == 4:
         # For heroes of the other player
-        for heroes in updated_dict:
+        for heroes in updated:
             if gap_calculator(positions, hero_name, heroes) <= 2:
-                updated_dict[heroes][h_points] -= 2
+                updated[heroes][h_points] -= 2
                 used += 1
                 print("%s 's health points have been decreased by 2 " % heroes)
             else:
                 print("%s ' health points haven't been modified" % heroes)
 
         # For the creatures
-        for ennemies in creatures:
-            if gap_calculator(positions, hero_name, enemies) <= 2:                updated_dict[ennemies][h_points] -= 2
+        for enemies in creatures:
+            if gap_calculator(positions, hero_name, enemies) <= 2:
+                updated[enemies][h_points] -= 2
+                used += 1
+                print("%s 's health points have been decreased by 2 " % enemies)
+            else:
+                print("%s ' health points haven't been modified" % enemies)
+
+    # Level of the hero = 5
+    elif good_dict[hero_name][level] == 5:
+        # For heroes of the other player
+        for heroes in updated_dict:
+            if gap_calculator(positions, hero_name, heroes) <= 3:
+                updated_dict[heroes][h_points] -= 3
+                used += 1
+                print("%s 's health points have been decreased by 3 " % heroes)
+            else:
+                print("%s ' health points haven't been modified" % heroes)
+
+    # For the creatures
+    for ennemies in creatures:
+        if gap_calculator(positions, hero_name, enemies) <= 3:
+            updated_dict[ennemies][h_points] -= 3
             used += 1
-            print("%s 's health points have been decreased by 2 " % ennemies)
+            print("%s 's health points have been decreased by 3 " % ennemies)
         else:
             print("%s ' health points haven't been modified" % ennemies)
 
-# Level of the hero = 5
-elif good_dict[hero_name][level] == 5:
-# For heroes of the other player
-for heroes in updated_dict:
-    if gap_calculator(positions, hero_name, heroes) <= 3:
-        updated_dict[heroes][h_points] -= 3
-        used += 1
-        print("%s 's health points have been decreased by 3 " % heroes)
+    # Level of the hero = 1 or = 2
     else:
-        print("%s ' health points haven't been modified" % heroes)
+        print(" You can't use this special attack yet")
 
-# For the creatures
-for ennemies in creatures:
-    if gap_calculator(positions, hero_name, enemies) <= 3:                updated_dict[ennemies][h_points] -= 3
-    used += 1
-    print("%s 's health points have been decreased by 3 " % ennemies)
-else:
-    print("%s ' health points haven't been modified" % ennemies)
+    # Adding the cooldown to the dictionary of the player if the attack has been used
+    if used >= 1:
+        updated_dict[heroes][cooldown][burst] += 1
+    else:
+        print("You used burst but nothing happened")
 
-# Level of the hero = 1 or = 2
-else:
-print(" You can't use this special attack yet")
-
-# Adding the cooldown to the dictionary of the player if the attack has been used
-if used >= 1:
-    updated_dict[heroes][cooldown][burst] += 1
-else:
-    print("You used burst but nothing happened")
-
-return updated_dict, good_dict, modif, creatures
+    return updated_dict, good_dict, modif, creatures
