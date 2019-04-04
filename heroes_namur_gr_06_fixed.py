@@ -80,7 +80,7 @@ def create_board(board_file, player_1, player_2):
     b_file.close()
 
     positions = {}
-    creatures = {}
+    creatures = []
 
     ROWS = int(board[1])
     COLUMNS = int(board[2])
@@ -114,9 +114,12 @@ def create_board(board_file, player_1, player_2):
 
     # Stock les creatures
     for index in range(creatures_index + 1, len(board), 7):
-        positions[(board[index + 1], board[index + 2])] = board[index]
+        positions[(board[index + 1], board[index + 2])] = [board[index], board[index + 3], board[index + 4],
+                                                           board[index + 5], board[index + 6]]
+        creatures += [board[index]]
 
     print(positions)
+    print(creatures)
 
     del board
     
