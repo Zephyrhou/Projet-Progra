@@ -118,27 +118,6 @@ def create_board(board_file, player_1, player_2):
 
     print(positions)
 
-    # creatures[board[19]]['h_points'] = board[22]
-    # creatures[board[19]]['d_points'] = board[23]
-    # creatures[board[19]]['creature_wage'] = board[24]
-    # creatures[board[19]]['v_points'] = board[25]
-    # creatures[board[26]]['h_points'] = board[29]
-    # creatures[board[26]]['d_points'] = board[30]
-    # creatures[board[26]]['creature_wage'] = board[31]
-    # creatures[board[26]]['v_points'] = board[32]
-
-    # for item in range(board[19], board[25]):
-    #     creatures['h_points'] = item
-    #     creatures['d_points'] = board[23]
-    #     creatures['creature_wage'] = board[24]
-    #     creatures['v_points'] = board[25]
-    #
-    # for creatures in board[26]:
-    #     creatures['h_points'] = board[29]
-    #     creatures['d_points'] = board[30]
-    #     creatures['creature_wage'] = board[31]
-    #     creatures['v_points'] = board[32]
-
     del board
     
     return ROWS, COLUMNS, NB_TURNS, positions, creatures
