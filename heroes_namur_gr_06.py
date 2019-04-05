@@ -54,9 +54,6 @@ def game(player_1, player_2):
     implementation:
     """
 
-    update_level(player_1)
-    update_level(player_2)
-
     return nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time
 
 
@@ -492,6 +489,7 @@ def defeated(player, nb_player, positions, creatures):
                 print('The creature', value[0], 'is dead')
 
     return player, positions, creatures
+
 
 # Function 10
 def players_choice(choice, positions):
