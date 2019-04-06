@@ -11,8 +11,8 @@ def initialization():
 
     positions = {'spawn_player_1': ('20', '3'), 'spawn_player_2': ('20', '38')}
 
-    player1 = create_heroes(classes, positions)
-    player2 = create_heroes(classes, positions)
+    player1 = create_heroes(classes)
+    player2 = create_heroes(classes)
 
     # Puts heroes in positions with the right position
     for hero in player1:
@@ -22,9 +22,10 @@ def initialization():
 
     print(positions)
     print(player1)
+    print(player2)
 
 
-def create_heroes(classes, positions):
+def create_heroes(classes):
     """Takes the player's input, splits the information and stores it into a dictionary.
 
     Parameter:
