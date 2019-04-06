@@ -338,30 +338,47 @@ def creature_turn(positions, creatures, player1, player2):
     """
 
 
-def inactivity(positions, inactivity, incativity_time):
+def inactivity(positions, initial_positions, creatures, initial_creatures, inactivity_time):
     """Count the inactivity of the players.
 
     Parameters:
     -----------
-    positions: Contains all the coordinates of the board and the heroes(dict)
-    inactivity: Contains all the coordinates of the board and the heroes of the previous turn(dict)
+    positions: Contains all the coordinates of the board and the heroes (dict)
+    initial_positions: Contains all the coordinates of the board and the heroes before changes (dict)
+    creatures: Has every information of each creature (dict)
+    initial_creatures: Has every information of each creature before changes (dict)
+    inactivity_time: Number of turns no changes has been made (int)
 
     Returns:
     --------
-    inactivity: Contains all the coordinates of the board and the heroes of the previous turn(dict)
-    inactivity_time: Number of inactivity turn(int)
+    inactivity_time: Number of turns where the game is inactive (int)
+    game_over: If the game is over or not depending on inactivity_time (bool)
+
+    Notes:
+    ------
+    If no changes has been made in the game (no moves, no attacks, etc.) for 40 turns then the game is over.
 
     Versions:
     ---------
-    specification: Zéphyr Houyoux (v.1 17/03/19)
-    implementation: Zéphyr Houyoux(v.2 21/03/19)
+    specification: Zéphyr Houyoux(v.2 05/04/19)
+    implementation: Zéphyr Houyoux(v.4 06/04/19)
     """
 
-    if positions == inactivity:
-        inactivity_time = + 1
-    inactivity = positions
+    game_over = False
 
-    return inactivity, inactivity_time
+    # If no changes has been made to positions
+    if positions == initial_positions:
+        # If no changes has been made in creatures
+        if len(creatures) == len(initial_creatures):
+
+            # Then inactivity increased by one
+            inactivity_time += 1
+            if inactivity_time >= 40:
+                game_over = True
+            else:
+                game_over = False
+
+    return inactivity_time, game_over
 
 
 def gap_calculator(position_1, position_2):
@@ -685,17 +702,48 @@ def update_level(player):
 
 
 # Function 14
-def summarize(player, creatures, nb_turns):
+def summarize(initial_creatures, creatures, nb_turns, nb_turns_left, initial_positions, positions, ROWS, COLUMNS):
     """Summarizes the state of the game.
 
     Parameters:
     -----------
-    player: All the data about the heroes (dict)
     creatures: All the data about creatures (dict)
     nb_turns: Number of turns of the game (int)
+    nb_turns_left: Number of turns left for a player to win the game (int)
+    positions: positions: Contains all the coordinates of the board (dict)
+    ROWS: Number of rows of the board (int)
+    COLUMNS: Number of columns of the board (int)
 
     Version:
     --------
-    specification: Manon Michaux (v.2 25/02/19)
-    implementation: Aude Lekeux (v.2 15/03/19)
+    specification: Manon Michaux (v.3 04/04/19)
+    implementation: Aude Lekeux (v.2 04/04/19)
     """
+
+    # Whenever a hero has moved
+    for hero in positions:
+        if positions[hero] != initial_positions[hero]:
+
+            # Whenever a hero has been respawning
+            for key, value in positions.copy().items():
+                if positions[hero] == key:
+                    print(hero + ' has been respawning to ' + str(key))
+
+            print(hero + ' moved from ' + str(initial_positions[hero]) + ' to ' + str(positions[hero]))
+
+    # Whenever a creature has been defeated
+    for creature in range(1, len(creatures)):
+        if creatures[creature] != initial_creatures[creature]:
+            print(initial_creatures[creature] + ' has been defeated')
+
+    # print('Creatures = ' + creatures)
+    # print('Positions = ' + positions)
+    # print('Number of turns played = ' + nb_turns)
+    # display_board(ROWS, COLUMNS, positions)
+
+    # Resets initial positions to positions
+    initial_positions = positions
+    # Resets initial creatures to creatures
+    initial_creatures = creatures
+
+    return initial_positions, positions, initial_creatures, creatures

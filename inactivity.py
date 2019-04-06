@@ -12,7 +12,7 @@ def inactivity(positions, initial_positions, creatures, initial_creatures, inact
     Returns:
     --------
     inactivity_time: Number of turns where the game is inactive (int)
-    is_game_over: If the game is over or not depending on inactivity_time (bool)
+    game_over: If the game is over or not depending on inactivity_time (bool)
 
     Notes:
     ------
@@ -21,7 +21,7 @@ def inactivity(positions, initial_positions, creatures, initial_creatures, inact
     Versions:
     ---------
     specification: Zéphyr Houyoux(v.2 05/04/19)
-    implementation: Zéphyr Houyoux(v.3 05/04/19)
+    implementation: Zéphyr Houyoux(v.4 06/04/19)
     """
 
     is_game_over = False
