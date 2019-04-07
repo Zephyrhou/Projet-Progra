@@ -277,7 +277,7 @@ def display_board(ROWS, COLUMNS, positions):
 
 
 # Function 7
-def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time):
+def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time, positions, initial_positions, creatures, initial_creatures):
     """Checks whether the game is over or not.
 
     Parameters:
@@ -297,13 +297,16 @@ def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time):
 
     Version:
     --------
-    specification: Aude Lekeux (v.4 04/03/2019)
-    implementation: Zéphyr Houyoux (v.2 21/03/2019)
+    specification: Aude Lekeux (v.5 07/04/2019)
+    implementation: Zéphyr Houyoux (v.3 07/04/2019)
     """
 
-    if nb_turns_wanted == nb_turns1 or nb_turns2:
+    if nb_turns1 == nb_turns_wanted or nb_turns2 == nb_turns_wanted:
         return True
-    elif inactivity_time == 40:
+
+    i_time = inactivity(positions, initial_positions, creatures, initial_creatures, inactivity_time)
+    print(i_time[0])
+    if i_time[0] >= 40:
         return True
     else:
         return False
@@ -352,7 +355,6 @@ def inactivity(positions, initial_positions, creatures, initial_creatures, inact
     Returns:
     --------
     inactivity_time: Number of turns where the game is inactive (int)
-    game_over: If the game is over or not depending on inactivity_time (bool)
 
     Notes:
     ------
@@ -361,24 +363,15 @@ def inactivity(positions, initial_positions, creatures, initial_creatures, inact
     Versions:
     ---------
     specification: Zéphyr Houyoux(v.2 05/04/19)
-    implementation: Zéphyr Houyoux(v.4 06/04/19)
+    implementation: Zéphyr Houyoux(v.6 07/04/19)
     """
 
-    game_over = False
+    # If no changes has been made to positions or if no changes has been made in creatures
+    if positions == initial_positions or len(creatures) == len(initial_creatures):
+        # Then inactivity increased by one
+        inactivity_time += 1
 
-    # If no changes has been made to positions
-    if positions == initial_positions:
-        # If no changes has been made in creatures
-        if len(creatures) == len(initial_creatures):
-
-            # Then inactivity increased by one
-            inactivity_time += 1
-            if inactivity_time >= 40:
-                game_over = True
-            else:
-                game_over = False
-
-    return inactivity_time, game_over
+    return inactivity_time
 
 
 def gap_calculator(position_1, position_2):
