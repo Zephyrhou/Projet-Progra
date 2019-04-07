@@ -502,13 +502,14 @@ def defeated(player, nb_player, positions, creatures):
 
 
 # Function 10
-def players_choice(choice, positions):
+def players_choice(choice, positions, player):
     """Translates the player's order and calls the functions move or attack.
 
     Parameters:
     -----------
     choice: Order of the player (str)
     positions: Contains all the coordinates of the board (dict)
+    player: Level, number of point, etc. of heroes of the player (dict)
 
     Notes:
     ------
@@ -548,14 +549,14 @@ def players_choice(choice, positions):
         if result[item][0] == '@':
             move(positions, item, (result[item][1:3], result[item][4:6]))
         elif result[item][0] == '*':
-            attack(positions, item, '', (result[item][1:3], result[item][4:6]))
+            attack(positions, item, '', (result[item][1:3], result[item][4:6]), player)
         else:
             name_capacity = result[item]
-            attack(positions, item, name_capacity, (0, 0))
+            attack(positions, item, name_capacity, (0, 0), player)
 
 
 # Function 11
-def attack(positions, hero, capacity, attack):
+def attack(positions, hero, capacity, attack, player):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
     Parameters:
@@ -577,7 +578,7 @@ def attack(positions, hero, capacity, attack):
     Version:
     --------
     specification: Zephyr Houyoux (v.3 04/03/19)
-    implementation: 
+    implementation:
     """
 
 
