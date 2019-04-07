@@ -510,43 +510,76 @@ def defeated(player, nb_player, positions, creatures):
 
 # Function 10
 def players_choice(choice, positions):
-    """Translates the player's order into actions.
+    """Translates the player's order and calls the functions move or attack.
 
     Parameters:
     -----------
     choice: Order of the player (str)
     positions: Contains all the coordinates of the board (dict)
 
-    Returns:
-    --------
-    positions: Contains all the coordinates of the board (dict)
-
     Notes:
     ------
-    The order of the player must be with the expected format = "hero_name : @r-c(movement) or *r-c(attack) "
+    The order of the player must be with the expected format = 'hero_name:@r-c', 'hero_name:*r-c'
+    or 'hero_name:capacity'.
+    @ stands for a movement, * stands for a simple attack or 'capacity' is the name of a special capacity
+    a hero wants to use.
 
     Version:
     --------
-    specification: Manon Michaux (v.3 04/03/19)
-    implementation:
+    specification: Zéphyr Houyoux (v.6 07/04/19)
+    implementation: Zéphyr Houyoux (v.3 07/04/19)
     """
+
+    choice = choice.split(' ')
+    temp = []
+    result = {}
+
+    for items in choice:
+        temp += items.split(':')
+
+    # Puts the input of the player in a dictionary
+    for index in range(len(choice)):
+        temp[index] = choice[index].split(':')
+        if temp[index][1] != temp[index][-1]:
+            name = temp[index][0]
+            action = temp[index][1]
+            pos = temp[index][2]
+            result[name] = (action, pos)
+        else:
+            name = temp[index][0]
+            action = temp[index][1]
+            result[name] = action
+
+    # Reads the dictionary and calls the right function (move or attack)
+    for item in result:
+        if result[item][0] == '@':
+            move(positions, item, (result[item][1:3], result[item][4:6]))
+        elif result[item][0] == '*':
+            attack(positions, item, '', (result[item][1:3], result[item][4:6]))
+        else:
+            name_capacity = result[item]
+            attack(positions, item, name_capacity, (0, 0))
 
 
 # Function 11
-def attack(name_attack, positions, player, creatures):
+def attack(positions, hero, capacity, attack):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
     Parameters:
     -----------
-    name_attack: Name of the attack (str)
     positions: Contains all the coordinates of the board (dict)
     player: All the data about heroes (dict)
-    creatures: All the data about creatures (dict)
+    capacity: Name of the special capacity (str)
+    attack: Where the attack is made (tuple)
 
     Returns:
     --------
     player: All the data about heroes (dict)
     creatures: All the data about creatures (dict)
+
+    Notes:
+    ------
+    A hero can attack with a special capacity if he can, or he can do a simple attack.
 
     Version:
     --------
