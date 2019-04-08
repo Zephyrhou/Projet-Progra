@@ -1,7 +1,7 @@
 from heroes_namur_gr_06 import *
 
 
-def fulgura(coordinates, creatures, hero_name, modif, positions):
+def fulgura(coordinates, creatures, hero_name, positions):
     """ The creature / ennemy on the target coordinates loses a given number of health points.
 
     Parameters:
@@ -130,10 +130,10 @@ def fulgura(coordinates, creatures, hero_name, modif, positions):
     else:
         print("You used stun but nothing happened ")
 
-    return updated, creatures, modif, good
+    return updated, creatures, good
 
 
-def ovibus(positions, hero_name, coordinates, player1, player2, creatures, modif):
+def ovibus(positions, hero_name, coordinates, creatures, modif):
     """The creature/ennemy on the target coordinates is unable to act during a given number of turn.
     Parameters:
     -----------

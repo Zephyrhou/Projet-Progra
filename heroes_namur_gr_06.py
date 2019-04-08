@@ -493,10 +493,11 @@ def defeated(player, nb_player, positions, creatures):
     # Delete a creature when it's defeated
     for key, value in positions.copy().items():
         if value[0] in creatures:
-            if value[1] <= 0:
+            if int(value[1]) <= 0:
                 del positions[key]
                 del creatures[creatures.index(value[0])]
                 print('The creature', value[0], 'is dead')
+                # If a creature is dead its victory points are distributed
 
     return player, positions, creatures
 
@@ -556,7 +557,7 @@ def players_choice(choice, positions, player):
 
 
 # Function 11
-def attack(positions, hero, capacity, attack, player):
+def attack(positions, hero, capacity, coordinates, attack, player):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
     Parameters:
@@ -730,7 +731,7 @@ def update_level(player):
 
 
 # Function 14
-def special_capacity(player, hero):
+def special_capacity_available(player, hero):
     """Whenever a hero reaches level 2 or 3 he can start using special capacities.
 
     Parameters:
@@ -799,10 +800,10 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, nb_turns_pla
     # Whenever a hero leveled up he can use a special capacity
     for hero1 in player_1:
         if player_1[hero1]['level'] != initial_p1[hero1]['level']:
-            special_capacity(player_1, hero1)
+            special_capacity_available(player_1, hero1)
     for hero2 in player_2:
         if player_2[hero2]['level'] != initial_p2[hero2]['level']:
-            special_capacity(player_2, hero2)
+            special_capacity_available(player_2, hero2)
 
     print('Creatures = ' + str(creatures))
     print('Positions = ' + str(positions))

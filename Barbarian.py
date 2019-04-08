@@ -43,7 +43,7 @@ def energise_level(level, updated, used, positions, hero_name):
     return used, updated
 
 
-def energise(positions, hero_name, player, modif):
+def energise(positions, hero_name, player):
     """Raise the damage points of the allies in the hero's influence wage.
 
     Parameters:
@@ -51,12 +51,10 @@ def energise(positions, hero_name, player, modif):
     positions: Contains all the coordinates of the board (dict)
     hero_name: Name of the hero (str)
     player: Level, number of point, etc. of the heroes of the player (dict)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
 
     Returns:
     --------
     updated_dict: Updated dictionary of the player which hero's using this attack.
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
 
     Version:
     --------
@@ -84,7 +82,7 @@ def energise(positions, hero_name, player, modif):
     else:
         print("You used energise but nothing happened")
 
-    return updated, modif
+    return updated
 
 
 def stun_level(type, level, updated, hero_name, positions, used, creatures):
@@ -142,7 +140,7 @@ def stun_level(type, level, updated, hero_name, positions, used, creatures):
     return used, positions
     
 
-def stun(positions, player, creatures, hero_name, modif):
+def stun(positions, player, creatures, hero_name):
     """ Stun the ennemies ( both heroes and creatures) in the hero's wage.
 
     Parameters:
@@ -151,13 +149,11 @@ def stun(positions, player, creatures, hero_name, modif):
     player: Level, number of point, etc. of the heroes of the player (dict)
     creatures: All the data about creatures (dict)
     hero_name: Name of the hero (str)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature (dict)
 
     Returns:
     --------
     updated_dict: Dictionary of the ennemy (dict)
     creatures: updated Dictionary of the creatures (dict)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature (dict)
     dict: Dictionary of the player which hero's using tha attack (dict)
 
     Version:
@@ -186,4 +182,4 @@ def stun(positions, player, creatures, hero_name, modif):
     else:
         print("You used stun but nothing happened")
 
-    return updated, creatures, modif, good
+    return updated, creatures, good

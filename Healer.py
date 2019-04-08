@@ -67,7 +67,7 @@ def invigorate_level(hero, type, level_hero, level_ally, updated, used):
     return updated, used
 
 
-def invigorate(positions, hero_name, player, modif):
+def invigorate(positions, hero_name, player):
     """Raise the health points of the allies in the hero's wage.
 
     Parameters:
@@ -76,12 +76,10 @@ def invigorate(positions, hero_name, player, modif):
     hero_name: Name of the hero (str)
     player: Level, number of point, etc. of the heroes of player (dict)
     max_health_dict: Dictionary containing for each class and for each level their own maximum of health points (dict)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
 
     Returns:
     --------
     updated: Updated dictionary of the player which hero's using this attack.
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
 
     Version:
     --------
@@ -116,4 +114,11 @@ def invigorate(positions, hero_name, player, modif):
     else:
         print("You used stun but nothing happened")
 
-    return updated, modif
+    return updated
+
+
+def immunise(positions, player, creatures, hero_name, coordinates):
+    """
+
+    :return:
+    """

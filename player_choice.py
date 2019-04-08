@@ -1,7 +1,7 @@
 from heroes_namur_gr_06 import *
 
 
-def players_choice(choice, positions):
+def players_choice(choice, positions, player):
     """Translates the player's order and calls the functions move or attack.
 
     Parameters:
@@ -45,17 +45,24 @@ def players_choice(choice, positions):
     # Reads the dictionary and calls the right function (move or attack)
     for item in result:
         if result[item][0] == '@':
-            move(positions, item, (result[item][1:3], result[item][4:6]))
+            move_coordinates = (result[item][1:3], result[item][4:6])
+            move(positions, item, move_coordinates)
         elif result[item][0] == '*':
-            attack(positions, item, '', (result[item][1:3], result[item][4:6]))
+            attack_coordinates = (result[item][1:3], result[item][4:6])
+            attack(positions, item, '', (0, 0), attack_coordinates, player)
         else:
-            name_capacity = result[item]
-            attack(positions, item, name_capacity, (0, 0))
+            if type(result[item]) is tuple:
+                name_capacity = result[item][0]
+                coordinates = (result[item][1][0:2], result[item][1][3:5])
+                attack(positions, item, name_capacity, coordinates, (0, 0), player)
+            else:
+                name_capacity = result[item]
+                attack(positions, item, name_capacity, (0, 0), (0, 0), player)
 
 
 player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
            'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'May': {'class': 'mage', 'level': 2, 'life_points': 12, 'victory_points': 100, 'damage_points': 3},
            'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
 
 positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('24', '3'),
@@ -64,7 +71,7 @@ positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz
              ('21', '39'): 'spur', ('10', '10'): ['bear', '20', '5', '3', '100'],
              ('10', '20'): ['bear', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
 
-choices = 'Baz:@30-31 Lee:invigorate May:@20-13 Rob:*10-15'
+choices = 'Baz:@30-31 Lee:invigorate May:fulgura:10-10 Rob:*10-15'
 
-players_choice(choices, positions)
+players_choice(choices, positions, player1)
 
