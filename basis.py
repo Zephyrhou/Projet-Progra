@@ -161,10 +161,8 @@ def is_on_spur(hero, positions):
     for item in positions:
         if positions[item] == 'spur':
             if positions[hero] == item:
-                print(item, hero, positions[item])
                 return True
-            else:
-                return False
+    return False
 
 
 def move_cell(character, start, new_position, positions, creatures):
@@ -195,9 +193,11 @@ def move_cell(character, start, new_position, positions, creatures):
         positions[character] = new_position
 
     elif character in creatures:
-        for key, value in positions.items():
+        for key, value in positions.copy().items():
             if key == start:
-                positions[key] = positions[new_position]
+                # Adds the new position and deletes the previous one
+                positions[new_position] = positions[key]
+                del positions[key]
 
     return positions
 
@@ -208,12 +208,12 @@ player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory
            'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
 
 positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('24', '3'),
-             'May': ('14', '6'), 'Rob': ('21', '38'), 'Buf': ('20', '17'), 'Lia': ('19', '7'), 'Mey': ('3', '3'),
+             'May': ('14', '6'), 'Rob': ('23', '38'), 'Buf': ('20', '17'), 'Lia': ('19', '7'), 'Mey': ('3', '3'),
              'Tob': ('2', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
              ('21', '39'): 'spur', ('10', '10'): ['bear', '20', '5', '3', '100'],
              ('10', '20'): ['bear', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
 
 creatures = ['bear', 'bear', 'wolf']
 
-# print(is_on_spur('Rob', positions))
-print(move_cell('wolf', ('15', '10'), ('5', '7'), positions, creatures))
+print(is_on_spur('Rob', positions))
+# print(move_cell('bear', ('10', '20'), ('5', '7'), positions, creatures))

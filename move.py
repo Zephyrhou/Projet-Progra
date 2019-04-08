@@ -1,4 +1,4 @@
-from gap import *
+from heroes_namur_gr_06 import *
 
 
 def move(positions, hero, movement):
@@ -40,7 +40,7 @@ def move(positions, hero, movement):
     else:
         # If the gap is less than 1.5 he can move
         if gap < 1.5:
-            positions[hero] = movement
+            move_cell(hero, positions[hero], movement, positions, creatures)
             return positions
         else:
             return 'This position is too far from where you are'
@@ -52,4 +52,6 @@ positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz
              ('21', '39'): 'spur', ('10', '10'): ['bear', '20', '5', '3', '100'],
              ('10', '20'): ['bear', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
 
-print(move(positions, 'Buf', ('19', '17')))
+creatures = ['bear', 'bear', 'wolf']
+
+print(move(positions, 'Buf', ('20', '16')))
