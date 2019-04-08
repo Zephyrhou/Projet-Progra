@@ -24,7 +24,6 @@ def energise_level(level, updated, used, positions, hero_name):
         for heroes in updated:
             if gap_calculator(positions, hero_name, heroes) == 1:
                 updated[heroes]['damage_points'] += 1
-                modif[heroes]['damage_points_modifs'] += 1
                 used += 1
                 print(heroes + "'s damage points have been increased by 1 for this turn")
             else:
@@ -34,7 +33,6 @@ def energise_level(level, updated, used, positions, hero_name):
         for heroes in updated:
             if gap_calculator(positions, hero_name, heroes) <= level - 1:
                 updated[heroes]['damage_points'] += level - 2
-                modif[heroes]['damage_points_modifs'] += level - 2
                 used += 1
                 print(heroes + "'s damage points have been increased by 1 for this turn")
             else:
@@ -114,7 +112,6 @@ def stun_level(type, level, updated, hero_name, positions, used, creatures):
             if gap_calculator(positions, hero_name, heroes) == level - 2:
                 if updated[heroes]['damage_points'] >= level - 1:
                     updated[heroes]['damage_points'] -= level - 2
-                    modif[heroes]['damage_points_modifs'] -= level - 2
                     used += 1
                     print(heroes + "'s damage points have been decreased by 1 for this turn")
                 else:
@@ -128,7 +125,6 @@ def stun_level(type, level, updated, hero_name, positions, used, creatures):
             if gap_calculator(positions, hero_name, enemies) == level - 2:
                 if creatures[enemies]['damage_points'] >= level - 1:
                     creatures[enemies]['damage_points'] -= level - 2
-                    modif[enemies]['damage_points_modifs'] -= level - 2
                     used += 1
                     print(enemies + "'s damage points have been decreased by 1 for this turn")
                 else:

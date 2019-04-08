@@ -133,7 +133,7 @@ def fulgura(coordinates, creatures, hero_name, positions):
     return updated, creatures, good
 
 
-def ovibus(positions, hero_name, coordinates, creatures, modif):
+def ovibus(positions, hero_name, coordinates, creatures):
     """The creature/ennemy on the target coordinates is unable to act during a given number of turn.
     Parameters:
     -----------
@@ -166,7 +166,6 @@ def ovibus(positions, hero_name, coordinates, creatures, modif):
             # For the heroes of the player
             for heroes in updated_dict:
                 if gap_calculator(positions, coordinates, heroes) == 0:
-                    modif[heroes][confused] += 1
                     used += 1
                     print("%s is confused for one turn" % heroes)
 
@@ -176,7 +175,6 @@ def ovibus(positions, hero_name, coordinates, creatures, modif):
             # For the creatures
             for ennemy in creatures:
                 if gap_calculator(positions, coordinates, ennemy) == 0:
-                    modif[ennemy][confused] += 1
                     used += 1
                     print("%s is confused for one turn" % heroes)
                 else:
@@ -189,7 +187,6 @@ def ovibus(positions, hero_name, coordinates, creatures, modif):
         if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the heroes of the player
             for heroes in updated_dict:
                 if gap_calculator(positions, coordinates, heroes) == 0:
-                    modif[heroes][confused] += 2
                     used += 1
                     print("%s is confused for one turn" % heroes)
 
@@ -199,7 +196,6 @@ def ovibus(positions, hero_name, coordinates, creatures, modif):
             # For the creatures
             for ennemy in creatures:
                 if gap_calculator(positions, coordinates, ennemy) == 0:
-                    modif[ennemy][confused] += 2
                     used += 1
                     print("%s is confused for one turn" % heroes)
                 else:
@@ -212,7 +208,6 @@ def ovibus(positions, hero_name, coordinates, creatures, modif):
         if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the heroes of the player
             for heroes in updated_dict:
                 if gap_calculator(positions, coordinates, heroes) == 0:
-                    modif[heroes][confused] += 3
                     used += 1
                     print("%s is confused for one turn" % heroes)
 
@@ -222,7 +217,6 @@ def ovibus(positions, hero_name, coordinates, creatures, modif):
             # For the creatures
             for ennemy in creatures:
                 if gap_calculator(positions, coordinates, ennemy) == 0:
-                    modif[ennemy][confused] += 3
                     used += 1
                     print("%s is confused for one turn" % heroes)
                 else:
@@ -240,4 +234,4 @@ def ovibus(positions, hero_name, coordinates, creatures, modif):
     else:
         print("You used stun but nothing happened ")
 
-    return updated_dict, good_dict, creatures, modif
+    return updated_dict, good_dict, creatures

@@ -5,12 +5,9 @@ def launch(board_file):
 
     player1, player2, positions, ROWS, COLUMNS, NB_TURNS = initialization(board_file)
 
-    game_over = True
+    positions = game(player1, player2, positions)
 
-    while game_over:
-        positions = game(player1, player2, positions)
-        display_board(ROWS, COLUMNS, positions)
-        game_over = input('Game over ? [True/False]')
+    display_board(ROWS, COLUMNS, positions)
 
 
 def initialization(board_file):
@@ -32,6 +29,8 @@ def game(player_1, player_2, positions):
 
     positions = players_choice(choice1, positions, player_1)
     positions = players_choice(choice2, positions, player_2)
+
+    print(positions)
 
     return positions
 
@@ -186,4 +185,6 @@ def display_board(ROWS, COLUMNS, positions):
 # Buf:barbarian Lia:rogue Mey:mage Tob:rogue
 # Baz:@21-3 Lee:@20-4 May:@10-10 Rob:@21-3
 # Buf:@20-36 Lia:@21-37 Mey:@20-38 Tob:@21-36
+# Baz:@21-4 Lee:@19-4 May:@21-3 Rob:*21-3
+# Buf:@21-36 Lia:*21-36 Mey:@20-38 Tob:@21-36
 launch("board.txt")

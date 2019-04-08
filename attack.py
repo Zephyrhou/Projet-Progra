@@ -54,10 +54,11 @@ def attack(positions, hero, capacity, coordinates, attack, player):
         # If hero is on level 1 he can't use a special capacity yet
         if hero_level == 1:
             print('You cannot use a special capacity yet')
+            return positions
         else:
             # If hero on level 2 to 5 he can use a special capacity
             for level in range(2, 6):
-                special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates)
+                positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates)
 
     return positions, player
 
@@ -92,59 +93,75 @@ def special_capacity_usage(positions, hero, player, hero_level, hero_class, capa
         if hero_class == 'barbarian':
             if capacity != 'energise':
                 print('You cannot use the capacity ' + capacity)
+                return positions
             else:
-                energise(positions, hero, player)
+                positions = energise(positions, hero, player)
+                return positions
 
         # If the hero is a healer he can only use invigorate
         elif hero_class == 'healer':
             if capacity != 'invigorate':
                 print('You cannot use the capacity ' + capacity)
+                return positions
             else:
-                invigorate(positions, hero, player)
+                positions = invigorate(positions, hero, player)
+                return positions
 
         # If the hero is a mage he can only use fulgura
         elif hero_class == 'mage':
             if capacity != 'fulgura':
                 print('You cannot use the capacity ' + capacity)
+                return positions
             else:
-                fulgura(coordinates, positions, hero, player)
+                positions = fulgura(coordinates, positions, hero, player)
+                return positions
 
         # If the hero is a rogue he can only use reach
         elif hero_class == 'rogue':
             if capacity != 'reach':
                 print('You cannot use the capacity ' + capacity)
+                return positions
             else:
-                reach(positions, hero, coordinates)
+                positions = reach(positions, hero, coordinates)
+                return positions
 
     # If the hero is on level 3 or more he can use both of his special capacities
     elif hero_level >= 3:
         # Barbarian can use energise and stun
         if hero_class == 'barbarian':
             if capacity == 'energise':
-                energise(positions, hero, player)
+                positions = energise(positions, hero, player)
+                return positions
             elif capacity == 'stun':
-                stun(positions, player, creatures, hero)
+                positions = stun(positions, player, creatures, hero)
+                return positions
 
         # Healer can use invigorate and immunise
         elif hero_class == 'healer':
             if capacity == 'invigorate':
-                invigorate(positions, hero, player)
+                positions = invigorate(positions, hero, player)
+                return positions
             elif capacity == 'immunise':
-                immunise(positions, player, creatures, hero, coordinates)
+                positions = immunise(positions, player, creatures, hero, coordinates)
+                return positions
 
-        # Mage can use fulgura and ovibue
+        # Mage can use fulgura and ovibus
         elif hero_class == 'mage':
             if capacity == 'fulgura':
-                fulgura(coordinates, positions, hero, player)
+                positions = fulgura(coordinates, positions, hero, player)
+                return positions
             elif capacity == 'ovibus':
-                ovibus(positions, hero, coordinates, creatures, modifs)
+                positions = ovibus(positions, hero, coordinates, creatures)
+                return positions
 
         # Rogue can use reach and burst
         elif hero_class == 'rogue':
             if capacity == 'reach':
-                reach(positions, hero, coordinates)
+                positions = reach(positions, hero, coordinates)
+                return positions
             elif capacity == 'burst':
-                burst(positions, hero, creatures)
+                positions = burst(positions, hero, creatures)
+                return positions
 
 
 player1 = {'Baz': {'class': 'barbarian', 'level': 2, 'life_points': 13, 'victory_points': 100, 'damage_points': 3},
@@ -160,5 +177,5 @@ positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz
 
 creatures = ['bear', 'bear', 'wolf']
 
-print(attack(positions, 'Baz', '', ('10', '20'), player1))
-print(defeated(player1, 1, positions, creatures))
+# print(attack(positions, 'Baz', '', (0, 0), ('10', '20'), player1))
+# print(defeated(player1, 1, positions, creatures))

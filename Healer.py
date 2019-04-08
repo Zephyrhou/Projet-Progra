@@ -25,7 +25,6 @@ def invigorate_level(hero, type, level_hero, level_ally, updated, used):
         if updated[hero]['level'] == level_ally:
             if updated[hero]['life_points'] < max_life_points[type][level]:
                 updated[hero]['life_points'] += 1
-                modif[hero]['life_points_modifs'] += 1
                 used += 1
                 print(hero + "' health points have been increased by one for this turn")
             else:
@@ -36,7 +35,6 @@ def invigorate_level(hero, type, level_hero, level_ally, updated, used):
             max_health = max_life_points[type][level_ally] - 2
             if updated[hero]['life_points'] <= max_health:
                 updated[hero]['life_points'] += 2
-                modif[hero]['life_points_modifs'] += 2
                 used += 1
                 print(hero + "' health points have been increased by one for this turn")
             else:
@@ -47,7 +45,6 @@ def invigorate_level(hero, type, level_hero, level_ally, updated, used):
             max_health = max_life_points[type][level_ally] - 3
             if updated[hero]['life_points'] <= max_health:
                 updated[hero]['life_points'] += 3
-                modif[hero]['life_points_modifs'] += 3
                 used += 1
                 print(hero + "' health points have been increased by one for this turn")
             else:
