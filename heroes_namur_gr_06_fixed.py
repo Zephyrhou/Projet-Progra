@@ -1,6 +1,16 @@
+from heroes_namur_gr_06 import *
+
+
 def launch(board_file):
-    initialization(board_file)
-    #game()
+
+    player1, player2, positions, ROWS, COLUMNS, NB_TURNS = initialization(board_file)
+
+    game_over = True
+
+    while game_over:
+        positions = game(player1, player2, positions)
+        display_board(ROWS, COLUMNS, positions)
+        game_over = input('Game over ? [True/False]')
 
 
 def initialization(board_file):
@@ -11,6 +21,19 @@ def initialization(board_file):
     ROWS, COLUMNS, NB_TURNS, positions, creatures = create_board(board_file, player_1, player_2)
 
     display_board(ROWS, COLUMNS, positions)
+
+    return player_1, player_2, positions, ROWS, COLUMNS, NB_TURNS
+
+
+def game(player_1, player_2, positions):
+
+    choice1 = input('Player 1: Enter your orders for your heroes: ')
+    choice2 = input('Player 2: Enter your orders for your heroes: ')
+
+    positions = players_choice(choice1, positions, player_1)
+    positions = players_choice(choice2, positions, player_2)
+
+    return positions
 
 
 def create_heroes():
@@ -66,6 +89,7 @@ def create_heroes():
 
 
 def create_board(board_file, player_1, player_2):
+
     b_file = open(board_file, 'r')
     board = []
     lines = []
@@ -160,4 +184,6 @@ def display_board(ROWS, COLUMNS, positions):
 
 # Baz:barbarian Lee:healer May:mage Rob:rogue
 # Buf:barbarian Lia:rogue Mey:mage Tob:rogue
+# Baz:@21-3 Lee:@20-4 May:@10-10 Rob:@21-3
+# Buf:@20-36 Lia:@21-37 Mey:@20-38 Tob:@21-36
 launch("board.txt")

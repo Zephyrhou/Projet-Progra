@@ -54,7 +54,7 @@ def game(player_1, player_2):
     implementation:
     """
 
-    return nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time
+    # return nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time
 
 
 # Function 3
@@ -510,7 +510,6 @@ def players_choice(choice, positions, player):
     -----------
     choice: Order of the player (str)
     positions: Contains all the coordinates of the board (dict)
-    player: Level, number of point, etc. of heroes of the player (dict)
 
     Notes:
     ------
@@ -522,7 +521,7 @@ def players_choice(choice, positions, player):
     Version:
     --------
     specification: Zéphyr Houyoux (v.6 07/04/19)
-    implementation: Zéphyr Houyoux (v.3 07/04/19)
+    implementation: Zéphyr Houyoux (v.4 08/04/19)
     """
 
     choice = choice.split(' ')
@@ -548,12 +547,21 @@ def players_choice(choice, positions, player):
     # Reads the dictionary and calls the right function (move or attack)
     for item in result:
         if result[item][0] == '@':
-            move(positions, item, (result[item][1:3], result[item][4:6]))
+            move_coordinates = (result[item][1:3], result[item][4:6])
+            positions = move(positions, item, move_coordinates)
         elif result[item][0] == '*':
-            attack(positions, item, '', (result[item][1:3], result[item][4:6]), player)
+            attack_coordinates = (result[item][1:3], result[item][4:6])
+            positions = attack(positions, item, '', (0, 0), attack_coordinates, player)
         else:
-            name_capacity = result[item]
-            attack(positions, item, name_capacity, (0, 0), player)
+            if type(result[item]) is tuple:
+                name_capacity = result[item][0]
+                coordinates = (result[item][1][0:2], result[item][1][3:5])
+                positions = attack(positions, item, name_capacity, coordinates, (0, 0), player)
+            else:
+                name_capacity = result[item]
+                positions = attack(positions, item, name_capacity, (0, 0), (0, 0), player)
+
+    return positions
 
 
 # Function 11
@@ -582,6 +590,8 @@ def attack(positions, hero, capacity, coordinates, attack, player):
     implementation:
     """
 
+    return positions
+
 
 # Function 12
 def move(positions, hero, movement):
@@ -609,24 +619,26 @@ def move(positions, hero, movement):
     implementation: Zephyr Houyoux (v.4 06/04/19)
     """
 
-    position_hero = positions[hero]
     # Computes the gap between the position of the hero and where he wants to go
-    gap = gap_calculator(movement, position_hero)
+    gap = gap_calculator(positions[hero], movement)
 
     # If the hero is already on the position he wants to go on
     if movement[0] == positions[hero][0] and movement[1] == positions[hero][1]:
-        return 'Your are already in this position'
+        print('Your are already in this position')
+        return positions
     # If the position the hero wants to go on is already taken
     for key in positions:
         if positions[key][0] == movement[0] and positions[key][1] == movement[1]:
-            return 'This position is already taken'
+            print('This position is already taken')
+            return positions
     else:
         # If the gap is less than 1.5 he can move
         if gap < 1.5:
-            positions[hero] = movement
+            positions = move_hero(hero, movement, positions)
             return positions
         else:
-            return 'This position is too far from where you are'
+            print('This position is too far from where you are ' + hero)
+            return positions
 
 
 # Function 13
@@ -987,14 +999,13 @@ def is_on_spur(hero, positions):
     return False
 
 
-def move_cell(character, start, new_position, positions, creatures):
+def move_hero(character, new_position, positions):
     """Move from one cell to another.
 
     Parameters:
     -----------
     character: Either the name of a hero or of a creature (str)
-    start: Position the character is on now (tuple)
-    finish: Position the character wants to go on (tuple)
+    new_position: Position the character wants to go on (tuple)
     positions: Contains all the coordinates of the board (dict)
 
     Returns:
@@ -1014,11 +1025,40 @@ def move_cell(character, start, new_position, positions, creatures):
     if character in positions:
         positions[character] = new_position
 
-    elif character in creatures:
+    return positions
+
+
+def move_creatures(character, start, new_position, positions, creatures):
+    """Move from one cell to another.
+
+    Parameters:
+    -----------
+    character: Either the name of a hero or of a creature (str)
+    start: Position the character is on now (tuple)
+    new_position: Position the character wants to go on (tuple)
+    positions: Contains all the coordinates of the board (dict)
+    creatures: All the data about creatures (dict)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board updated(dict)
+    creatures: All the data about creatures updated (dict)
+
+    Notes:
+    ------
+    This function is called only when the movement can be executed.
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 07/04/19)
+    implementation: Aude Lekeux (v.1 07/04/19)
+    """
+
+    if character in creatures:
         for key, value in positions.copy().items():
             if key == start:
                 # Adds the new position and deletes the previous one
                 positions[new_position] = positions[key]
                 del positions[key]
 
-    return positions
+    return creatures, positions

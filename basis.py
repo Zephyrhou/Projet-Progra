@@ -165,14 +165,13 @@ def is_on_spur(hero, positions):
     return False
 
 
-def move_cell(character, start, new_position, positions, creatures):
+def move_hero(character, new_position, positions):
     """Move from one cell to another.
 
     Parameters:
     -----------
     character: Either the name of a hero or of a creature (str)
-    start: Position the character is on now (tuple)
-    finish: Position the character wants to go on (tuple)
+    new_position: Position the character wants to go on (tuple)
     positions: Contains all the coordinates of the board (dict)
 
     Returns:
@@ -192,14 +191,41 @@ def move_cell(character, start, new_position, positions, creatures):
     if character in positions:
         positions[character] = new_position
 
-    elif character in creatures:
+    return positions
+
+
+def move_creatures(character, start, new_position, creatures):
+    """Move from one cell to another.
+
+    Parameters:
+    -----------
+    character: Either the name of a hero or of a creature (str)
+    start: Position the character is on now (tuple)
+    new_position: Position the character wants to go on (tuple)
+    creatures: All the data about creatures (dict)
+
+    Returns:
+    --------
+    creatures: All the data about creatures updated (dict)
+
+    Notes:
+    ------
+    This function is called only when the movement can be executed.
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 07/04/19)
+    implementation: Aude Lekeux (v.1 07/04/19)
+    """
+
+    if character in creatures:
         for key, value in positions.copy().items():
             if key == start:
                 # Adds the new position and deletes the previous one
                 positions[new_position] = positions[key]
                 del positions[key]
 
-    return positions
+    return creatures
 
 
 player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},

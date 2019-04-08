@@ -1,9 +1,9 @@
 def energise_level(level, updated, used, positions, hero_name):
-    """When a hero want's to use energise.
+    """When a hero want's to use energise depending on their level.
     
     Parameters:
     -----------
-    level:
+    level: Level of the hero (str)
     updated:
     used:
     positions:

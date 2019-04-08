@@ -40,7 +40,7 @@ def move(positions, hero, movement):
     else:
         # If the gap is less than 1.5 he can move
         if gap < 1.5:
-            move_cell(hero, positions[hero], movement, positions, creatures)
+            positions = move_hero(hero, movement, positions)
             return positions
         else:
             return 'This position is too far from where you are'
