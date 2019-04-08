@@ -9,11 +9,17 @@ def launch(board_file):
     Version:
     --------
     specification: Zephyr Houyoux (v.2 04/03/19)
-    implementation: Aude Lekeux (v.2 02/04/19)
+    implementation: Aude Lekeux (v.3 08/04/19)
     """
 
-    initialization(board_file)
-    # game()
+    player1, player2, positions, ROWS, COLUMNS, NB_TURNS = initialization(board_file)
+
+    game_over = True
+
+    while game_over:
+        positions = game(player1, player2, positions)
+        display_board(ROWS, COLUMNS, positions)
+        game_over = input('Game over ? [True/False]')
 
 
 # Function 2
@@ -27,7 +33,7 @@ def initialization(board_file):
     Version:
     --------
     specification: Zephyr Houyoux (v.3 02/04/19)
-    implementation: Aude Lekeux (v.2 02/04/19)
+    implementation: Aude Lekeux (v.3 08/04/19)
     """
 
     player_1 = create_heroes()
@@ -37,9 +43,17 @@ def initialization(board_file):
 
     display_board(ROWS, COLUMNS, positions)
 
+    return player_1, player_2, positions, ROWS, COLUMNS, NB_TURNS
 
-def game(player_1, player_2):
+
+def game(player_1, player_2, positions):
     """Starts a new turn if the game is not finished.
+
+    Parameters:
+    -----------
+    player_1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player_2: Level, number of point, etc. of the heroes of player 2 (dict)
+    positions: Contains all the coordinates of the board (dict)
 
     Returns:
     --------
@@ -47,14 +61,21 @@ def game(player_1, player_2):
     nb_turns1: Number of turns a hero of player1 stands on the spur (int)
     nb_turns2: Number of turns a hero of player2 stands on the spur (int)
     inactivity: Number of turns no activity has been observed (int)
+    positions: Contains all the coordinates of the board updated (dict)
 
     Version:
     --------
-    specification: Zephyr Houyoux (v.4 02/04/19)
-    implementation:
+    specification: Zephyr Houyoux (v.5 08/04/19)
+    implementation: Aude Lekeux (v.1 08/04/19)
     """
 
-    # return nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time
+    choice1 = input('Player 1: Enter your orders for your heroes: ')
+    choice2 = input('Player 2: Enter your orders for your heroes: ')
+
+    positions = players_choice(choice1, positions, player_1)
+    positions = players_choice(choice2, positions, player_2)
+
+    return positions
 
 
 # Function 3
