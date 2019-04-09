@@ -531,13 +531,21 @@ def defeated(player, nb_player, positions, creatures):
 
 
 # Function 10
-def players_choice(choice, positions, player):
+def players_choice(choice, positions, player1, player2):
     """Translates the player's order and calls the functions move or attack.
 
     Parameters:
     -----------
     choice: Order of the player (str)
     positions: Contains all the coordinates of the board (dict)
+    player1: Level, number of point, etc. of heroes of player1 (dict)
+    player2: Level, number of point, etc. of heroes of player2 (dict)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board updated(dict)
+    player1: Level, number of point, etc. of heroes of player1 updated (dict)
+    player2: Level, number of point, etc. of heroes of player2 updated (dict)
 
     Notes:
     ------
@@ -548,8 +556,8 @@ def players_choice(choice, positions, player):
 
     Version:
     --------
-    specification: Zéphyr Houyoux (v.6 07/04/19)
-    implementation: Zéphyr Houyoux (v.4 08/04/19)
+    specification: Zéphyr Houyoux (v.7 09/04/19)
+    implementation: Zéphyr Houyoux (v.5 09/04/19)
     """
 
     choice = choice.split(' ')
@@ -579,21 +587,21 @@ def players_choice(choice, positions, player):
             positions = move(positions, item, move_coordinates)
         elif result[item][0] == '*':
             attack_coordinates = (result[item][1:3], result[item][4:6])
-            positions, player = attack(positions, item, '', (0, 0), attack_coordinates, player)
+            positions, player1, player2 = attack(positions, item, '', (0, 0), attack_coordinates, player1, player2)
         else:
             if type(result[item]) is tuple:
                 name_capacity = result[item][0]
                 coordinates = (result[item][1][0:2], result[item][1][3:5])
-                positions, player = attack(positions, item, name_capacity, coordinates, (0, 0), player)
+                positions, player1, player2 = attack(positions, item, name_capacity, coordinates, (0, 0), player1, player2)
             else:
                 name_capacity = result[item]
-                positions, player = attack(positions, item, name_capacity, (0, 0), (0, 0), player)
+                positions, player1, player2 = attack(positions, item, name_capacity, (0, 0), (0, 0), player1, player2)
 
-    return positions
+    return positions, player1, player2
 
 
 # Function 11
-def attack(positions, hero, capacity, coordinates, attack, player):
+def attack(positions, hero, capacity, coordinates, attack, player1, player2):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
     Parameters:
@@ -603,12 +611,15 @@ def attack(positions, hero, capacity, coordinates, attack, player):
     coordinates: Coordinates where the hero wants to use his special capacity (tuple)
     capacity: Name of the special capacity (str)
     attack: Where the attack is made (tuple)
-    player: All the data about heroes of the player (dict)
+    player1: All the data about heroes of player1 (dict)
+    player2: All the data about heroes of player2 (dict)
 
     Returns:
     --------
-    player: All the data about heroes of he player updated (dict)
-    creatures: All the data about creatures updated (dict)
+    positions: Contains all the coordinates of the board updated (dict)
+    player1: All the data about heroes of player1 updated (dict)
+    player2: All the data about heroes of player2 updated (dict)
+
 
     Notes:
     ------
@@ -616,8 +627,8 @@ def attack(positions, hero, capacity, coordinates, attack, player):
 
     Version:
     --------
-    specification: Zephyr Houyoux (v.4 08/04/19)
-    implementation: Manon Michaux (v.2 08/04/19)
+    specification: Zephyr Houyoux (v.5 09/04/19)
+    implementation: Manon Michaux (v.3 09/04/19)
     """
 
     # If there's no capacity name then it's a simple attack
@@ -625,35 +636,46 @@ def attack(positions, hero, capacity, coordinates, attack, player):
         for key in positions:
 
             # If the hero attacks another hero
-            if key == attack:
-                player[key]['life_points'] -= player[hero]['damage_points']
+            if positions[key] == attack:
+                if key in player1:
+                    player1[key]['life_points'] -= player2[hero]['damage_points']
+                elif key in player2:
+                    player2[key]['life_points'] -= player1[hero]['damage_points']
                 print('Hero', hero, 'has attacked', key)
-                return positions, player
+                return positions, player1, player2
 
             # If the hero attacks a creature
             elif key == attack:
                 # If the creature has enough life points left
                 if int(positions[key][1]) > 0:
-                    positions[key][1] = int(positions[key][1]) - player[hero]['damage_points']
-                    print('Hero', hero, 'has attacked', positions[key])
-                    return positions, player
+                    if hero in player1:
+                        positions[key][1] = int(positions[key][1]) - player1[hero]['damage_points']
+                    elif hero in player2:
+                        positions[key][1] = int(positions[key][1]) - player2[hero]['damage_points']
+                    print('Hero', hero, 'has attacked', positions[key][0])
+                    return positions, player1, player2
 
     # If there's no position to attack then it's a special capacity
     elif attack == (0, 0):
-        hero_class = get_class(hero, player)
-        hero_level = get_level(hero, player)
+
+        if hero in player1:
+            hero_class = get_class(hero, player1)
+            hero_level = get_level(hero, player1)
+        elif hero in player2:
+            hero_class = get_class(hero, player2)
+            hero_level = get_level(hero, player2)
 
         # If hero is on level 1 he can't use a special capacity yet
         if hero_level == 1:
             print('You cannot use a special capacity yet')
-            return positions, player
+            return positions, player1, player2
         else:
             # If hero on level 2 to 5 he can use a special capacity
             for level in range(2, 6):
                 positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates)
-                return positions, player
+                return positions, player1, player2
 
-    return positions, player
+    return positions, player1, player2
 
 
 def special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates):

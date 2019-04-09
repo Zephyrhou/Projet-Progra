@@ -27,10 +27,8 @@ def game(player_1, player_2, positions):
     choice1 = input('Player 1: Enter your orders for your heroes: ')
     choice2 = input('Player 2: Enter your orders for your heroes: ')
 
-    positions = players_choice(choice1, positions, player_1)
-    positions = players_choice(choice2, positions, player_2)
-
-    print(positions)
+    positions, player_1, player_2 = players_choice(choice1, positions, player_1, player_2)
+    positions, player_1, player_2 = players_choice(choice2, positions, player_1, player_2)
 
     return positions
 
@@ -185,6 +183,6 @@ def display_board(ROWS, COLUMNS, positions):
 # Buf:barbarian Lia:rogue Mey:mage Tob:rogue
 # Baz:@21-3 Lee:@20-4 May:@10-10 Rob:@21-3
 # Buf:@20-36 Lia:@21-37 Mey:@20-38 Tob:@21-36
-# Baz:@21-4 Lee:@19-4 May:@21-3 Rob:*21-3
-# Buf:@21-36 Lia:*21-36 Mey:@20-38 Tob:@21-36
+# Baz:@21-4 Lee:@19-4 May:@21-3 Rob:*21-36
+# Buf:@21-36 Lia:*10-10 Mey:@20-38 Tob:*21-3
 launch("board.txt")
