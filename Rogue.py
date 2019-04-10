@@ -1,6 +1,3 @@
-from heroes_namur_gr_06 import *
-
-
 def reach_level(level, updated, hero_name, positions, coordinates, used):
     """When a hero wants to use reach depending on his level.
 
@@ -10,14 +7,12 @@ def reach_level(level, updated, hero_name, positions, coordinates, used):
     updated: Updated dictionary of the player which hero is using this attack (dict)
     hero_name: Name of the hero (str)
     positions: Contains all the coordinates of the board (dict)
-    coordinates: Where the hero wants to use ovibus (tupl)
-    used:
+    coordinates: Where the hero wants to use ovibus (tuple)
 
     Returns:
     --------
     updated: Updated dictionary of the player which hero is using this attack (dict)
     positions: Contains all the coordinates of the board updated (dict)
-    used:
 
     Version:
     --------
@@ -99,15 +94,13 @@ def burst_level(level, hero_name, positions, updated, creatures, used):
     hero_name: Name of the hero (str)
     positions: Contains all the coordinates of the board (dict)
     updated: Updated dictionary of the player which hero's using this attack (dict)
-    creatures: All the data about creatures (dict)
-    used:
+    creatures: Has every information of each creature (list)
 
     Returns:
     --------
     positions: Contains all the coordinates of the board updated (dict)
     updated: Updated dictionary of the player which hero's using this attack (dict)
-    creatures: All the data about creatures updated (dict)
-    used:
+    creatures: Has every information of each creature updated (list)
 
     Version:
     --------
@@ -165,13 +158,13 @@ def burst(positions, hero_name, creatures):
     -----------
     positions: Contains all the coordinates of the board (dict)
     hero_name: Name of the hero (str)
-    creatures: All the data about creatures (dict)
+    creatures: Has every information of each creature list)
 
     Returns:
     --------
     updated: Updated dictionary of the player which hero's using this attack.
     good: Updated dictionary of the player which hero is using this attack.
-    creatures: All the data about creatures (dict)
+    creatures: Has every information of each creature updated (list)
 
     Version:
     --------

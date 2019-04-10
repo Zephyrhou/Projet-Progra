@@ -1,8 +1,3 @@
-from Barbarian import *
-from Healer import *
-from Mage import *
-from Rogue import *
-from test import *
 import math
 
 
@@ -63,43 +58,6 @@ def initialization(board_file):
     display_board(ROWS, COLUMNS, positions)
 
     return player_1, player_2, positions, ROWS, COLUMNS, NB_TURNS, creatures
-
-
-def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
-    """Starts a new turn if the game is not finished.
-
-    Parameters:
-    -----------
-    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
-    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
-    player_1: Level, number of point, etc. of the heroes of player 1 (dict)
-    player_2: Level, number of point, etc. of the heroes of player 2 (dict)
-    positions: Contains all the coordinates of the board (dict)
-    creatures: Has every information of each creature (list)
-
-    Returns:
-    --------
-    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
-    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
-    positions: Contains all the coordinates of the board updated (dict)
-
-    Version:
-    --------
-    specification: Zephyr Houyoux (v.5 08/04/19)
-    implementation: Aude Lekeux (v.1 08/04/19)
-    """
-
-    choice1 = input('Player 1: Enter your orders for your heroes: ')
-    choice2 = input('Player 2: Enter your orders for your heroes: ')
-
-    positions, player_1, player_2, creatures = players_choice(choice1, positions, player_1, player_2, creatures)
-    positions, player_1, player_2, creatures = players_choice(choice2, positions, player_1, player_2, creatures)
-
-    player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
-
-    nb_spur_p1, nb_spur_p2 = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2, positions)
-
-    return nb_spur_p1, nb_spur_p2, positions
 
 
 def create_board(board_file, player_1, player_2):
@@ -317,6 +275,43 @@ def display_board(ROWS, COLUMNS, positions):
         print(display_line)
 
 
+def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
+    """Starts a new turn if the game is not finished.
+
+    Parameters:
+    -----------
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
+    player_1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player_2: Level, number of point, etc. of the heroes of player 2 (dict)
+    positions: Contains all the coordinates of the board (dict)
+    creatures: Has every information of each creature (list)
+
+    Returns:
+    --------
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
+    positions: Contains all the coordinates of the board updated (dict)
+
+    Version:
+    --------
+    specification: Zephyr Houyoux (v.5 08/04/19)
+    implementation: Aude Lekeux (v.1 08/04/19)
+    """
+
+    choice1 = input('Player 1: Enter your orders for your heroes: ')
+    choice2 = input('Player 2: Enter your orders for your heroes: ')
+
+    positions, player_1, player_2, creatures = players_choice(choice1, positions, player_1, player_2, creatures)
+    positions, player_1, player_2, creatures = players_choice(choice2, positions, player_1, player_2, creatures)
+
+    player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
+
+    nb_spur_p1, nb_spur_p2 = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2, positions)
+
+    return nb_spur_p1, nb_spur_p2, positions
+
+
 def is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
     """Checks whether the game is over or not.
 
@@ -346,82 +341,6 @@ def is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
     elif nb_spur_p2 == nb_turns_wanted:
         print('Player2 won')
         return True
-
-    # i_time = inactivity(positions, initial_positions, creatures, initial_creatures, inactivity_time)
-    # print(i_time[0])
-    # if i_time[0] >= 40:
-    #     return True
-    # else:
-    #     return False
-
-
-def creature_turn(positions, creatures, player1, player2, nb_rows, nb_columns):
-    """Checks where a creature should attack or move depending on it's surrounding.
-
-    Parameters:
-    -----------
-    positions: Contains all the coordinates of the board (dict)
-    creatures: Has every information of each creature (list)
-    player1: Level, number of point, etc. of heroes of player1 (dict)
-    player2: Level, number of point, etc. of heroes of player2 (dict)
-
-    Returns:
-    --------
-    positions: Contains all the coordinates of the board (dict)
-    player1: Level, number of point, etc. of heroes of player 1 (dict)
-    player2: Level, number of point, etc. of heroes of player 2 (dict)
-
-    Notes:
-    ------
-    A creature attacks or moves towards the closest enemy.
-    It can also do nothing.
-
-    Version:
-    --------
-    specification: Aude Lekeux (v.5 10/04/19)
-    implementation: Manon Michaux (v.4 10/04/19)
-    """
-
-    smallest_gap = {}
-
-    # Gap calculating for player 1
-    for character in positions:
-        if positions[character][0] in creatures:
-            creature = character
-            if character in player1:
-                hero = character
-                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
-
-    # Gap calculating for player 2
-    for character in positions:
-        if positions[character][0] in creatures:
-            creature = character
-            if character in player2:
-                hero = character
-                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
-
-    evil = []
-
-    # Comparing the gap with each creature's wage
-    for creature in creatures:
-        for people in smallest_gap:
-            evil.append(smallest_gap[people][creature])
-        closest = evil.sort()
-        for people in smallest_gap:
-            if smallest_gap[people][creature] == closest[0]:
-                target = people
-                if smallest_gap[target] <= positions[creature][3]:
-                    attack_coord = positions[target]
-                    positions, player1, player2, creatures = attack(positions, creature, '', (0, 0), attack_coord,
-                                                                    player1, player2, creatures)
-                else:
-                    for item in positions:
-                        if gap_calculator(item, target) == (positions[creature][3] - 1):
-                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0),
-                                                                            item, player1, player2,
-                                                                            creatures)
-
-    return positions, player1, player2
 
 
 def inactivity(positions, initial_positions, creatures, initial_creatures, inactivity_time):
@@ -455,174 +374,6 @@ def inactivity(positions, initial_positions, creatures, initial_creatures, inact
         inactivity_time += 1
 
     return inactivity_time
-
-
-def gap_calculator(position_1, position_2):
-    """Computes the gap between two characters.
-
-    Parameter:
-    -----------
-    position_1: Position of the first character (tuple)
-    position_2: Position of the second character (tuple)
-
-    Returns:
-    -------
-    gap: Gap between two characters (int)
-
-    Version:
-    --------
-    specification: Manon Michaux (v.3 04/04/19)
-    implementation: Zéphyr Houyoux (v.3 04/04/19)
-    """
-
-    pos1c = int(position_1[0])
-    pos1r = int(position_1[1])
-    pos2c = int(position_2[0])
-    pos2r = int(position_2[1])
-
-    gap = ((pos1r - pos2r) ** 2 + (pos1c - pos2c) ** 2) ** 0.5
-
-    return gap
-
-
-def defeated(player1, player2, positions, creatures):
-    """Whenever a hero or a creature is defeated.
-
-    Parameters:
-    -----------
-    player1: Level, number of point, etc. of the heroes of player 1 (dict)
-    player2: Level, number of point, etc. of the heroes of player 2 (dict)
-    creatures: Has every information of each creature (list)
-    positions: Contains all the coordinates of the board (dict)
-
-    Returns:
-    --------
-    player1: Level, number of point, etc. of the heroes of player 1 updated (dict)
-    player2: Level, number of point, etc. of the heroes of player 2 updated (dict)
-    position: Contains all the coordinates of the board updated (dict)
-    creatures: Has every information of each creature updated (list)
-
-    Notes:
-    ------
-    A hero or a creature is defeated whenever their health points are at O or less.
-    When a hero is defeated he respawns.
-    When a creature is defeated it dies and it's victory points are distributed to the heroes around.
-
-    Version:
-    --------
-    specification: Aude Lekeux (v.6 03/04/19)
-    implementation: Aude Lekeux (v.4 03/04/19)
-    """
-
-    # Respawn a hero when he's defeated
-    for hero in player1:
-        if get_life_points(hero, player1) <= 0:
-            for key in positions:
-                if positions[key] == 'spawn_player_1':
-                    positions[hero] = key
-                    # Reset life points of the hero depending on his class and level
-                    player1 = reset(hero, player1)
-
-    for hero in player2:
-        if get_life_points(hero, player2) <= 0:
-            for key in positions:
-                if positions[key] == 'spawn_player_2':
-                    positions[hero] = key
-                    # Reset life points of the hero depending on his class and level
-                    player2 = reset(hero, player2)
-
-    print('The hero', hero, 'is respawning')
-
-    # Delete a creature when it's defeated
-    for key, value in positions.copy().items():
-        if value[0] in creatures:
-            if int(value[1]) <= 0:
-                print('The creature', value[0], 'is dead')
-                # If a creature is dead its victory points are distributed
-                hero_count = 0
-                hero_list = []
-                for hero in positions:
-                    if type(positions[hero]) is tuple:
-                        print(positions[hero], key)
-                        if gap_calculator(positions[hero], key) < 1.5:
-                            hero_count += 1
-                            hero_list.append(hero)
-                points = math.ceil(int(positions[key][4]) / hero_count)
-                for hero in hero_list:
-                    if hero in player1:
-                        player1[hero]['victory_points'] += points
-                    elif hero in player2:
-                        player2[hero]['victory_points'] += points
-                del positions[key]
-                del creatures[creatures.index(value[0])]
-
-    return player1, player2, positions, creatures
-
-
-def reset(hero, player):
-    """Resets the data of the hero who has been defeated and respawning.
-
-    Parameters:
-    -----------
-    hero: Name of the hero respawning (str)
-    player: Level, number of point, etc. of the heroes of the player (dict)
-
-    Returns:
-    --------
-    player: Level, number of point, etc. of the heroes of the player updated (dict)
-
-    Version:
-    --------
-    specification: Aude Lekeux (v.1 10/04/19)
-    implementation: Aude Lekeux (v.1 08/04/19)
-    """
-
-    if get_class(hero, player) == 'barbarian':
-        if get_level(hero, player) == 1:
-            player[hero]['life_points'] = 10
-        elif get_level(hero, player) == 2:
-            player[hero]['life_points'] = 13
-        elif get_level(hero, player) == 3:
-            player[hero]['life_points'] = 16
-        elif get_level(hero, player) == 4:
-            player[hero]['life_points'] = 19
-        elif get_level(hero, player) == 5:
-            player[hero]['life_points'] = 22
-    elif get_class(hero, player) == 'healer':
-        if get_level(hero, player) == 1:
-            player[hero]['life_points'] = 10
-        elif get_level(hero, player) == 2:
-            player[hero]['life_points'] = 11
-        elif get_level(hero, player) == 3:
-            player[hero]['life_points'] = 12
-        elif get_level(hero, player) == 4:
-            player[hero]['life_points'] = 13
-        elif get_level(hero, player) == 5:
-            player[hero]['life_points'] = 14
-    elif get_class(hero, player) == 'mage':
-        if get_level(hero, player) == 1:
-            player[hero]['life_points'] = 10
-        elif get_level(hero, player) == 2:
-            player[hero]['life_points'] = 12
-        elif get_level(hero, player) == 3:
-            player[hero]['life_points'] = 14
-        elif get_level(hero, player) == 4:
-            player[hero]['life_points'] = 16
-        elif get_level(hero, player) == 5:
-            player[hero]['life_points'] = 18
-    elif get_class(hero, player) == 'rogue':
-        if get_level(hero, player) == 1:
-            player[hero]['life_points'] = 10
-        elif get_level(hero, player) == 2:
-            player[hero]['life_points'] = 12
-        elif get_level(hero, player) == 3:
-            player[hero]['life_points'] = 14
-        elif get_level(hero, player) == 4:
-            player[hero]['life_points'] = 16
-        elif get_level(hero, player) == 5:
-            player[hero]['life_points'] = 18
-
-    return player
 
 
 def actions_turn(positions, player1, player2, creatures):
@@ -780,6 +531,75 @@ def players_choice(choice, positions, player1, player2, creatures):
     return positions, player1, player2, creatures
 
 
+def creature_turn(positions, creatures, player1, player2, nb_rows, nb_columns):
+    """Checks where a creature should attack or move depending on it's surrounding.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    creatures: Has every information of each creature (list)
+    player1: Level, number of point, etc. of heroes of player1 (dict)
+    player2: Level, number of point, etc. of heroes of player2 (dict)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board (dict)
+    player1: Level, number of point, etc. of heroes of player 1 (dict)
+    player2: Level, number of point, etc. of heroes of player 2 (dict)
+
+    Notes:
+    ------
+    A creature attacks or moves towards the closest enemy.
+    It can also do nothing.
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.5 10/04/19)
+    implementation: Manon Michaux (v.4 10/04/19)
+    """
+
+    smallest_gap = {}
+
+    # Gap calculating for player 1
+    for character in positions:
+        if positions[character][0] in creatures:
+            creature = character
+            if character in player1:
+                hero = character
+                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
+
+    # Gap calculating for player 2
+    for character in positions:
+        if positions[character][0] in creatures:
+            creature = character
+            if character in player2:
+                hero = character
+                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
+
+    evil = []
+
+    # Comparing the gap with each creature's wage
+    for creature in creatures:
+        for people in smallest_gap:
+            evil.append(smallest_gap[people][creature])
+        closest = evil.sort()
+        for people in smallest_gap:
+            if smallest_gap[people][creature] == closest[0]:
+                target = people
+                if smallest_gap[target] <= positions[creature][3]:
+                    attack_coord = positions[target]
+                    positions, player1, player2, creatures = attack(positions, creature, '', (0, 0), attack_coord,
+                                                                    player1, player2, creatures)
+                else:
+                    for item in positions:
+                        if gap_calculator(item, target) == (positions[creature][3] - 1):
+                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0),
+                                                                            item, player1, player2,
+                                                                            creatures)
+
+    return positions, player1, player2
+
+
 def attack(positions, character, capacity, coordinates, attack, player1, player2, creatures):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
@@ -872,6 +692,41 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
         creature_turn(positions, creatures, player1, player2)
 
     return positions, player1, player2, creatures
+
+
+def special_capacity_available(player, hero):
+    """Whenever a hero reaches level 2 or 3 he can start using special capacities.
+
+    Parameters:
+    -----------
+    player: Level, number of point, etc. of the heroes of player (dict)
+    hero: Name of the hero (str)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.2 05/04/19)
+    implementation: Aude Lekeux (v.2 05/04/19)
+    """
+
+    if get_level(hero, player) == 2:
+        if get_class(hero, player) == 'barbarian':
+            print('The hero ' + hero + ' can now use the capacity energise')
+        if get_class(hero, player) == 'healer':
+            print('The hero ' + hero + ' can now use the capacity invigorate')
+        if get_class(hero, player) == 'mage':
+            print('The hero ' + hero + ' can now use the capacity fulgura')
+        if get_class(hero, player) == 'rogue':
+            print('The hero ' + hero + ' can now use the capacity reach')
+
+    if get_level(hero, player) == 3:
+        if get_class(hero, player) == 'barbarian':
+            print('The hero ' + hero + ' can now use the capacity stun')
+        if get_class(hero, player) == 'healer':
+            print('The hero ' + hero + ' can now use the capacity immunise')
+        if get_class(hero, player) == 'mage':
+            print('The hero ' + hero + ' can now use the capacity ovibus')
+        if get_class(hero, player) == 'rogue':
+            print('The hero ' + hero + ' can now use the capacity burst')
 
 
 def special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates):
@@ -1026,6 +881,99 @@ def move(positions, hero, movement):
             return positions
 
 
+def move_hero(hero, new_position, positions):
+    """Move from one cell to another.
+
+    Parameters:
+    -----------
+    hero: Name of the hero (str)
+    new_position: Position the character wants to go on (tuple)
+    positions: Contains all the coordinates of the board (dict)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board updated (dict)
+
+    Notes:
+    ------
+    This function is called only when the movement can be executed.
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 07/04/19)
+    implementation: Aude Lekeux (v.1 07/04/19)
+    """
+
+    if hero in positions:
+        positions[hero] = new_position
+
+    return positions
+
+
+def move_creatures(creature, start, new_position, positions, creatures):
+    """Move from one cell to another.
+
+    Parameters:
+    -----------
+    creature: Name of the creature (str)
+    start: Position the character is on now (tuple)
+    new_position: Position the character wants to go on (tuple)
+    positions: Contains all the coordinates of the board (dict)
+    creatures: Has every information of each creature (list)
+
+    Returns:
+    --------
+    creatures: Has every information of each creature updated (list)
+    positions: Contains all the coordinates of the board updated (dict)
+
+    Notes:
+    ------
+    This function is called only when the movement can be executed.
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 07/04/19)
+    implementation: Aude Lekeux (v.1 07/04/19)
+    """
+
+    if creature in creatures:
+        for key, value in positions.copy().items():
+            if key == start:
+                # Adds the new position and deletes the previous one
+                positions[new_position] = positions[key]
+                del positions[key]
+
+    return creatures, positions
+
+
+def gap_calculator(position_1, position_2):
+    """Computes the gap between two characters.
+
+    Parameter:
+    -----------
+    position_1: Position of the first character (tuple)
+    position_2: Position of the second character (tuple)
+
+    Returns:
+    -------
+    gap: Gap between two characters (int)
+
+    Version:
+    --------
+    specification: Manon Michaux (v.3 04/04/19)
+    implementation: Zéphyr Houyoux (v.3 04/04/19)
+    """
+
+    pos1c = int(position_1[0])
+    pos1r = int(position_1[1])
+    pos2c = int(position_2[0])
+    pos2r = int(position_2[1])
+
+    gap = ((pos1r - pos2r) ** 2 + (pos1c - pos2c) ** 2) ** 0.5
+
+    return gap
+
+
 def update_level(player):
     """Checks if a hero can level up and upgrade their characteristics.
 
@@ -1126,39 +1074,187 @@ def update_level(player):
     return player
 
 
-def special_capacity_available(player, hero):
-    """Whenever a hero reaches level 2 or 3 he can start using special capacities.
+def defeated(player1, player2, positions, creatures):
+    """Whenever a hero or a creature is defeated.
 
     Parameters:
     -----------
-    player: Level, number of point, etc. of the heroes of player (dict)
-    hero: Name of the hero (str)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
+    creatures: Has every information of each creature (list)
+    positions: Contains all the coordinates of the board (dict)
+
+    Returns:
+    --------
+    player1: Level, number of point, etc. of the heroes of player 1 updated (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 updated (dict)
+    position: Contains all the coordinates of the board updated (dict)
+    creatures: Has every information of each creature updated (list)
+
+    Notes:
+    ------
+    A hero or a creature is defeated whenever their health points are at O or less.
+    When a hero is defeated he respawns.
+    When a creature is defeated it dies and it's victory points are distributed to the heroes around.
 
     Version:
     --------
-    specification: Aude Lekeux (v.2 05/04/19)
-    implementation: Aude Lekeux (v.2 05/04/19)
+    specification: Aude Lekeux (v.6 03/04/19)
+    implementation: Aude Lekeux (v.4 03/04/19)
     """
 
-    if get_level(hero, player) == 2:
-        if get_class(hero, player) == 'barbarian':
-            print('The hero ' + hero + ' can now use the capacity energise')
-        if get_class(hero, player) == 'healer':
-            print('The hero ' + hero + ' can now use the capacity invigorate')
-        if get_class(hero, player) == 'mage':
-            print('The hero ' + hero + ' can now use the capacity fulgura')
-        if get_class(hero, player) == 'rogue':
-            print('The hero ' + hero + ' can now use the capacity reach')
+    # Respawn a hero when he's defeated
+    for hero in player1:
+        if get_life_points(hero, player1) <= 0:
+            for key in positions:
+                if positions[key] == 'spawn_player_1':
+                    positions[hero] = key
+                    # Reset life points of the hero depending on his class and level
+                    player1 = reset(hero, player1)
 
-    if get_level(hero, player) == 3:
-        if get_class(hero, player) == 'barbarian':
-            print('The hero ' + hero + ' can now use the capacity stun')
-        if get_class(hero, player) == 'healer':
-            print('The hero ' + hero + ' can now use the capacity immunise')
-        if get_class(hero, player) == 'mage':
-            print('The hero ' + hero + ' can now use the capacity ovibus')
-        if get_class(hero, player) == 'rogue':
-            print('The hero ' + hero + ' can now use the capacity burst')
+    for hero in player2:
+        if get_life_points(hero, player2) <= 0:
+            for key in positions:
+                if positions[key] == 'spawn_player_2':
+                    positions[hero] = key
+                    # Reset life points of the hero depending on his class and level
+                    player2 = reset(hero, player2)
+
+    print('The hero', hero, 'is respawning')
+
+    # Delete a creature when it's defeated
+    for key, value in positions.copy().items():
+        if value[0] in creatures:
+            if int(value[1]) <= 0:
+                print('The creature', value[0], 'is dead')
+                # If a creature is dead its victory points are distributed
+                hero_count = 0
+                hero_list = []
+                for hero in positions:
+                    if type(positions[hero]) is tuple:
+                        print(positions[hero], key)
+                        if gap_calculator(positions[hero], key) < 1.5:
+                            hero_count += 1
+                            hero_list.append(hero)
+                points = math.ceil(int(positions[key][4]) / hero_count)
+                for hero in hero_list:
+                    if hero in player1:
+                        player1[hero]['victory_points'] += points
+                    elif hero in player2:
+                        player2[hero]['victory_points'] += points
+                del positions[key]
+                del creatures[creatures.index(value[0])]
+
+    return player1, player2, positions, creatures
+
+
+def reset(hero, player):
+    """Resets the data of the hero who has been defeated and respawning.
+
+    Parameters:
+    -----------
+    hero: Name of the hero respawning (str)
+    player: Level, number of point, etc. of the heroes of the player (dict)
+
+    Returns:
+    --------
+    player: Level, number of point, etc. of the heroes of the player updated (dict)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 10/04/19)
+    implementation: Aude Lekeux (v.1 08/04/19)
+    """
+
+    if get_class(hero, player) == 'barbarian':
+        if get_level(hero, player) == 1:
+            player[hero]['life_points'] = 10
+        elif get_level(hero, player) == 2:
+            player[hero]['life_points'] = 13
+        elif get_level(hero, player) == 3:
+            player[hero]['life_points'] = 16
+        elif get_level(hero, player) == 4:
+            player[hero]['life_points'] = 19
+        elif get_level(hero, player) == 5:
+            player[hero]['life_points'] = 22
+    elif get_class(hero, player) == 'healer':
+        if get_level(hero, player) == 1:
+            player[hero]['life_points'] = 10
+        elif get_level(hero, player) == 2:
+            player[hero]['life_points'] = 11
+        elif get_level(hero, player) == 3:
+            player[hero]['life_points'] = 12
+        elif get_level(hero, player) == 4:
+            player[hero]['life_points'] = 13
+        elif get_level(hero, player) == 5:
+            player[hero]['life_points'] = 14
+    elif get_class(hero, player) == 'mage':
+        if get_level(hero, player) == 1:
+            player[hero]['life_points'] = 10
+        elif get_level(hero, player) == 2:
+            player[hero]['life_points'] = 12
+        elif get_level(hero, player) == 3:
+            player[hero]['life_points'] = 14
+        elif get_level(hero, player) == 4:
+            player[hero]['life_points'] = 16
+        elif get_level(hero, player) == 5:
+            player[hero]['life_points'] = 18
+    elif get_class(hero, player) == 'rogue':
+        if get_level(hero, player) == 1:
+            player[hero]['life_points'] = 10
+        elif get_level(hero, player) == 2:
+            player[hero]['life_points'] = 12
+        elif get_level(hero, player) == 3:
+            player[hero]['life_points'] = 14
+        elif get_level(hero, player) == 4:
+            player[hero]['life_points'] = 16
+        elif get_level(hero, player) == 5:
+            player[hero]['life_points'] = 18
+
+    return player
+
+
+def is_on_spur(nb_spur_p1, nb_spur_p2, player1, player2, positions):
+    """Checks whether a hero is on spur.
+
+    Parameters:
+    -----------
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
+    positions: Contains all the coordinates of the board (dict)
+
+    Returns:
+    --------
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 07/04/19)
+    implementation: Aude Lekeux (v.1 07/04/19)
+    """
+
+    is_p1_on_spur = False
+    is_p2_on_spur = False
+
+    for item in positions:
+        if positions[item] == 'spur':
+            for hero in player1:
+                if positions[hero] == item:
+                    nb_spur_p1 += 1
+                    is_p1_on_spur = True
+            for hero in player2:
+                if positions[hero] == item:
+                    nb_spur_p2 += 1
+                    is_p2_on_spur = True
+
+    if is_p1_on_spur and is_p2_on_spur:
+        nb_spur_p1 = 0
+        nb_spur_p2 = 0
+
+    return nb_spur_p1, nb_spur_p2
 
 
 def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_positions, positions, ROWS, COLUMNS, creatures):
@@ -1190,13 +1286,6 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_posi
     specification: Manon Michaux (v.4 06/04/19)
     implementation: Aude Lekeux (v.3 06/04/19)
     """
-
-    # for hero in positions:
-    #     if positions[hero] != initial_positions[hero]:
-    #         # Whenever a hero has been respawning
-    #         for key, value in positions.copy().items():
-    #             if positions[hero] == key:
-    #                 print(hero + ' has been respawning to ' + str(key))
 
     player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
 
@@ -1365,109 +1454,709 @@ def get_damage_points(hero, player):
             return player[heroes]['damage_points']
 
 
-def is_on_spur(nb_spur_p1, nb_spur_p2, player1, player2, positions):
-    """Checks whether a hero is on spur.
+# Special Capacities
+# Mage
+def fulgura(coordinates, player1, player2, creatures, hero_name, positions):
+    """ The creature / ennemy on the target coordinates loses a given number of health points.
 
     Parameters:
     -----------
-    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
-    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
-    player1: Level, number of point, etc. of the heroes of player 1 (dict)
-    player2: Level, number of point, etc. of the heroes of player 2 (dict)
-    positions: Contains all the coordinates of the board (dict)
-
-    Returns:
-    --------
-    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
-    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
-
-    Version:
-    --------
-    specification: Aude Lekeux (v.1 07/04/19)
-    implementation: Aude Lekeux (v.1 07/04/19)
-    """
-
-    is_p1_on_spur = False
-    is_p2_on_spur = False
-
-    for item in positions:
-        if positions[item] == 'spur':
-            for hero in player1:
-                if positions[hero] == item:
-                    nb_spur_p1 += 1
-                    is_p1_on_spur = True
-            for hero in player2:
-                if positions[hero] == item:
-                    nb_spur_p2 += 1
-                    is_p2_on_spur = True
-
-    if is_p1_on_spur and is_p2_on_spur:
-        nb_spur_p1 = 0
-        nb_spur_p2 = 0
-
-    return nb_spur_p1, nb_spur_p2
-
-
-def move_hero(hero, new_position, positions):
-    """Move from one cell to another.
-
-    Parameters:
-    -----------
-    hero: Name of the hero (str)
-    new_position: Position the character wants to go on (tuple)
-    positions: Contains all the coordinates of the board (dict)
-
-    Returns:
-    --------
-    positions: Contains all the coordinates of the board updated (dict)
-
-    Notes:
-    ------
-    This function is called only when the movement can be executed.
-
-    Version:
-    --------
-    specification: Aude Lekeux (v.1 07/04/19)
-    implementation: Aude Lekeux (v.1 07/04/19)
-    """
-
-    if hero in positions:
-        positions[hero] = new_position
-
-    return positions
-
-
-def move_creatures(creature, start, new_position, positions, creatures):
-    """Move from one cell to another.
-
-    Parameters:
-    -----------
-    creature: Name of the creature (str)
-    start: Position the character is on now (tuple)
-    new_position: Position the character wants to go on (tuple)
-    positions: Contains all the coordinates of the board (dict)
+    coordinates: Where the hero wants to use ovibus(tupl)
+    player1: Level, number of point, etc. of the heroes of player1 (dict)
+    player2: Level, number of point, etc. of the heroes of player2 (dict)
     creatures: Has every information of each creature (list)
+    hero_name: Name of the hero (str)
+    positions: Contains all the coordinates of the board (dict)
 
     Returns:
     --------
     creatures: Has every information of each creature updated (list)
     positions: Contains all the coordinates of the board updated (dict)
 
-    Notes:
-    ------
-    This function is called only when the movement can be executed.
+    Version:
+    --------
+    specification: Manon Michaux (v.2 31/03/19)
+    implementation: Manon Michaux (v.2 31/03/19)
+    """
+
+    good, updated = good(hero_name)
+    used = 0
+
+    # Level of the hero = 2
+    if good[hero_name]['level'] == 2:
+        if gap_calculator(positions, hero_name, coordinates) == 1:
+            # For the heroes of the other player
+            for heroes in updated:
+                if gap_calculator(positions, coordinates, heroes) == 0:
+                    updated[heroes]['life_points'] -= 3
+                    used += 1
+                    print(" %s 's health points have been decreased by 3 " % heroes)
+                else:
+                    print("%s 's damage points haven't been modified " % heroes)
+            # For the creatures
+            for enemies in creatures:
+                if gap_calculator(positions, hero_name, enemies) == 0:
+                    creatures[enemies]['life_points'] -= 3
+                    used += 1
+                    print(" %s 's health points have been decreased by 3" % enemies)
+                else:
+                    print("%s 's damage points haven't been modified " % enemies)
+
+            else:
+                print("%s 's damage points haven't been modified " % enemies)
+
+    # Level of the hero = 3
+    elif good[hero_name][level] == 3:
+        if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the heroes of the other player
+            for heroes in updated:
+                if gap_calculator(positions, coordinates, heroes) == 0:
+                    updated[heroes][h_points] -= 3
+                    used += 1
+                    print(" %s 's health points have been decreased by 3 " % heroes)
+                else:
+                    print("%s 's damage points haven't been modified " % heroes)
+            # For the creatures
+            for enemies in creatures:
+                if gap_calculator(positions, hero_name, enemies) == 0:
+                    creatures[enemies][h_points] -= 3
+                    used += 1
+                    print(" %s 's health points have been decreased by 3" % enemies)
+                else:
+                    print("%s 's damage points haven't been modified " % enemies)
+
+            else:
+                print("%s 's damage points haven't been modified " % enemies)
+
+    # Level of the hero = 4
+    elif good[hero_name][level] == 4:
+        if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the heroes of the other player
+            for heroes in updated:
+                if gap_calculator(positions, coordinates, heroes) == 0:
+                    updated[heroes][h_points] -= 4
+                    used += 1
+                    print(" %s 's health points have been decreased by 4 " % heroes)
+                else:
+                    print("%s 's damage points haven't been modified " % heroes)
+            # For the creatures
+            for enemies in creatures:
+                if gap_calculator(positions, hero_name, enemies) == 0:
+                    creatures[enemies][h_points] -= 4
+                    used += 1
+                    print(" %s 's health points have been decreased by 4" % enemies)
+                else:
+                    print("%s 's damage points haven't been modified " % enemies)
+
+            else:
+                print("%s 's damage points haven't been modified " % enemies)
+
+    # Level of the hero = 5
+    elif good[hero_name][level] == 5:
+        if gap_calculator(positions, hero_name, coordinates) <= 4:  # For the heroes of the other player
+            for heroes in updated:
+                if gap_calculator(positions, coordinates, heroes) == 0:
+                    updated[heroes][h_points] -= 4
+                    used += 1
+                    print(" %s 's health points have been decreased by 4 " % heroes)
+                else:
+                    print("%s 's damage points haven't been modified " % heroes)
+            # For the creatures
+            for enemies in creatures:
+                if gap_calculator(positions, hero_name, enemies) == 0:
+                    creatures[enemies][h_points] -= 4
+                    used += 1
+                    print(" %s 's health points have been decreased by 4" % enemies)
+                else:
+                    print("%s 's damage points haven't been modified " % enemies)
+
+            else:
+                print("%s 's damage points haven't been modified " % enemies)
+
+    # Level of the hero = 1 or = 2
+    else:
+        print(" You can't use this attack yet")
+
+    # Adding the cooldown to the dictionary of the player if he attack has been used
+    if used >= 1:
+        good[hero_name][cooldown][fulgura] += 1
+    else:
+        print("You used stun but nothing happened ")
+
+    return updated, creatures, good
+
+
+def ovibus(positions, hero_name, coordinates, creatures):
+    """The creature/ennemy on the target coordinates is unable to act during a given number of turn.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    hero_name: Name of the hero (str)
+    coordinates: Where the hero wants to use ovibus(tupl)
+    player1: Level, number of point, etc. of the heroes of player1 (dict)
+    player2: Level, number of point, etc. of the heroes of player2 (dict)
+    creatures: Has every information of each creature (list)
+
+    Returns:
+    --------
+    updated: Updated dictionary of the player which hero isn't using this attack.
+    good: Updated dictionary of the player which hero is using this attack.
+    creatures: Has every information of each creature updated(list)
 
     Version:
     --------
-    specification: Aude Lekeux (v.1 07/04/19)
-    implementation: Aude Lekeux (v.1 07/04/19)
+    specification: Manon Michaux (v.1 29/03/19)
+    implementation: Manon Michaux (v.1 29/03/19)
     """
 
-    if creature in creatures:
-        for key, value in positions.copy().items():
-            if key == start:
-                # Adds the new position and deletes the previous one
-                positions[new_position] = positions[key]
-                del positions[key]
+    good, updated = good(hero_name)
 
-    return creatures, positions
+    # Level of the hero = 3
+    if good[hero_name][level] == 3:
+        if gap_calculator(positions, hero_name, coordinates) == 1:
+            # For the heroes of the player
+            for heroes in updated:
+                if gap_calculator(positions, coordinates, heroes) == 0:
+                    used += 1
+                    print("%s is confused for one turn" % heroes)
+
+                else:
+                    print("Those coordinates don't belong to %s" % heroes)
+
+            # For the creatures
+            for ennemy in creatures:
+                if gap_calculator(positions, coordinates, ennemy) == 0:
+                    used += 1
+                    print("%s is confused for one turn" % heroes)
+                else:
+                    print("Those coordinates don't belong to %s" % heroes)
+
+            print("The coordinates you tried to reach are too far away right now")
+
+    # Level of the hero = 4
+    elif good[hero_name][level] == 4:
+        if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the heroes of the player
+            for heroes in updated:
+                if gap_calculator(positions, coordinates, heroes) == 0:
+                    used += 1
+                    print("%s is confused for one turn" % heroes)
+
+                else:
+                    print("Those coordinates don't belong to %s" % heroes)
+
+            # For the creatures
+            for ennemy in creatures:
+                if gap_calculator(positions, coordinates, ennemy) == 0:
+                    used += 1
+                    print("%s is confused for one turn" % heroes)
+                else:
+                    print("Those coordinates don't belong to %s" % heroes)
+
+            print("The coordinates you tried to reach are too far away right now")
+
+    # Level of the hero = 5
+    elif good[hero_name][level] == 5:
+        if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the heroes of the player
+            for heroes in updated:
+                if gap_calculator(positions, coordinates, heroes) == 0:
+                    used += 1
+                    print("%s is confused for one turn" % heroes)
+
+                else:
+                    print("Those coordinates don't belong to %s" % heroes)
+
+            # For the creatures
+            for ennemy in creatures:
+                if gap_calculator(positions, coordinates, ennemy) == 0:
+                    used += 1
+                    print("%s is confused for one turn" % heroes)
+                else:
+                    print("Those coordinates don't belong to %s" % heroes)
+
+            print("The coordinates you tried to reach are too far away right now")
+
+    # Level of the hero = 1 or = 2
+    else:
+        print("You can't use this attack yet")
+
+    # Adding the cooldown to the dictionary of the player if he attack has been used
+    if used >= 1:
+        good[hero_name][cooldown][ovibus] += 3
+    else:
+        print("You used stun but nothing happened ")
+
+    return updated, good, creatures
+
+
+# Healer
+def invigorate_level(hero, type, level_hero, level_ally, updated):
+    """If a hero want's to use invigorate.
+
+    Parameters:
+    -----------
+    hero: Name of the hero using invigorate (str)
+    type: Type of the hero (str)
+    level_hero: Level of the hero (int)
+    level_ally: Level of the ally (int)
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+
+    Returns:
+    --------
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 03/04/19)
+    implementation: Aude Lekeux (v.1 03/04/19)
+    """
+
+    # Level of the hero equals 2
+    if level_hero == 2:
+        if updated[hero]['level'] == level_ally:
+            if updated[hero]['life_points'] < max_life_points[type][level]:
+                updated[hero]['life_points'] += 1
+                print(hero + "' health points have been increased by one for this turn")
+            else:
+                print(hero + "' health points haven't been modified")
+
+    # Level of the hero from 3 to 5
+    elif level_hero >= 3:
+        if updated[hero]['level'] == level_ally:
+            max_health = max_life_points[type][level_ally] - (level_hero - 1)
+            if updated[hero]['life_points'] <= max_health:
+                updated[hero]['life_points'] += (level_hero - 1)
+                print(hero + "' health points have been increased by one for this turn")
+            else:
+                print(hero + "' health points haven't been modified")
+
+    return updated
+
+
+def invigorate(positions, hero_name, player):
+    """Raise the health points of the allies in the hero's wage.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    hero_name: Name of the hero (str)
+    player: Level, number of point, etc. of the heroes of player (dict)
+    max_health_dict: Dictionary containing for each class and for each level their own maximum of health points (dict)
+
+    Returns:
+    --------
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+
+    Version:
+    --------
+    specification: Manon Michaux (v.2 27/03/19)
+    implementation: Manon Michaux (v.4 03/04/19)
+    """
+
+    updated, bad_dict = good(hero_name)
+    used = 0
+
+    # Level of the hero from 2 to 5
+    for level_hero in range(2, 6):
+        if updated[hero_name]['level'] == level_hero:
+            for heroes in updated:
+                if gap_calculator(positions, hero_name, heroes) == level_hero - 1:
+
+                    for type in dict_job:
+                        if updated[heroes]['job'] == type:
+                            # Level of the ally from 1 to 5
+                            for level_ally in range(1, 6):
+                                updated = invigorate_level(heroes, type, level_hero, level_ally, updated)
+                        else:
+                            print(" Class isn't correct")
+
+    # Level of the hero equals 1
+    else:
+        print(" You can't use this attack yet")
+
+    # Adding the cooldown to the dictionary of the player if he attack has been used
+    if used >= 1:
+        good(hero_name)['cooldown']['stun'] += 1
+    else:
+        print("You used stun but nothing happened")
+
+    return updated
+
+
+def immunise(positions, player, creatures, hero_name, coordinates):
+    """
+
+    :return:
+    """
+
+
+# Barbarian
+def energise_level(level, updated, positions, hero_name):
+    """When a hero want's to use energise depending on their level.
+
+    Parameters:
+    -----------
+    level: Level of the hero (str)
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+    positions: Contains all the coordinates of the board (dict)
+    hero_name: Name of the hero using energise (str)
+
+    Returns:
+    --------
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 03/04/19)
+    implementation Aude Lekeux (v.1 03/04/19)
+    """
+
+    if level == 2:
+        for heroes in updated:
+            if gap_calculator(positions, hero_name, heroes) == 1:
+                updated[heroes]['damage_points'] += 1
+                print(heroes + "'s damage points have been increased by 1 for this turn")
+            else:
+                print(heroes + "' damage points haven't been modified")
+
+    else:
+        for heroes in updated:
+            if gap_calculator(positions, hero_name, heroes) <= level - 1:
+                updated[heroes]['damage_points'] += level - 2
+                print(heroes + "'s damage points have been increased by 1 for this turn")
+            else:
+                print(heroes + "%s ' damage points haven't been modified")
+
+    return updated
+
+
+def energise(positions, hero_name, player):
+    """Raise the damage points of the allies in the hero's influence wage.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    hero_name: Name of the hero (str)
+    player: Level, number of point, etc. of the heroes of the player (dict)
+
+    Returns:
+    --------
+    updated_dict: Updated dictionary of the player which hero's using this attack (dict)
+
+    Version:
+    --------
+    specification: Manon Michaux (v.4 27/03/19)
+    implementation: Manon Michaux (v.3 26/03/19)
+    """
+
+    updated, bad_dict = good(hero_name)
+    used = 0
+
+    # Level of the hero from 1 to 5
+    for level in range(1, 6):
+        # Level from 2 to 5
+        if level < 1:
+            if updated[hero_name]['level'] == level:
+                used, updates = energise_level(level, updated, used, positions, hero_name)
+
+        # Level of the hero = 1
+        else:
+            print(" You can't use this special attack yet")
+
+    # Adding the cooldown to the dictionary of the player if he attack has been used
+    if used >= 1:
+        updated[hero_name]['cooldown']['energise'] += 1
+    else:
+        print("You used energise but nothing happened")
+
+    return updated
+
+
+def stun_level(type, level, updated, hero_name, positions, used, creatures):
+    """When a hero want's to use stun.
+
+    Parameters:
+    -----------
+    type: Type of the hero (str)
+    level: Level of the hero (int)
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+    hero_name: Name of the hero using stun (str)
+    positions: Contains all the coordinates of the board (dict)
+    creatures: Has every information of each creature (list)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board (dict)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 03/04/19)
+    implementation: Aude Lekeux (v.1 03/04/19)
+    """
+
+    if type == 'hero':
+        for heroes in updated:
+            if gap_calculator(positions, hero_name, heroes) == level - 2:
+                if updated[heroes]['damage_points'] >= level - 1:
+                    updated[heroes]['damage_points'] -= level - 2
+                    used += 1
+                    print(heroes + "'s damage points have been decreased by 1 for this turn")
+                else:
+                    print(heroes + "'s damage points haven't been modified")
+
+            else:
+                print(heroes + "'s damage points haven't been modified")
+
+    elif type == 'creature':
+        for enemies in creatures:
+            if gap_calculator(positions, hero_name, enemies) == level - 2:
+                if creatures[enemies]['damage_points'] >= level - 1:
+                    creatures[enemies]['damage_points'] -= level - 2
+                    used += 1
+                    print(enemies + "'s damage points have been decreased by 1 for this turn")
+                else:
+                    print(enemies + "'s damage points haven't been modified")
+
+            else:
+                print(enemies + "'s damage points haven't been modified")
+
+    return used, positions
+
+
+def stun(positions, creatures, hero_name):
+    """ Stun the ennemies ( both heroes and creatures) in the hero's wage.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    player: Level, number of point, etc. of the heroes of the player (dict)
+    creatures: Has every information of each creature (list)
+    hero_name: Name of the hero (str)
+
+    Returns:
+    --------
+    updated: Dictionary of the enemy (dict)
+    creatures: Has every information of each creature updated (list)
+    good: Dictionary of the player which hero's using tha attack (dict)
+
+    Version:
+    --------
+    specification: Manon Michaux (v.4 27/03/19)
+    implementation: Manon Michaux (v.2 26/03/19)
+    """
+
+    good, updated = good(hero_name)
+    used = 0
+
+    # Level from 1 to 5
+    for level in range(1, 6):
+        # Level of the hero from 3 to 5
+        if level > 2:
+            if updated[hero_name]['level'] == level:
+                stun_level('hero', level, updated, hero_name, positions, used, creatures)
+        # Level of the hero from 1 to 2
+        else:
+            print(" You can't use this attack yet")
+
+    # Adding the cooldown to the dictionary of the player if he attack has been used
+    if used >= 1:
+        good(hero_name)['cooldown']['stun'] += 1
+    else:
+        print("You used stun but nothing happened")
+
+    return updated, creatures, good
+
+
+# Rogue
+def reach_level(level, updated, hero_name, positions, coordinates, used):
+    """When a hero wants to use reach depending on his level.
+
+    Parameters:
+    -----------
+    level: Level the hero is on (int)
+    updated: Updated dictionary of the player which hero is using this attack (dict)
+    hero_name: Name of the hero (str)
+    positions: Contains all the coordinates of the board (dict)
+    coordinates: Where the hero wants to use ovibus (tuple)
+
+    Returns:
+    --------
+    updated: Updated dictionary of the player which hero is using this attack (dict)
+    positions: Contains all the coordinates of the board updated (dict)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 04/04/19)
+    implementation: Aude Lekeux (v.1 04/04/19)
+    """
+
+    character_list = []
+    unoccupied = 0
+
+    if updated[hero_name]['level'] == level:
+        if gap_calculator(positions[hero_name], coordinates) == level - 1:
+
+            # For the all the characters in positions
+            for characters in positions:
+                if gap_calculator(positions[characters], coordinates) == 0:
+                    print(characters + "is already on those coordinates right now")
+                else:
+                    unoccupied += 1
+                character_list += characters
+        else:
+            print("The coordinates you tried to reach are too far away right now")
+
+        # If none of the characters are on the target coordinates
+        if unoccupied == len(character_list):
+            positions[hero_name] = coordinates
+            used += 1
+
+    return updated, positions, used
+
+
+def reach(positions, hero_name, coordinates):
+    """Teleports the hero using the attack if he is the first using reach this turn and if the target coordinates aren't occupied.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    hero_name: Name of the hero (str)
+    coordinates: Where the hero wants to use ovibus (tupl)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board (dict)
+    updated: Updated dictionary of the player which hero is using this attack (dict)
+
+    Version:
+    --------
+    specification: Manon Michaux (v.2 03/04/19)
+    implementation: Manon Michaux (v.3 04/04/19)
+    """
+
+    updated, bad_dict = good(hero_name)
+    used = 0
+
+    # Level of the hero from 1 to 5
+    for level in range(2, 6):
+        # Level from 3 to 5
+        if level in range(3, 6):
+            updated, positions, used = reach_level(level, updated, hero_name, positions, coordinates, used)
+        # Level from 1 to 2
+        else:
+            print("You can't use this attack yet")
+
+    # Adding the cooldown to the dictionary of the player if he attack has been used
+    if used == 1:
+        good[hero_name]['cooldown']['ovibus'] += 1
+    else:
+        print("You used stun but nothing happened ")
+
+    return positions, updated
+
+
+def burst_level(level, hero_name, positions, updated, creatures, used):
+    """When a hero wants to use burst depending on his level.
+
+    Parameters:
+    -----------
+    level: Level the hero is on (int)
+    hero_name: Name of the hero (str)
+    positions: Contains all the coordinates of the board (dict)
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+    creatures: Has every information of each creature (list)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board updated (dict)
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+    creatures: Has every information of each creature updated (list)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 04/04/19)
+    implementation: Aude Lekeux (v.1 04/04/19)
+    """
+
+    if good[hero_name]['level'] == level:
+
+        # For heroes of the other player
+        for heroes in updated:
+            # If level equals 3
+            if level == 3:
+                if gap_calculator(positions[hero_name], positions[heroes]) == 1:
+                    updated[heroes]['life_points'] -= 1
+                    used += 1
+                    print(hero_name + "'s health points have been decreased by 1")
+                else:
+                    print(hero_name + "' health points haven't been modified")
+            # Level from 4 to 5
+            else:
+                if gap_calculator(positions[hero_name], positions[heroes]) <= level - 2:
+                    updated[heroes]['life_points'] -= level - 2
+                    used += 1
+                    print(hero_name + "'s health points have been decreased by 1")
+                else:
+                    print(hero_name + "' health points haven't been modified")
+
+        # For the creatures
+        for enemies in creatures:
+            # If level equals 3
+            if level == 3:
+                if gap_calculator(positions[hero_name], positions[enemies]) == 1:
+                    updated[enemies]['life_points'] -= 1
+                    used += 1
+                    print(enemies + "'s health points have been decreased by 1")
+                else:
+                    print(enemies + "' health points haven't been modified")
+            # Level from 4 to 5
+            else:
+                if gap_calculator(positions[hero_name], positions[enemies]) <= level - 2:
+                    updated[enemies]['life_points'] -= level - 2
+                    used += 1
+                    print(enemies + "'s health points have been decreased by 1")
+                else:
+                    print(enemies + "' health points haven't been modified")
+
+    return positions, updated, creatures, used
+
+
+def burst(positions, hero_name, creatures):
+    """The creatures/ennemies in the hero's wage lose a given number of health points.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    hero_name: Name of the hero (str)
+    creatures: Has every information of each creature list)
+
+    Returns:
+    --------
+    updated: Updated dictionary of the player which hero's using this attack.
+    good: Updated dictionary of the player which hero is using this attack.
+    creatures: Has every information of each creature updated (list)
+
+    Version:
+    --------
+    specification: Manon Michaux (v.2 03/04/19)
+    implementation: Manon Michaux (v.2 04/04/19)
+    """
+
+    good, updated = good(hero_name)
+    used = 0
+
+    # Level of the hero from 1 to 5
+    for level in range(1, 6):
+        # Level from 3 to 5
+        if level in range(3, 6):
+            positions, updated, creatures, used = burst_level(level, hero_name, positions, updated, creatures, used)
+        # Level of the hero from 1 to 2
+        else:
+            print(" You can't use this special attack yet")
+
+    # Adding the cooldown to the dictionary of the player if the attack has been used
+    if used >= 1:
+        updated[hero_name]['cooldown'][burst] += 1
+    else:
+        print("You used burst but nothing happened")
+
+    return updated, good, creatures
+

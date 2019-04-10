@@ -1,19 +1,17 @@
-def invigorate_level(hero, type, level_hero, level_ally, updated, used):
+def invigorate_level(hero, type, level_hero, level_ally, updated):
     """If a hero want's to use invigorate.
 
     Parameters:
     -----------
-    hero:
-    type:
-    level_hero:
-    level_ally:
-    updated:
-    used:
+    hero: Name of the hero using invigorate (str)
+    type: Type of the hero (str)
+    level_hero: Level of the hero (int)
+    level_ally: Level of the ally (int)
+    updated: Updated dictionary of the player which hero's using this attack (dict)
 
     Returns:
     --------
-    updated:
-    used:
+    updated: Updated dictionary of the player which hero's using this attack (dict)
 
     Version:
     --------
@@ -21,47 +19,26 @@ def invigorate_level(hero, type, level_hero, level_ally, updated, used):
     implementation: Aude Lekeux (v.1 03/04/19)
     """
 
+    # Level of the hero equals 2
     if level_hero == 2:
         if updated[hero]['level'] == level_ally:
             if updated[hero]['life_points'] < max_life_points[type][level]:
                 updated[hero]['life_points'] += 1
-                used += 1
                 print(hero + "' health points have been increased by one for this turn")
             else:
                 print(hero + "' health points haven't been modified")
 
-    elif level_hero == 3:
+    # Level of the hero from 3 to 5
+    elif level_hero >= 3:
         if updated[hero]['level'] == level_ally:
-            max_health = max_life_points[type][level_ally] - 2
+            max_health = max_life_points[type][level_ally] - (level_hero - 1)
             if updated[hero]['life_points'] <= max_health:
-                updated[hero]['life_points'] += 2
-                used += 1
+                updated[hero]['life_points'] += (level_hero - 1)
                 print(hero + "' health points have been increased by one for this turn")
             else:
                 print(hero + "' health points haven't been modified")
 
-    elif level_hero == 4:
-        if updated[hero]['level'] == level_ally:
-            max_health = max_life_points[type][level_ally] - 3
-            if updated[hero]['life_points'] <= max_health:
-                updated[hero]['life_points'] += 3
-                used += 1
-                print(hero + "' health points have been increased by one for this turn")
-            else:
-                print(hero + "' health points haven't been modified")
-
-    elif level_hero == 5:
-        if updated[hero]['level'] == level_ally:
-            max_health = max_life_points[type][level_ally] - 4
-            if updated[hero]['life_points'] <= max_health:
-                updated[hero]['life_points'] += 4
-                modif[hero]['life_points_modifs'] += 4
-                used += 1
-                print(hero + "' health points have been increased by one for this turn")
-            else:
-                print(hero + "' health points haven't been modified")
-
-    return updated, used
+    return updated
 
 
 def invigorate(positions, hero_name, player):
@@ -76,7 +53,7 @@ def invigorate(positions, hero_name, player):
 
     Returns:
     --------
-    updated: Updated dictionary of the player which hero's using this attack.
+    updated: Updated dictionary of the player which hero's using this attack (dict)
 
     Version:
     --------
@@ -97,11 +74,11 @@ def invigorate(positions, hero_name, player):
                         if updated[heroes]['job'] == type:
                             # Level of the ally from 1 to 5
                             for level_ally in range(1, 6):
-                                updated, used = invigorate_level(heroes, type, level_hero, level_ally, updated, used)
+                                updated = invigorate_level(heroes, type, level_hero, level_ally, updated)
                         else:
                             print(" Class isn't correct")
 
-    # Level of the hero = 1
+    # Level of the hero equals 1
     else:
         print(" You can't use this attack yet")
 

@@ -1,18 +1,16 @@
-def energise_level(level, updated, used, positions, hero_name):
+def energise_level(level, updated, positions, hero_name):
     """When a hero want's to use energise depending on their level.
     
     Parameters:
     -----------
     level: Level of the hero (str)
-    updated:
-    used:
-    positions:
-    hero_name:
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+    positions: Contains all the coordinates of the board (dict)
+    hero_name: Name of the hero using energise (str)
     
     Returns:
     --------
-    used:
-    updated:
+    updated: Updated dictionary of the player which hero's using this attack (dict)
     
     Version:
     --------
@@ -24,7 +22,6 @@ def energise_level(level, updated, used, positions, hero_name):
         for heroes in updated:
             if gap_calculator(positions, hero_name, heroes) == 1:
                 updated[heroes]['damage_points'] += 1
-                used += 1
                 print(heroes + "'s damage points have been increased by 1 for this turn")
             else:
                 print(heroes + "' damage points haven't been modified")
@@ -33,12 +30,11 @@ def energise_level(level, updated, used, positions, hero_name):
         for heroes in updated:
             if gap_calculator(positions, hero_name, heroes) <= level - 1:
                 updated[heroes]['damage_points'] += level - 2
-                used += 1
                 print(heroes + "'s damage points have been increased by 1 for this turn")
             else:
                 print(heroes + "%s ' damage points haven't been modified")
                 
-    return used, updated
+    return updated
 
 
 def energise(positions, hero_name, player):
@@ -52,7 +48,7 @@ def energise(positions, hero_name, player):
 
     Returns:
     --------
-    updated_dict: Updated dictionary of the player which hero's using this attack.
+    updated_dict: Updated dictionary of the player which hero's using this attack (dict)
 
     Version:
     --------
@@ -88,18 +84,16 @@ def stun_level(type, level, updated, hero_name, positions, used, creatures):
     
     Parameters:
     -----------
-    type:
-    level:
-    updated:
-    hero_name:
-    positions:
-    used:
-    creatures: 
+    type: Type of the hero (str)
+    level: Level of the hero (int)
+    updated: Updated dictionary of the player which hero's using this attack (dict)
+    hero_name: Name of the hero using stun (str)
+    positions: Contains all the coordinates of the board (dict)
+    creatures: Has every information of each creature (list)
     
     Returns:
     --------
-    used:
-    positions:
+    positions: Contains all the coordinates of the board (dict)
     
     Version:
     --------
@@ -136,27 +130,26 @@ def stun_level(type, level, updated, hero_name, positions, used, creatures):
     return used, positions
     
 
-def stun(positions, player, creatures, hero_name):
+def stun(positions, creatures, hero_name):
     """ Stun the ennemies ( both heroes and creatures) in the hero's wage.
 
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
     player: Level, number of point, etc. of the heroes of the player (dict)
-    creatures: All the data about creatures (dict)
+    creatures: Has every information of each creature (list)
     hero_name: Name of the hero (str)
 
     Returns:
     --------
-    updated_dict: Dictionary of the ennemy (dict)
-    creatures: updated Dictionary of the creatures (dict)
-    dict: Dictionary of the player which hero's using tha attack (dict)
+    updated: Dictionary of the enemy (dict)
+    creatures: Has every information of each creature updated (list)
+    good: Dictionary of the player which hero's using tha attack (dict)
 
     Version:
     --------
     specification: Manon Michaux (v.4 27/03/19)
     implementation: Manon Michaux (v.2 26/03/19)
-
     """
 
     good, updated = good(hero_name)

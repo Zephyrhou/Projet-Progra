@@ -1,7 +1,7 @@
 from heroes_namur_gr_06 import *
 
 
-def fulgura(coordinates, creatures, hero_name, positions):
+def fulgura(coordinates, player1, player2, creatures, hero_name, positions):
     """ The creature / ennemy on the target coordinates loses a given number of health points.
 
     Parameters:
@@ -9,18 +9,14 @@ def fulgura(coordinates, creatures, hero_name, positions):
     coordinates: Where the hero wants to use ovibus(tupl)
     player1: Level, number of point, etc. of the heroes of player1 (dict)
     player2: Level, number of point, etc. of the heroes of player2 (dict)
-    creatures: All the data about creatures (dict)
+    creatures: Has every information of each creature (list)
     hero_name: Name of the hero (str)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature (dict)
     positions: Contains all the coordinates of the board (dict)
-
 
     Returns:
     --------
-    updated_dict: Dictionary of the ennemy (dict)
-    creatures: updated Dictionary of the creatures (dict)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature (dict)
-    good_dict: Dictionary of the player which hero's using tha attack (dict)
+    creatures: Has every information of each creature updated (list)
+    positions: Contains all the coordinates of the board updated (dict)
 
     Version:
     --------
@@ -135,6 +131,7 @@ def fulgura(coordinates, creatures, hero_name, positions):
 
 def ovibus(positions, hero_name, coordinates, creatures):
     """The creature/ennemy on the target coordinates is unable to act during a given number of turn.
+
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
@@ -142,15 +139,13 @@ def ovibus(positions, hero_name, coordinates, creatures):
     coordinates: Where the hero wants to use ovibus(tupl)
     player1: Level, number of point, etc. of the heroes of player1 (dict)
     player2: Level, number of point, etc. of the heroes of player2 (dict)
-    creatures: All the data about creatures (dict)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
+    creatures: Has every information of each creature (list)
 
     Returns:
     --------
-    updated_dict: Updated dictionary of the player which hero isn't using this attack.
-    good_dict:  Updated dictionary of the player which hero is using this attack.
-    creatures: All the data about creatures (dict)
-    modif: Dictionary which contains each modification of the damage point / health points of each hero / creature and if they are immunised(dict)
+    updated: Updated dictionary of the player which hero isn't using this attack.
+    good: Updated dictionary of the player which hero is using this attack.
+    creatures: Has every information of each creature updated(list)
 
     Version:
     --------
@@ -158,13 +153,13 @@ def ovibus(positions, hero_name, coordinates, creatures):
     implementation: Manon Michaux (v.1 29/03/19)
     """
 
-    good_dict, updated_dict = good_dict(hero_name)
+    good, updated = good(hero_name)
 
     # Level of the hero = 3
-    if good_dict[hero_name][level] == 3:
+    if good[hero_name][level] == 3:
         if gap_calculator(positions, hero_name, coordinates) == 1:
             # For the heroes of the player
-            for heroes in updated_dict:
+            for heroes in updated:
                 if gap_calculator(positions, coordinates, heroes) == 0:
                     used += 1
                     print("%s is confused for one turn" % heroes)
@@ -183,9 +178,9 @@ def ovibus(positions, hero_name, coordinates, creatures):
             print("The coordinates you tried to reach are too far away right now")
 
     # Level of the hero = 4
-    elif good_dict[hero_name][level] == 4:
+    elif good[hero_name][level] == 4:
         if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the heroes of the player
-            for heroes in updated_dict:
+            for heroes in updated:
                 if gap_calculator(positions, coordinates, heroes) == 0:
                     used += 1
                     print("%s is confused for one turn" % heroes)
@@ -204,9 +199,9 @@ def ovibus(positions, hero_name, coordinates, creatures):
             print("The coordinates you tried to reach are too far away right now")
 
     # Level of the hero = 5
-    elif good_dict[hero_name][level] == 5:
+    elif good[hero_name][level] == 5:
         if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the heroes of the player
-            for heroes in updated_dict:
+            for heroes in updated:
                 if gap_calculator(positions, coordinates, heroes) == 0:
                     used += 1
                     print("%s is confused for one turn" % heroes)
@@ -230,8 +225,8 @@ def ovibus(positions, hero_name, coordinates, creatures):
 
     # Adding the cooldown to the dictionary of the player if he attack has been used
     if used >= 1:
-        good_dict[hero_name][cooldown][ovibus] += 3
+        good[hero_name][cooldown][ovibus] += 3
     else:
         print("You used stun but nothing happened ")
 
-    return updated_dict, good_dict, creatures
+    return updated, good, creatures
