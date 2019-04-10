@@ -3,11 +3,17 @@ from heroes_namur_gr_06 import *
 
 def launch(board_file):
 
-    player1, player2, positions, ROWS, COLUMNS, NB_TURNS = initialization(board_file)
+    player1, player2, positions, ROWS, COLUMNS, NB_TURNS, creatures = initialization(board_file)
 
-    positions = game(player1, player2, positions)
+    nb_turn = 0
+    nb_spur_p1 = 0
+    nb_spur_p2 = 0
 
-    display_board(ROWS, COLUMNS, positions)
+    # While the game is not over the next turn begins
+    while not is_game_over(NB_TURNS, nb_spur_p1, nb_spur_p2):
+        nb_spur_p1, nb_spur_p2, positions = game(nb_spur_p1, nb_spur_p2, player1, player2, positions, creatures)
+        display_board(ROWS, COLUMNS, positions)
+        nb_turn += 1
 
 
 def initialization(board_file):
@@ -19,18 +25,22 @@ def initialization(board_file):
 
     display_board(ROWS, COLUMNS, positions)
 
-    return player_1, player_2, positions, ROWS, COLUMNS, NB_TURNS
+    return player_1, player_2, positions, ROWS, COLUMNS, NB_TURNS, creatures
 
 
-def game(player_1, player_2, positions):
+def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
 
     choice1 = input('Player 1: Enter your orders for your heroes: ')
     choice2 = input('Player 2: Enter your orders for your heroes: ')
 
-    positions, player_1, player_2 = players_choice(choice1, positions, player_1, player_2)
-    positions, player_1, player_2 = players_choice(choice2, positions, player_1, player_2)
+    positions, player_1, player_2, creatures = players_choice(choice1, positions, player_1, player_2, creatures)
+    positions, player_1, player_2, creatures = players_choice(choice2, positions, player_1, player_2, creatures)
 
-    return positions
+    player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
+
+    nb_spur_p1, nb_spur_p2 = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2, positions)
+
+    return nb_spur_p1, nb_spur_p2, positions
 
 
 def create_heroes():
@@ -184,5 +194,5 @@ def display_board(ROWS, COLUMNS, positions):
 # Baz:@21-3 Lee:@20-4 May:@10-10 Rob:@21-3
 # Buf:@20-36 Lia:@21-37 Mey:@20-38 Tob:@21-36
 # Baz:@21-4 Lee:@19-4 May:@21-3 Rob:*21-36
-# Buf:@21-36 Lia:*10-10 Mey:@20-38 Tob:*21-3
+# Buf:@21-36 Lia:*21-37 Mey:@20-38 Tob:*21-3
 launch("board.txt")

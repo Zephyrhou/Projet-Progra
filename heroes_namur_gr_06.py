@@ -3,6 +3,7 @@ from Healer import *
 from Mage import *
 from Rogue import *
 from test import *
+import math
 
 
 # Function 1
@@ -19,14 +20,17 @@ def launch(board_file):
     implementation: Aude Lekeux (v.3 08/04/19)
     """
 
-    player1, player2, positions, ROWS, COLUMNS, NB_TURNS = initialization(board_file)
+    player1, player2, positions, ROWS, COLUMNS, nb_turns_wanted, creatures = initialization(board_file)
 
-    game_over = True
+    nb_turn = 0
+    nb_spur_p1 = 0
+    nb_spur_p2 = 0
 
-    while game_over:
-        positions = game(player1, player2, positions)
+    # While the game is not over the next turn begins
+    while not is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
+        nb_spur_p1, nb_spur_p2, positions = game(nb_spur_p1, nb_spur_p2, player1, player2, positions, creatures)
         display_board(ROWS, COLUMNS, positions)
-        game_over = input('Game over ? [True/False]')
+        nb_turn += 1
 
 
 # Function 2
@@ -36,6 +40,16 @@ def initialization(board_file):
     Parameter:
     ----------
     board_file: Path of the file used to create the board (str)
+
+    Returns:
+    --------
+    player_1: Level, number of point, etc. of the heroes of player 1 created (dict)
+    player_2: Level, number of point, etc. of the heroes of player 2 created (dict)
+    positions: Contains all the coordinates of the board (dict)
+    ROWS: Number of rows of the board (int)
+    COLUMNS: Number of columns of the board (int)
+    nb_turns_wanted: Number of turns to be on the spur in order to win (int)
+    creatures: Has every information of each creature (list)
 
     Version:
     --------
@@ -50,24 +64,25 @@ def initialization(board_file):
 
     display_board(ROWS, COLUMNS, positions)
 
-    return player_1, player_2, positions, ROWS, COLUMNS, NB_TURNS
+    return player_1, player_2, positions, ROWS, COLUMNS, NB_TURNS, creatures
 
 
-def game(player_1, player_2, positions):
+def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
     """Starts a new turn if the game is not finished.
 
     Parameters:
     -----------
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
     player_1: Level, number of point, etc. of the heroes of player 1 (dict)
     player_2: Level, number of point, etc. of the heroes of player 2 (dict)
     positions: Contains all the coordinates of the board (dict)
+    creatures: Has every information of each creature (list)
 
     Returns:
     --------
-    nb_turns_wanted: Number of turns needed to be on the spur in order to win (int)
-    nb_turns1: Number of turns a hero of player1 stands on the spur (int)
-    nb_turns2: Number of turns a hero of player2 stands on the spur (int)
-    inactivity: Number of turns no activity has been observed (int)
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
     positions: Contains all the coordinates of the board updated (dict)
 
     Version:
@@ -79,10 +94,14 @@ def game(player_1, player_2, positions):
     choice1 = input('Player 1: Enter your orders for your heroes: ')
     choice2 = input('Player 2: Enter your orders for your heroes: ')
 
-    positions = players_choice(choice1, positions, player_1)
-    positions = players_choice(choice2, positions, player_2)
+    positions, player_1, player_2, creatures = players_choice(choice1, positions, player_1, player_2, creatures)
+    positions, player_1, player_2, creatures = players_choice(choice2, positions, player_1, player_2, creatures)
 
-    return positions
+    player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
+
+    nb_spur_p1, nb_spur_p2 = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2, positions)
+
+    return nb_spur_p1, nb_spur_p2, positions
 
 
 # Function 3
@@ -91,15 +110,15 @@ def create_board(board_file, player_1, player_2):
 
     Parameter:
     ----------
-    board_file : Path of the file used to create the board (str)
+    board_file: Path of the file used to create the board (str)
     player_1: Level, number of point, etc. of the heroes of player 1 (dict)
     player_2: Level, number of point, etc. of the heroes of player 2 (dict)
 
     Returns:
     --------
-    positions: Contains all the coordinates of the board (dict)
-    creatures: Has every information of each creature (dict)
-    NB_TURNS: Number of turns the heroes need to be on spur to win (int)
+    positions: Contains all the coordinates of the board updated (dict)
+    creatures: Has every information of each creature (list)
+    nb_turns_wanted: Number of turns to be on the spur in order to win (int)
     ROWS: Number of rows of the board (int)
     COLUMNS: Number of columns of the board (int)
 
@@ -128,7 +147,7 @@ def create_board(board_file, player_1, player_2):
 
     ROWS = int(board[1])
     COLUMNS = int(board[2])
-    NB_TURNS = int(board[3])
+    nb_turns_wanted = int(board[3])
 
     SPAWN_PLAYER_1 = (board[5], board[6])
     SPAWN_PLAYER_2 = (board[7], board[8])
@@ -164,7 +183,7 @@ def create_board(board_file, player_1, player_2):
 
     del board
 
-    return ROWS, COLUMNS, NB_TURNS, positions, creatures
+    return ROWS, COLUMNS, nb_turns_wanted, positions, creatures
 
 
 # Function 4
@@ -173,7 +192,7 @@ def create_heroes():
 
     Returns:
     --------
-    player: Level, number of point, etc. of the heroes of player (dict)
+    player: Level, number of point, etc. of the heroes of player created (dict)
 
     Notes:
     ------
@@ -305,15 +324,14 @@ def display_board(ROWS, COLUMNS, positions):
 
 
 # Function 7
-def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time, positions, initial_positions, creatures, initial_creatures):
+def is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
     """Checks whether the game is over or not.
 
     Parameters:
     -----------
-    nb_turns_wanted: Number of turns the heroes need to be on spur to win (int)
-    nb_turns1: Number of turns a hero of player1 stands on the spur (int)
-    nb_turns2: Number of turns a hero of player2 stands on the spur (int)
-    inactivity_time: Number of turns no activity has been observed (int)
+    nb_turns_wanted: Number of turns to be on the spur in order to win (int)
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
 
     Returns:
     -------
@@ -329,15 +347,19 @@ def is_game_over(nb_turns_wanted, nb_turns1, nb_turns2, inactivity_time, positio
     implementation: Zéphyr Houyoux (v.3 07/04/2019)
     """
 
-    if nb_turns1 == nb_turns_wanted or nb_turns2 == nb_turns_wanted:
+    if nb_spur_p1 == nb_turns_wanted:
+        print('Player1 won')
+        return True
+    elif nb_spur_p2 == nb_turns_wanted:
+        print('Player2 won')
         return True
 
-    i_time = inactivity(positions, initial_positions, creatures, initial_creatures, inactivity_time)
-    print(i_time[0])
-    if i_time[0] >= 40:
-        return True
-    else:
-        return False
+    # i_time = inactivity(positions, initial_positions, creatures, initial_creatures, inactivity_time)
+    # print(i_time[0])
+    # if i_time[0] >= 40:
+    #     return True
+    # else:
+    #     return False
 
 
 # Function 8
@@ -347,15 +369,15 @@ def creature_turn(positions, creatures, player1, player2):
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
-    creatures: Has every information of each creature (dict)
+    creatures: Has every information of each creature (list)
     player1: Level, number of point, etc. of heroes of player1 (dict)
     player2: Level, number of point, etc. of heroes of player2 (dict)
 
     Returns:
     --------
-    positions: Contains all the coordinates of the board (dict)
-    player1: Level, number of point, etc. of heroes of player1 (dict)
-    player2: Level, number of point, etc. of heroes of player2 (dict)
+    positions: Contains all the coordinates of the board updated (dict)
+    player1: Level, number of point, etc. of heroes of player1 updated (dict)
+    player2: Level, number of point, etc. of heroes of player2 updated (dict)
 
     Notes:
     ------
@@ -374,9 +396,9 @@ def inactivity(positions, initial_positions, creatures, initial_creatures, inact
 
     Parameters:
     -----------
-    positions: Contains all the coordinates of the board and the heroes (dict)
+    positions: Contains all the coordinates of the board (dict)
     initial_positions: Contains all the coordinates of the board and the heroes before changes (dict)
-    creatures: Has every information of each creature (dict)
+    creatures: Has every information of each creature (list)
     initial_creatures: Has every information of each creature before changes (dict)
     inactivity_time: Number of turns no changes has been made (int)
 
@@ -431,21 +453,22 @@ def gap_calculator(position_1, position_2):
 
 
 # Function 9
-def defeated(player, nb_player, positions, creatures):
+def defeated(player1, player2, positions, creatures):
     """Whenever a hero or a creature is defeated.
 
     Parameters:
     -----------
-    player: Information on the player's defeated hero who will respawn (dict)
-    nb_player: Number of the player whose hero is defeated (int)
-    creatures: Information on the creature that dies (list)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
+    creatures: Has every information of each creature (list)
     positions: Contains all the coordinates of the board (dict)
 
     Returns:
     --------
-    player: Information on the player's defeated hero who will respawn (dict)
-    position: Contains all the coordinates of the board (dict)
-    creatures: Information on the creature that dies (list)
+    player1: Level, number of point, etc. of the heroes of player 1 updated (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 updated (dict)
+    position: Contains all the coordinates of the board updated (dict)
+    creatures: Has every information of each creature updated (list)
 
     Notes:
     ------
@@ -460,78 +483,118 @@ def defeated(player, nb_player, positions, creatures):
     """
 
     # Respawn a hero when he's defeated
-    for hero in player:
-        if player[hero]['life_points'] <= 0:
-            if nb_player == 1:
-                for key in positions:
-                    if positions[key] == 'spawn_player_1':
-                        positions[hero] = key
-            if nb_player == 2:
-                for key in positions:
-                    if positions[key] == 'spawn_player_2':
-                        positions[hero] = key
+    for hero in player1:
+        if player1[hero]['life_points'] <= 0:
+            for key in positions:
+                if positions[key] == 'spawn_player_1':
+                    positions[hero] = key
+                    # Reset life points of the hero depending on his class and level
+                    player1 = reset(hero, player1)
 
-            # Reset life points of the hero depending on his class and level
-            if player[hero]['class'] == 'barbarian':
-                if player[hero]['level'] == 1:
-                    player[hero]['life_points'] = 10
-                elif player[hero]['level'] == 2:
-                    player[hero]['life_points'] = 13
-                elif player[hero]['level'] == 3:
-                    player[hero]['life_points'] = 16
-                elif player[hero]['level'] == 4:
-                    player[hero]['life_points'] = 19
-                elif player[hero]['level'] == 5:
-                    player[hero]['life_points'] = 22
-            elif player[hero]['class'] == 'healer':
-                if player[hero]['level'] == 1:
-                    player[hero]['life_points'] = 10
-                elif player[hero]['level'] == 2:
-                    player[hero]['life_points'] = 11
-                elif player[hero]['level'] == 3:
-                    player[hero]['life_points'] = 12
-                elif player[hero]['level'] == 4:
-                    player[hero]['life_points'] = 13
-                elif player[hero]['level'] == 5:
-                    player[hero]['life_points'] = 14
-            elif player[hero]['class'] == 'mage':
-                if player[hero]['level'] == 1:
-                    player[hero]['life_points'] = 10
-                elif player[hero]['level'] == 2:
-                    player[hero]['life_points'] = 12
-                elif player[hero]['level'] == 3:
-                    player[hero]['life_points'] = 14
-                elif player[hero]['level'] == 4:
-                    player[hero]['life_points'] = 16
-                elif player[hero]['level'] == 5:
-                    player[hero]['life_points'] = 18
-            elif player[hero]['class'] == 'rogue':
-                if player[hero]['level'] == 1:
-                    player[hero]['life_points'] = 10
-                elif player[hero]['level'] == 2:
-                    player[hero]['life_points'] = 12
-                elif player[hero]['level'] == 3:
-                    player[hero]['life_points'] = 14
-                elif player[hero]['level'] == 4:
-                    player[hero]['life_points'] = 16
-                elif player[hero]['level'] == 5:
-                    player[hero]['life_points'] = 18
-            print('The hero', hero, 'is respawning')
+    for hero in player2:
+        if player2[hero]['life_points'] <= 0:
+            for key in positions:
+                if positions[key] == 'spawn_player_2':
+                    positions[hero] = key
+                    # Reset life points of the hero depending on his class and level
+                    player2 = reset(hero, player2)
+
+    print('The hero', hero, 'is respawning')
 
     # Delete a creature when it's defeated
     for key, value in positions.copy().items():
         if value[0] in creatures:
             if int(value[1]) <= 0:
-                del positions[key]
-                del creatures[creatures.index(value[0])]
                 print('The creature', value[0], 'is dead')
                 # If a creature is dead its victory points are distributed
+                hero_count = 0
+                hero_list = []
+                for hero in positions:
+                    if type(positions[hero]) is tuple:
+                        print(positions[hero], key)
+                        if gap_calculator(positions[hero], key) < 1.5:
+                            hero_count += 1
+                            hero_list.append(hero)
+                points = math.ceil(int(positions[key][4]) / hero_count)
+                for hero in hero_list:
+                    if hero in player1:
+                        player1[hero]['victory_points'] += points
+                    elif hero in player2:
+                        player2[hero]['victory_points'] += points
+                del positions[key]
+                del creatures[creatures.index(value[0])]
 
-    return player, positions, creatures
+    return player1, player2, positions, creatures
+
+
+def reset(hero, player):
+    """Resets the data of the hero who has been defeated and respawning.
+
+    Parameters:
+    -----------
+    hero: Name of the hero respawning (str)
+    player: Level, number of point, etc. of the heroes of the player (dict)
+
+    Returns:
+    --------
+    player: Level, number of point, etc. of the heroes of the player updated (dict)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 10/04/19)
+    implementation: Aude Lekeux (v.1 08/04/19)
+    """
+
+    if player[hero]['class'] == 'barbarian':
+        if player[hero]['level'] == 1:
+            player[hero]['life_points'] = 10
+        elif player[hero]['level'] == 2:
+            player[hero]['life_points'] = 13
+        elif player[hero]['level'] == 3:
+            player[hero]['life_points'] = 16
+        elif player[hero]['level'] == 4:
+            player[hero]['life_points'] = 19
+        elif player[hero]['level'] == 5:
+            player[hero]['life_points'] = 22
+    elif player[hero]['class'] == 'healer':
+        if player[hero]['level'] == 1:
+            player[hero]['life_points'] = 10
+        elif player[hero]['level'] == 2:
+            player[hero]['life_points'] = 11
+        elif player[hero]['level'] == 3:
+            player[hero]['life_points'] = 12
+        elif player[hero]['level'] == 4:
+            player[hero]['life_points'] = 13
+        elif player[hero]['level'] == 5:
+            player[hero]['life_points'] = 14
+    elif player[hero]['class'] == 'mage':
+        if player[hero]['level'] == 1:
+            player[hero]['life_points'] = 10
+        elif player[hero]['level'] == 2:
+            player[hero]['life_points'] = 12
+        elif player[hero]['level'] == 3:
+            player[hero]['life_points'] = 14
+        elif player[hero]['level'] == 4:
+            player[hero]['life_points'] = 16
+        elif player[hero]['level'] == 5:
+            player[hero]['life_points'] = 18
+    elif player[hero]['class'] == 'rogue':
+        if player[hero]['level'] == 1:
+            player[hero]['life_points'] = 10
+        elif player[hero]['level'] == 2:
+            player[hero]['life_points'] = 12
+        elif player[hero]['level'] == 3:
+            player[hero]['life_points'] = 14
+        elif player[hero]['level'] == 4:
+            player[hero]['life_points'] = 16
+        elif player[hero]['level'] == 5:
+            player[hero]['life_points'] = 18
+
+    return player
 
 
 # Function 10
-def players_choice(choice, positions, player1, player2):
+def players_choice(choice, positions, player1, player2, creatures):
     """Translates the player's order and calls the functions move or attack.
 
     Parameters:
@@ -540,12 +603,14 @@ def players_choice(choice, positions, player1, player2):
     positions: Contains all the coordinates of the board (dict)
     player1: Level, number of point, etc. of heroes of player1 (dict)
     player2: Level, number of point, etc. of heroes of player2 (dict)
+    creatures: Has every information of each creature (list)
 
     Returns:
     --------
-    positions: Contains all the coordinates of the board updated(dict)
+    positions: Contains all the coordinates of the board updated (dict)
     player1: Level, number of point, etc. of heroes of player1 updated (dict)
     player2: Level, number of point, etc. of heroes of player2 updated (dict)
+    creatures: Has every information of each creature (list)
 
     Notes:
     ------
@@ -587,38 +652,40 @@ def players_choice(choice, positions, player1, player2):
             positions = move(positions, item, move_coordinates)
         elif result[item][0] == '*':
             attack_coordinates = (result[item][1:3], result[item][4:6])
-            positions, player1, player2 = attack(positions, item, '', (0, 0), attack_coordinates, player1, player2)
+            positions, player1, player2, creatures = attack(positions, item, '', (0, 0), attack_coordinates, player1, player2, creatures)
         else:
             if type(result[item]) is tuple:
                 name_capacity = result[item][0]
                 coordinates = (result[item][1][0:2], result[item][1][3:5])
-                positions, player1, player2 = attack(positions, item, name_capacity, coordinates, (0, 0), player1, player2)
+                positions, player1, player2, creatures = attack(positions, item, name_capacity, coordinates, (0, 0), player1, player2, creatures)
             else:
                 name_capacity = result[item]
-                positions, player1, player2 = attack(positions, item, name_capacity, (0, 0), (0, 0), player1, player2)
+                positions, player1, player2, creatures = attack(positions, item, name_capacity, (0, 0), (0, 0), player1, player2, creatures)
 
-    return positions, player1, player2
+    return positions, player1, player2, creatures
 
 
 # Function 11
-def attack(positions, hero, capacity, coordinates, attack, player1, player2):
+def attack(positions, hero, capacity, coordinates, attack, player1, player2, creatures):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
-    hero: Name of the hero wanting to attack (str)
+    hero: Name of the hero attacking (str)
     coordinates: Coordinates where the hero wants to use his special capacity (tuple)
     capacity: Name of the special capacity (str)
     attack: Where the attack is made (tuple)
-    player1: All the data about heroes of player1 (dict)
-    player2: All the data about heroes of player2 (dict)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
+    creatures: Has every information of each creature (list)
 
     Returns:
     --------
     positions: Contains all the coordinates of the board updated (dict)
-    player1: All the data about heroes of player1 updated (dict)
-    player2: All the data about heroes of player2 updated (dict)
+    player1: Level, number of point, etc. of the heroes of player 1 updated (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 updated (dict)
+    creatures: Has every information of each creature (list)
 
 
     Notes:
@@ -642,18 +709,23 @@ def attack(positions, hero, capacity, coordinates, attack, player1, player2):
                 elif key in player2:
                     player2[key]['life_points'] -= player1[hero]['damage_points']
                 print('Hero', hero, 'has attacked', key)
-                return positions, player1, player2
+                return positions, player1, player2, creatures
 
             # If the hero attacks a creature
             elif key == attack:
-                # If the creature has enough life points left
-                if int(positions[key][1]) > 0:
-                    if hero in player1:
-                        positions[key][1] = int(positions[key][1]) - player1[hero]['damage_points']
-                    elif hero in player2:
-                        positions[key][1] = int(positions[key][1]) - player2[hero]['damage_points']
-                    print('Hero', hero, 'has attacked', positions[key][0])
-                    return positions, player1, player2
+                if hero in player1:
+                    positions[key][1] = int(positions[key][1]) - player1[hero]['damage_points']
+
+                elif hero in player2:
+                    positions[key][1] = int(positions[key][1]) - player2[hero]['damage_points']
+
+                print('Hero', hero, 'has attacked', positions[key][0])
+
+                # If the creature doesn't have enough life points left it's defeated
+                if int(positions[key][1]) <= 0:
+                    print(positions[key][0], 'has been defeated')
+
+                return positions, player1, player2, creatures
 
     # If there's no position to attack then it's a special capacity
     elif attack == (0, 0):
@@ -668,14 +740,14 @@ def attack(positions, hero, capacity, coordinates, attack, player1, player2):
         # If hero is on level 1 he can't use a special capacity yet
         if hero_level == 1:
             print('You cannot use a special capacity yet')
-            return positions, player1, player2
+            return positions, player1, player2, creatures
         else:
             # If hero on level 2 to 5 he can use a special capacity
             for level in range(2, 6):
                 positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates)
-                return positions, player1, player2
+                return positions, player1, player2, creatures
 
-    return positions, player1, player2
+    return positions, player1, player2, creatures
 
 
 def special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates):
@@ -684,12 +756,16 @@ def special_capacity_usage(positions, hero, player, hero_level, hero_class, capa
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
-    hero: Name of the hero wanting to use a special capacity (str)
-    player: All the data about heroes of the player (dict)
+    hero: Name of the hero using a special capacity (str)
+    player: Level, number of point, etc. of the heroes of the player (dict)
     hero_level: Level of the hero wanting to use a special capacity (int)
     hero_class: Class of the hero wanting to use a special capacity (str)
     capacity: Name of the special capacity (str)
     coordinates: Coordinates where the hero wants to use his special capacity (tuple)
+
+    Returns:
+    --------
+    positions: Contains all the coordinates of the board updated (dict)
 
     Notes:
     ------
@@ -786,12 +862,12 @@ def move(positions, hero, movement):
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
-    hero: Name of the hero who wants to move (str)
+    hero: Name of the hero moving (str)
     movement: Coordinates the hero wants to go to (tuple)
 
     Returns:
     --------
-    positions: Contains the updated coordinates of the board (dict)
+    positions: Contains all the coordinates of the board updated (dict)
 
     Notes:
     ------
@@ -833,11 +909,11 @@ def update_level(player):
 
     Parameters:
     -----------
-    player: All the data about the heroes (dict)
+    player: Level, number of point, etc. of the heroes of the player (dict)
 
     Returns:
     --------
-    player: Updated data about the heroes (dict)
+    player: Level, number of point, etc. of the heroes of the player updated (dict)
 
     Version:
     --------
@@ -935,7 +1011,7 @@ def special_capacity_available(player, hero):
     Parameters:
     -----------
     player: Level, number of point, etc. of the heroes of player (dict)
-    hero: Name of the hero who leveled up (str)
+    hero: Name of the hero (str)
 
     Version:
     --------
@@ -964,8 +1040,7 @@ def special_capacity_available(player, hero):
             print('The hero ' + hero + ' can now use the capacity burst')
 
 
-def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, nb_turns_player, initial_positions, positions, ROWS,
-              COLUMNS, creatures):
+def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_positions, positions, ROWS, COLUMNS, creatures):
     """Summarizes the state of the game.
 
     Parameters:
@@ -975,12 +1050,19 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, nb_turns_pla
     player_2: Level, number of point, etc. of heroes of player2 (dict)
     initial_p2: Level, number of point, etc. of heroes of player2 before changes (dict)
     nb_turns: Number of turns of the game (int)
-    nb_turns_player: Number of turns a hero of a player is on spur (int)
     initial_positions: Contains all the coordinates of the board before changes (dict)
     positions: Contains all the coordinates of the board (dict)
     ROWS: Number of rows of the board (int)
     COLUMNS: Number of columns of the board (int)
-    creatures: All the data about creatures (dict)
+    creatures: Has every information of each creature (list)
+
+    Returns:
+    --------
+    initial_positions: Contains all the coordinates of the board before next turn (dict)
+    positions: Contains all the coordinates of the board (dict)
+    initial_p1: Level, number of point, etc. of the heroes of player 1 before next turn (dict)
+    initial_p2: Level, number of point, etc. of the heroes of player 2 before next turn (dict)
+    creatures: Has every information of each creature (list)
 
     Version:
     --------
@@ -988,12 +1070,14 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, nb_turns_pla
     implementation: Aude Lekeux (v.3 06/04/19)
     """
 
-    for hero in positions:
-        if positions[hero] != initial_positions[hero]:
-            # Whenever a hero has been respawning
-            for key, value in positions.copy().items():
-                if positions[hero] == key:
-                    print(hero + ' has been respawning to ' + str(key))
+    # for hero in positions:
+    #     if positions[hero] != initial_positions[hero]:
+    #         # Whenever a hero has been respawning
+    #         for key, value in positions.copy().items():
+    #             if positions[hero] == key:
+    #                 print(hero + ' has been respawning to ' + str(key))
+
+    player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
 
     # Whenever a hero leveled up he can use a special capacity
     for hero1 in player_1:
@@ -1003,10 +1087,10 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, nb_turns_pla
         if player_2[hero2]['level'] != initial_p2[hero2]['level']:
             special_capacity_available(player_2, hero2)
 
-    print('Creatures = ' + str(creatures))
-    print('Positions = ' + str(positions))
-    print('Number of turns played = ' + str(nb_turns))
-    print('Number of turns player is on spur = ' + str(nb_turns_player))
+    # print('Creatures = ' + str(creatures))
+    # print('Positions = ' + str(positions))
+    # print('Number of turns played = ' + str(nb_turns))
+    # print('Number of turns player is on spur = ' + str(nb_turns_player))
     display_board(ROWS, COLUMNS, positions)
 
     # Resets initial positions to positions
@@ -1051,7 +1135,7 @@ def get_class(hero, player):
     Parameters:
     -----------
     hero: Name of the hero (str)
-    player: All the data about heroes (dict)
+    player: Level, number of point, etc. of the heroes of the player (dict)
 
     Returns:
     --------
@@ -1074,7 +1158,7 @@ def get_level(hero, player):
     Parameters:
     -----------
     hero: Name of the hero (str)
-    player: All the data about heroes (dict)
+    player: Level, number of point, etc. of the heroes of the player (dict)
 
     Returns:
     --------
@@ -1097,7 +1181,7 @@ def get_life_points(hero, player):
     Parameters:
     -----------
     hero: Name of the hero (str)
-    player: All the data about heroes (dict)
+    player: Level, number of point, etc. of the heroes of the player (dict)
 
     Returns:
     --------
@@ -1120,7 +1204,7 @@ def get_victory_points(hero, player):
     Parameters:
     -----------
     hero: Name of the hero (str)
-    player: All the data about heroes (dict)
+    player: Level, number of point, etc. of the heroes of the player (dict)
 
     Returns:
     --------
@@ -1143,7 +1227,7 @@ def get_damage_points(hero, player):
     Parameters:
     -----------
     hero: Name of the hero (str)
-    player: All the data about heroes (dict)
+    player: Level, number of point, etc. of the heroes of the player (dict)
 
     Returns:
     --------
@@ -1160,17 +1244,21 @@ def get_damage_points(hero, player):
             return player[heroes]['damage_points']
 
 
-def is_on_spur(hero, positions):
+def is_on_spur(nb_spur_p1, nb_spur_p2, player1, player2, positions):
     """Checks whether a hero is on spur.
 
     Parameters:
     -----------
-    hero: Name of the heo (str)
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
     positions: Contains all the coordinates of the board (dict)
 
     Returns:
     --------
-    on_spur: If the hero is on spur or not (bool)
+    nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
+    nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
 
     Version:
     --------
@@ -1178,19 +1266,33 @@ def is_on_spur(hero, positions):
     implementation: Aude Lekeux (v.1 07/04/19)
     """
 
+    is_p1_on_spur = False
+    is_p2_on_spur = False
+
     for item in positions:
         if positions[item] == 'spur':
-            if positions[hero] == item:
-                return True
-    return False
+            for hero in player1:
+                if positions[hero] == item:
+                    nb_spur_p1 += 1
+                    is_p1_on_spur = True
+            for hero in player2:
+                if positions[hero] == item:
+                    nb_spur_p2 += 1
+                    is_p2_on_spur = True
+
+    if is_p1_on_spur and is_p2_on_spur:
+        nb_spur_p1 = 0
+        nb_spur_p2 = 0
+
+    return nb_spur_p1, nb_spur_p2
 
 
-def move_hero(character, new_position, positions):
+def move_hero(hero, new_position, positions):
     """Move from one cell to another.
 
     Parameters:
     -----------
-    character: Either the name of a hero or of a creature (str)
+    hero: Name of the hero (str)
     new_position: Position the character wants to go on (tuple)
     positions: Contains all the coordinates of the board (dict)
 
@@ -1208,27 +1310,27 @@ def move_hero(character, new_position, positions):
     implementation: Aude Lekeux (v.1 07/04/19)
     """
 
-    if character in positions:
-        positions[character] = new_position
+    if hero in positions:
+        positions[hero] = new_position
 
     return positions
 
 
-def move_creatures(character, start, new_position, positions, creatures):
+def move_creatures(creature, start, new_position, positions, creatures):
     """Move from one cell to another.
 
     Parameters:
     -----------
-    character: Either the name of a hero or of a creature (str)
+    creature: Name of the creature (str)
     start: Position the character is on now (tuple)
     new_position: Position the character wants to go on (tuple)
     positions: Contains all the coordinates of the board (dict)
-    creatures: All the data about creatures (dict)
+    creatures: Has every information of each creature (list)
 
     Returns:
     --------
-    positions: Contains all the coordinates of the board updated(dict)
-    creatures: All the data about creatures updated (dict)
+    creatures: Has every information of each creature updated (list)
+    positions: Contains all the coordinates of the board updated (dict)
 
     Notes:
     ------
@@ -1240,7 +1342,7 @@ def move_creatures(character, start, new_position, positions, creatures):
     implementation: Aude Lekeux (v.1 07/04/19)
     """
 
-    if character in creatures:
+    if creature in creatures:
         for key, value in positions.copy().items():
             if key == start:
                 # Adds the new position and deletes the previous one
