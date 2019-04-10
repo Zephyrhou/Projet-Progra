@@ -9,6 +9,6 @@ spur:
 21 38
 21 39
 creatures:
-bear 21 37 2 5 3 100
+bear 10 10 20 5 3 100
 bear 10 20 20 5 3 100
 wolf 15 10 10 3 2 50

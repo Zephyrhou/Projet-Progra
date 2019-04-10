@@ -67,6 +67,8 @@ classes = {'barbarian': {'energise': [[1, 1, 1], [2, 1, 1], [3, 2, 1], [4, 2, 1]
            'rogue': {'reach': [[1, 0, 1], [2, 0, 1], [3, 0, 1], [4, 0, 1]],
                      'brust': [[1, 1, 1], [2, 2, 1], [3, 3, 1]]}}
 
-creatures = {"bear1": {"h_points": 20, "d_points": 5, "creature_wage": 3, "v_points": 100},
-             "bear2": {"h_points": 20, "d_points": 5, "creature_wage": 3, "v_points": 100},
-             "wolf": {"h_points": 10, "d_points": 3, "creature_wage": 2, "v_points": 100}}
+# creatures = {"bear1": {"h_points": 20, "d_points": 5, "creature_wage": 3, "v_points": 100},
+#              "bear2": {"h_points": 20, "d_points": 5, "creature_wage": 3, "v_points": 100},
+#              "wolf": {"h_points": 10, "d_points": 3, "creature_wage": 2, "v_points": 100}}
+
+creatures = ['bear', 'bear', 'wolf']

@@ -6,7 +6,6 @@ from test import *
 import math
 
 
-# Function 1
 def launch(board_file):
     """Starts the game.
 
@@ -33,7 +32,6 @@ def launch(board_file):
         nb_turn += 1
 
 
-# Function 2
 def initialization(board_file):
     """Initialization of the game. Creation of the board and the heroes.
 
@@ -104,7 +102,6 @@ def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
     return nb_spur_p1, nb_spur_p2, positions
 
 
-# Function 3
 def create_board(board_file, player_1, player_2):
     """Creates the map and displays it.
 
@@ -186,7 +183,6 @@ def create_board(board_file, player_1, player_2):
     return ROWS, COLUMNS, nb_turns_wanted, positions, creatures
 
 
-# Function 4
 def create_heroes():
     """Takes the player's input, splits the information and stores it into a dictionary.
 
@@ -257,7 +253,6 @@ def create_heroes():
     return player
 
 
-# Function 5.2
 def get_content(row, column, positions):
     """Returns the content of a certain row and column in the board.
 
@@ -290,7 +285,6 @@ def get_content(row, column, positions):
             return key
 
 
-# Function 5
 def display_board(ROWS, COLUMNS, positions):
     """Displays the board.
 
@@ -323,7 +317,6 @@ def display_board(ROWS, COLUMNS, positions):
         print(display_line)
 
 
-# Function 7
 def is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
     """Checks whether the game is over or not.
 
@@ -362,8 +355,7 @@ def is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
     #     return False
 
 
-# Function 8
-def creature_turn(positions, creatures, player1, player2):
+def creature_turn(positions, creatures, player1, player2, nb_rows, nb_columns):
     """Checks where a creature should attack or move depending on it's surrounding.
 
     Parameters:
@@ -375,9 +367,9 @@ def creature_turn(positions, creatures, player1, player2):
 
     Returns:
     --------
-    positions: Contains all the coordinates of the board updated (dict)
-    player1: Level, number of point, etc. of heroes of player1 updated (dict)
-    player2: Level, number of point, etc. of heroes of player2 updated (dict)
+    positions: Contains all the coordinates of the board (dict)
+    player1: Level, number of point, etc. of heroes of player 1 (dict)
+    player2: Level, number of point, etc. of heroes of player 2 (dict)
 
     Notes:
     ------
@@ -386,9 +378,50 @@ def creature_turn(positions, creatures, player1, player2):
 
     Version:
     --------
-    specification: Aude Lekeux(v.4 04/03/2019)
-    implementation:
+    specification: Aude Lekeux (v.5 10/04/19)
+    implementation: Manon Michaux (v.4 10/04/19)
     """
+
+    smallest_gap = {}
+
+    # Gap calculating for player 1
+    for character in positions:
+        if positions[character][0] in creatures:
+            creature = character
+            if character in player1:
+                hero = character
+                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
+
+    # Gap calculating for player 2
+    for character in positions:
+        if positions[character][0] in creatures:
+            creature = character
+            if character in player2:
+                hero = character
+                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
+
+    evil = []
+
+    # Comparing the gap with each creature's wage
+    for creature in creatures:
+        for people in smallest_gap:
+            evil.append(smallest_gap[people][creature])
+        closest = evil.sort()
+        for people in smallest_gap:
+            if smallest_gap[people][creature] == closest[0]:
+                target = people
+                if smallest_gap[target] <= positions[creature][3]:
+                    attack_coord = positions[target]
+                    positions, player1, player2, creatures = attack(positions, creature, '', (0, 0), attack_coord,
+                                                                    player1, player2, creatures)
+                else:
+                    for item in positions:
+                        if gap_calculator(item, target) == (positions[creature][3] - 1):
+                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0),
+                                                                            item, player1, player2,
+                                                                            creatures)
+
+    return positions, player1, player2
 
 
 def inactivity(positions, initial_positions, creatures, initial_creatures, inactivity_time):
@@ -452,7 +485,6 @@ def gap_calculator(position_1, position_2):
     return gap
 
 
-# Function 9
 def defeated(player1, player2, positions, creatures):
     """Whenever a hero or a creature is defeated.
 
@@ -484,7 +516,7 @@ def defeated(player1, player2, positions, creatures):
 
     # Respawn a hero when he's defeated
     for hero in player1:
-        if player1[hero]['life_points'] <= 0:
+        if get_life_points(hero, player1) <= 0:
             for key in positions:
                 if positions[key] == 'spawn_player_1':
                     positions[hero] = key
@@ -492,7 +524,7 @@ def defeated(player1, player2, positions, creatures):
                     player1 = reset(hero, player1)
 
     for hero in player2:
-        if player2[hero]['life_points'] <= 0:
+        if get_life_points(hero, player2) <= 0:
             for key in positions:
                 if positions[key] == 'spawn_player_2':
                     positions[hero] = key
@@ -545,55 +577,138 @@ def reset(hero, player):
     implementation: Aude Lekeux (v.1 08/04/19)
     """
 
-    if player[hero]['class'] == 'barbarian':
-        if player[hero]['level'] == 1:
+    if get_class(hero, player) == 'barbarian':
+        if get_level(hero, player) == 1:
             player[hero]['life_points'] = 10
-        elif player[hero]['level'] == 2:
+        elif get_level(hero, player) == 2:
             player[hero]['life_points'] = 13
-        elif player[hero]['level'] == 3:
+        elif get_level(hero, player) == 3:
             player[hero]['life_points'] = 16
-        elif player[hero]['level'] == 4:
+        elif get_level(hero, player) == 4:
             player[hero]['life_points'] = 19
-        elif player[hero]['level'] == 5:
+        elif get_level(hero, player) == 5:
             player[hero]['life_points'] = 22
-    elif player[hero]['class'] == 'healer':
-        if player[hero]['level'] == 1:
+    elif get_class(hero, player) == 'healer':
+        if get_level(hero, player) == 1:
             player[hero]['life_points'] = 10
-        elif player[hero]['level'] == 2:
+        elif get_level(hero, player) == 2:
             player[hero]['life_points'] = 11
-        elif player[hero]['level'] == 3:
+        elif get_level(hero, player) == 3:
             player[hero]['life_points'] = 12
-        elif player[hero]['level'] == 4:
+        elif get_level(hero, player) == 4:
             player[hero]['life_points'] = 13
-        elif player[hero]['level'] == 5:
+        elif get_level(hero, player) == 5:
             player[hero]['life_points'] = 14
-    elif player[hero]['class'] == 'mage':
-        if player[hero]['level'] == 1:
+    elif get_class(hero, player) == 'mage':
+        if get_level(hero, player) == 1:
             player[hero]['life_points'] = 10
-        elif player[hero]['level'] == 2:
+        elif get_level(hero, player) == 2:
             player[hero]['life_points'] = 12
-        elif player[hero]['level'] == 3:
+        elif get_level(hero, player) == 3:
             player[hero]['life_points'] = 14
-        elif player[hero]['level'] == 4:
+        elif get_level(hero, player) == 4:
             player[hero]['life_points'] = 16
-        elif player[hero]['level'] == 5:
+        elif get_level(hero, player) == 5:
             player[hero]['life_points'] = 18
-    elif player[hero]['class'] == 'rogue':
-        if player[hero]['level'] == 1:
+    elif get_class(hero, player) == 'rogue':
+        if get_level(hero, player) == 1:
             player[hero]['life_points'] = 10
-        elif player[hero]['level'] == 2:
+        elif get_level(hero, player) == 2:
             player[hero]['life_points'] = 12
-        elif player[hero]['level'] == 3:
+        elif get_level(hero, player) == 3:
             player[hero]['life_points'] = 14
-        elif player[hero]['level'] == 4:
+        elif get_level(hero, player) == 4:
             player[hero]['life_points'] = 16
-        elif player[hero]['level'] == 5:
+        elif get_level(hero, player) == 5:
             player[hero]['life_points'] = 18
 
     return player
 
 
-# Function 10
+def actions_turn(positions, player1, player2, creatures):
+    """Determines the order of attacks / moves following the choices of both player and the creatures' ones.
+
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    player1: All the data about the heroes of the first player (dict)
+    player2: All the data about the heroes of the second player (dict)
+    creatures: Contains all the data about creatures (dict)
+
+    Returns:
+    --------
+    player1: All the data about the heroes of the first player (dict)
+    player2: All the data about the heroes of the second player (dict)
+    creatures: Contains all the data about creatures (dict)
+    positions: Contains all the coordinates of the board (dict)
+    """
+
+    attacking = []
+    moving = []
+
+    # Split the orders within attacks and movements
+    for character in positions:
+        if character in creatures:
+            if positions[character]['order'] == 'attack':
+                attacking += character
+            else:
+                moving += character
+        elif character in player1:
+            if positions[character]['order'] == 'attack':
+                attacking += character
+            else:
+                moving += character
+
+        else:
+            if positions[character]['order'] == 'attack':
+                attacking += character
+            else:
+                moving += character
+
+    # Execute the attacks
+    for character in attacking:
+        # First attacking : the creatures
+        if character in creatures:
+            hero_name = character
+            name_attack = positions[character]['name_attack']
+            attack_coord = positions[character]['where']
+            attack(positions, hero_name, name_attack, (0, 0), attack_coord, player1, player2, creatures)
+        # Then the heroes of the first player
+        elif character in player1:
+            hero_name = character
+            name_attack = positions[character]['name_attack']
+            attack_coord = positions[character]['where']
+            attack(positions, hero_name, name_attack, (0, 0), attack_coord, player1, player2, creatures)
+        # Finally the ones of the second player
+        else:
+            hero_name = character
+            name_attack = positions[character]['name_attack']
+            attack_coord = positions[character]['where']
+            attack(positions, hero_name, name_attack, (0, 0), attack_coord, player1, player2, creatures)
+
+    for character in moving:
+        print(character, moving)
+        # First moving : the creatures
+        if character in creatures:
+            hero_name = character
+            movement_coord = positions[character]['where']
+            move(hero_name, positions, movement_coord)
+
+        # Then the heroes of the first player
+        elif character in player1:
+            hero_name = character
+            movement_coord = positions[character]['where']
+            move(hero_name, positions, movement_coord)
+
+        # Finally the ones of the second player
+        else:
+            hero_name = character
+            movement_coord = positions[character]['where']
+            move(hero_name, positions, movement_coord)
+
+    return player1, player2, positions, creatures
+
+
 def players_choice(choice, positions, player1, player2, creatures):
     """Translates the player's order and calls the functions move or attack.
 
@@ -665,8 +780,7 @@ def players_choice(choice, positions, player1, player2, creatures):
     return positions, player1, player2, creatures
 
 
-# Function 11
-def attack(positions, hero, capacity, coordinates, attack, player1, player2, creatures):
+def attack(positions, character, capacity, coordinates, attack, player1, player2, creatures):
     """Checks whether the hero can do the attack, if yes, does it, if no, the attack is ignored.
 
     Parameters:
@@ -698,54 +812,64 @@ def attack(positions, hero, capacity, coordinates, attack, player1, player2, cre
     implementation: Manon Michaux (v.3 09/04/19)
     """
 
-    # If there's no capacity name then it's a simple attack
-    if capacity == '':
-        for key in positions:
+    # If a hero wants to attack
+    if character in player1 or player2:
+        hero = character
+        # If there's no capacity name then it's a simple attack
+        if capacity == '':
+            for key in positions:
 
-            # If the hero attacks another hero
-            if positions[key] == attack:
-                if key in player1:
-                    player1[key]['life_points'] -= player2[hero]['damage_points']
-                elif key in player2:
-                    player2[key]['life_points'] -= player1[hero]['damage_points']
-                print('Hero', hero, 'has attacked', key)
+                # If the hero attacks another hero
+                if positions[key] == attack:
+                    if key in player1:
+                        player1[key]['life_points'] -= get_damage_points(hero, player2)
+                    elif key in player2:
+                        player2[key]['life_points'] -= get_damage_points(hero, player1)
+                    print('Hero', hero, 'has attacked', key)
+                    return positions, player1, player2, creatures
+
+                # If the hero attacks a creature
+                elif key == attack:
+                    if hero in player1:
+                        positions[key][1] = int(positions[key][1]) - get_damage_points(hero, player1)
+
+                    elif hero in player2:
+                        positions[key][1] = int(positions[key][1]) - get_damage_points(hero, player2)
+
+                    print('Hero', hero, 'has attacked', positions[key][0])
+
+                    # If the creature doesn't have enough life points left it's defeated
+                    if int(positions[key][1]) <= 0:
+                        print(positions[key][0], 'has been defeated')
+
+                    return positions, player1, player2, creatures
+
+        # If there's no position to attack then it's a special capacity
+        elif attack == (0, 0):
+
+            hero_class = 0
+            hero_level = 0
+
+            if hero in player1:
+                hero_class = get_class(hero, player1)
+                hero_level = get_level(hero, player1)
+            elif hero in player2:
+                hero_class = get_class(hero, player2)
+                hero_level = get_level(hero, player2)
+
+            # If hero is on level 1 he can't use a special capacity yet
+            if hero_level == 1:
+                print('You cannot use a special capacity yet')
                 return positions, player1, player2, creatures
+            else:
+                # If hero on level 2 to 5 he can use a special capacity
+                for level in range(2, 6):
+                    positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates)
+                    return positions, player1, player2, creatures
 
-            # If the hero attacks a creature
-            elif key == attack:
-                if hero in player1:
-                    positions[key][1] = int(positions[key][1]) - player1[hero]['damage_points']
-
-                elif hero in player2:
-                    positions[key][1] = int(positions[key][1]) - player2[hero]['damage_points']
-
-                print('Hero', hero, 'has attacked', positions[key][0])
-
-                # If the creature doesn't have enough life points left it's defeated
-                if int(positions[key][1]) <= 0:
-                    print(positions[key][0], 'has been defeated')
-
-                return positions, player1, player2, creatures
-
-    # If there's no position to attack then it's a special capacity
-    elif attack == (0, 0):
-
-        if hero in player1:
-            hero_class = get_class(hero, player1)
-            hero_level = get_level(hero, player1)
-        elif hero in player2:
-            hero_class = get_class(hero, player2)
-            hero_level = get_level(hero, player2)
-
-        # If hero is on level 1 he can't use a special capacity yet
-        if hero_level == 1:
-            print('You cannot use a special capacity yet')
-            return positions, player1, player2, creatures
-        else:
-            # If hero on level 2 to 5 he can use a special capacity
-            for level in range(2, 6):
-                positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates)
-                return positions, player1, player2, creatures
+    # If a creature wants to attack
+    if character in creatures:
+        creature_turn(positions, creatures, player1, player2)
 
     return positions, player1, player2, creatures
 
@@ -855,7 +979,6 @@ def special_capacity_usage(positions, hero, player, hero_level, hero_class, capa
                 return positions
 
 
-# Function 12
 def move(positions, hero, movement):
     """Checks if the position he will end on is allowed. Do it if it is allowed.
 
@@ -903,7 +1026,6 @@ def move(positions, hero, movement):
             return positions
 
 
-# Function 13
 def update_level(player):
     """Checks if a hero can level up and upgrade their characteristics.
 
@@ -924,78 +1046,78 @@ def update_level(player):
     # Level increase depending on the hero's victory points
     for hero in player:
         # If hero is under 100 victory points
-        if player[hero]['victory_points'] < 100:
+        if get_victory_points(hero, player) < 100:
             print('Hero ' + hero + ' remains on level 1')
             player[hero]['level'] = 1
             player[hero]['life_points'] = 10
             player[hero]['damage_points'] = 2
         # If hero is over 100 points
         else:
-            if player[hero]['class'] == 'barbarian':
-                if player[hero]['victory_points'] < 200:
+            if get_class(hero, player) == 'barbarian':
+                if get_victory_points(hero, player) < 200:
                     player[hero]['level'] = 2
                     player[hero]['life_points'] = 13
                     player[hero]['damage_points'] = 3
-                elif player[hero]['victory_points'] < 400:
+                elif get_victory_points(hero, player) < 400:
                     player[hero]['level'] = 3
                     player[hero]['life_points'] = 16
                     player[hero]['damage_points'] = 4
-                elif player[hero]['victory_points'] < 800:
+                elif get_victory_points(hero, player) < 800:
                     player[hero]['level'] = 4
                     player[hero]['life_points'] = 19
                     player[hero]['damage_points'] = 5
-                elif player[hero]['victory_points'] > 800:
+                elif get_victory_points(hero, player) > 800:
                     player[hero]['level'] = 5
                     player[hero]['life_points'] = 22
                     player[hero]['damage_points'] = 6
-            elif player[hero]['class'] == 'healer':
-                if player[hero]['victory_points'] < 200:
+            elif get_class(hero, player) == 'healer':
+                if get_victory_points(hero, player) < 200:
                     player[hero]['level'] = 2
                     player[hero]['life_points'] = 11
                     player[hero]['damage_points'] = 2
-                elif player[hero]['victory_points'] < 400:
+                elif get_victory_points(hero, player) < 400:
                     player[hero]['level'] = 3
                     player[hero]['life_points'] = 12
                     player[hero]['damage_points'] = 3
-                elif player[hero]['victory_points'] < 800:
+                elif get_victory_points(hero, player) < 800:
                     player[hero]['level'] = 4
                     player[hero]['life_points'] = 13
                     player[hero]['damage_points'] = 3
-                elif player[hero]['victory_points'] > 800:
+                elif get_victory_points(hero, player) > 800:
                     player[hero]['level'] = 5
                     player[hero]['life_points'] = 14
                     player[hero]['damage_points'] = 4
-            elif player[hero]['class'] == 'mage':
-                if player[hero]['victory_points'] < 200:
+            elif get_class(hero, player) == 'mage':
+                if get_victory_points(hero, player) < 200:
                     player[hero]['level'] = 2
                     player[hero]['life_points'] = 12
                     player[hero]['damage_points'] = 3
-                elif player[hero]['victory_points'] < 400:
+                elif get_victory_points(hero, player) < 400:
                     player[hero]['level'] = 3
                     player[hero]['life_points'] = 14
                     player[hero]['damage_points'] = 4
-                elif player[hero]['victory_points'] < 800:
+                elif get_victory_points(hero, player) < 800:
                     player[hero]['level'] = 4
                     player[hero]['life_points'] = 16
                     player[hero]['damage_points'] = 5
-                elif player[hero]['victory_points'] > 800:
+                elif get_victory_points(hero, player) > 800:
                     player[hero]['level'] = 5
                     player[hero]['life_points'] = 18
                     player[hero]['damage_points'] = 6
-            elif player[hero]['class'] == 'rogue':
-                if player[hero]['victory_points'] < 200:
+            elif get_class(hero, player) == 'rogue':
+                if get_victory_points(hero, player) < 200:
                     player[hero]['level'] = 2
                     player[hero]['life_points'] = 12
                     player[hero]['damage_points'] = 3
-                elif player[hero]['victory_points'] < 400:
+                elif get_victory_points(hero, player) < 400:
                     player[hero]['level'] = 3
                     player[hero]['life_points'] = 14
                     player[hero]['damage_points'] = 4
-                elif player[hero]['victory_points'] < 800:
+                elif get_victory_points(hero, player) < 800:
                     player[hero]['level'] = 4
                     player[hero]['life_points'] = 16
                     player[hero]['damage_points'] = 5
-                elif player[hero]['victory_points'] > 800:
+                elif get_victory_points(hero, player) > 800:
                     player[hero]['level'] = 5
                     player[hero]['life_points'] = 18
                     player[hero]['damage_points'] = 6
@@ -1004,7 +1126,6 @@ def update_level(player):
     return player
 
 
-# Function 14
 def special_capacity_available(player, hero):
     """Whenever a hero reaches level 2 or 3 he can start using special capacities.
 
@@ -1019,24 +1140,24 @@ def special_capacity_available(player, hero):
     implementation: Aude Lekeux (v.2 05/04/19)
     """
 
-    if player[hero]['level'] == 2:
-        if player[hero]['class'] == 'barbarian':
+    if get_level(hero, player) == 2:
+        if get_class(hero, player) == 'barbarian':
             print('The hero ' + hero + ' can now use the capacity energise')
-        if player[hero]['class'] == 'healer':
+        if get_class(hero, player) == 'healer':
             print('The hero ' + hero + ' can now use the capacity invigorate')
-        if player[hero]['class'] == 'mage':
+        if get_class(hero, player) == 'mage':
             print('The hero ' + hero + ' can now use the capacity fulgura')
-        if player[hero]['class'] == 'rogue':
+        if get_class(hero, player) == 'rogue':
             print('The hero ' + hero + ' can now use the capacity reach')
 
-    if player[hero]['level'] == 3:
-        if player[hero]['class'] == 'barbarian':
+    if get_level(hero, player) == 3:
+        if get_class(hero, player) == 'barbarian':
             print('The hero ' + hero + ' can now use the capacity stun')
-        if player[hero]['class'] == 'healer':
+        if get_class(hero, player) == 'healer':
             print('The hero ' + hero + ' can now use the capacity immunise')
-        if player[hero]['class'] == 'mage':
+        if get_class(hero, player) == 'mage':
             print('The hero ' + hero + ' can now use the capacity ovibus')
-        if player[hero]['class'] == 'rogue':
+        if get_class(hero, player) == 'rogue':
             print('The hero ' + hero + ' can now use the capacity burst')
 
 
@@ -1081,10 +1202,10 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_posi
 
     # Whenever a hero leveled up he can use a special capacity
     for hero1 in player_1:
-        if player_1[hero1]['level'] != initial_p1[hero1]['level']:
+        if get_level(hero1, player_1) != get_level(hero1, initial_p1):
             special_capacity_available(player_1, hero1)
     for hero2 in player_2:
-        if player_2[hero2]['level'] != initial_p2[hero2]['level']:
+        if get_level(hero2, player_2) != get_level(hero2, initial_p2):
             special_capacity_available(player_2, hero2)
 
     # print('Creatures = ' + str(creatures))
