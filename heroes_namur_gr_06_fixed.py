@@ -44,14 +44,7 @@ def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
 
 
 def create_heroes():
-    classes = {'barbarian': {'energise': [[1, 1, 1], [2, 1, 1], [3, 2, 1], [4, 2, 1]],
-                             'stun': [[1, 1, 1], [2, 2, 2], [3, 3, 1]]},
-               'healer': {'invigorate': [[1, 1, 1], [2, 2, 1], [3, 3, 1], [4, 4, 1]],
-                          'immunise': [[1, 0, 1], [2, 0, 3], [3, 0, 3]]},
-               'mage': {'fulgura': [[1, 3, 1], [2, 3, 1], [3, 4, 1], [4, 4, 1]],
-                        'ovibus': [[1, 1, 3], [2, 2, 3], [3, 2, 3]]},
-               'rogue': {'reach': [[1, 0, 1], [2, 0, 1], [3, 0, 1], [4, 0, 1]],
-                         'brust': [[1, 1, 1], [2, 2, 1], [3, 3, 1]]}}
+    classes = ['barbarian', 'healer', 'mage', 'rogue']
 
     player = {}
     invalid_syntax = True
@@ -195,4 +188,11 @@ def display_board(ROWS, COLUMNS, positions):
 # Buf:@20-36 Lia:@21-37 Mey:@20-38 Tob:@21-36
 # Baz:@21-4 Lee:@19-4 May:@21-3 Rob:*21-36
 # Buf:@21-36 Lia:*21-37 Mey:@20-38 Tob:*21-3
-launch("board.txt")
+
+# Bernard:barbarian Heidi:healer Marguerite:mage Robert:rogue
+# Billy:barbarian Hans:healer Maya:mage Ruben:rogue
+# Bernard:@21-3 Heidi:@20-4 Marguerite:@10-10 Robert:@21-3
+# Billy:@20-36 Hans:@21-37 Maya:@20-38 Ruben:@21-36
+# Bernard:@21-4 Heidi:@19-4 Marguerite:@21-3 Robert:*21-36
+# Billy:@21-36 Hans:*21-37 Maya:@20-38 Ruben:*21-3
+launch("board2")

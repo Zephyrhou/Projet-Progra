@@ -1,4 +1,4 @@
-from heroes_namur_gr_06 import *
+from heroes_namur_gr_06 import gap_calculator, attack
 
 
 def creature_turn(positions, creatures, player1, player2):
@@ -29,7 +29,6 @@ def creature_turn(positions, creatures, player1, player2):
     """
 
     smallest_gap = {}
-    correct_coord = 0
 
     # Gap calculating for player 1
     for character in positions:
@@ -71,5 +70,23 @@ def creature_turn(positions, creatures, player1, player2):
     return positions, player1, player2
 
 
+positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('24', '3'),
+             'May': ('14', '6'), 'Rob': ('20', '17'), 'Buf': ('20', '17'), 'Lia': ('19', '7'), 'Mey': ('3', '3'),
+             'Tob': ('2', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
+             ('21', '39'): 'spur', ('10', '10'): ['fox', '20', '5', '3', '100'],
+             ('10', '20'): ['arrack', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
+
+player1 = {'Baz': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
+
+player2 = {'Buf': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Lia': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Mey': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Tob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
+
+creatures = ['arrack', 'wolf', 'fox']
 choice_creature = 'arrack:@30-31 wolf:@30-21 fox:*10-15'
+
 positions, player1, player2 = creature_turn(positions, creatures, player1, player2)

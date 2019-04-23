@@ -642,9 +642,9 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
                 # If the hero attacks another hero
                 if positions[key] == attack:
                     if key in player1:
-                        player1[key]['life_points'] -= get_damage_points(hero, player2)
+                        player1[key]['life_points'] -= player2[hero]['damage_points']
                     elif key in player2:
-                        player2[key]['life_points'] -= get_damage_points(hero, player1)
+                        player2[key]['life_points'] -= player1[hero]['damage_points']
                     print('Hero', hero, 'has attacked', key)
                     return positions, player1, player2, creatures
 
@@ -1359,7 +1359,7 @@ def get_class(hero, player):
 
     for heroes in player:
         if hero == heroes:
-            return player[heroes]['class']
+            return player[hero]['class']
 
 
 def get_level(hero, player):
@@ -1382,7 +1382,7 @@ def get_level(hero, player):
 
     for heroes in player:
         if hero == heroes:
-            return player[heroes]['level']
+            return player[hero]['level']
 
 
 def get_life_points(hero, player):
@@ -1405,7 +1405,7 @@ def get_life_points(hero, player):
 
     for heroes in player:
         if hero == heroes:
-            return player[heroes]['life_points']
+            return player[hero]['life_points']
 
 
 def get_victory_points(hero, player):
@@ -1428,7 +1428,7 @@ def get_victory_points(hero, player):
 
     for heroes in player:
         if hero == heroes:
-            return player[heroes]['victory_points']
+            return player[hero]['victory_points']
 
 
 def get_damage_points(hero, player):
@@ -1451,7 +1451,7 @@ def get_damage_points(hero, player):
 
     for heroes in player:
         if hero == heroes:
-            return player[heroes]['damage_points']
+            return player[hero]['damage_points']
 
 
 # Special Capacities
@@ -2160,3 +2160,5 @@ def burst(positions, hero_name, creatures):
 
     return updated, good, creatures
 
+
+launch('board.txt')
