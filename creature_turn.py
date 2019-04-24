@@ -30,21 +30,24 @@ def creature_turn(positions, creatures, player1, player2):
 
     smallest_gap = {}
 
-    # Gap calculating for player 1
+    # Gap calculating for player 1 and 2
     for character in positions:
         if positions[character][0] in creatures:
+            print('creature', character)
             creature = character
-            if character in player1:
+            if (character in player1) or (character in player2):
+                print('hero1', character)
                 hero = character
                 smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
+    print('gap', smallest_gap)
 
     # Gap calculating for player 2
-    for character in positions:
-        if positions[character][0] in creatures:
-            creature = character
-            if character in player2:
-                hero = character
-                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
+    # for character in positions:
+    #     if positions[character][0] in creatures:
+    #         creature = character
+    #         if character in player2:
+    #             hero = character
+    #             smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
 
     evil = []
 
@@ -70,8 +73,8 @@ def creature_turn(positions, creatures, player1, player2):
     return positions, player1, player2
 
 
-positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('24', '3'),
-             'May': ('14', '6'), 'Rob': ('20', '17'), 'Buf': ('20', '17'), 'Lia': ('19', '7'), 'Mey': ('3', '3'),
+positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('12', '20'),
+             'May': ('14', '10'), 'Rob': ('20', '17'), 'Buf': ('9', '10'), 'Lia': ('10', '7'), 'Mey': ('3', '3'),
              'Tob': ('2', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
              ('21', '39'): 'spur', ('10', '10'): ['fox', '20', '5', '3', '100'],
              ('10', '20'): ['arrack', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
@@ -87,6 +90,10 @@ player2 = {'Buf': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory
            'Tob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
 
 creatures = ['arrack', 'wolf', 'fox']
-choice_creature = 'arrack:@30-31 wolf:@30-21 fox:*10-15'
+# choice_creature = 'arrack:@30-31 wolf:@30-21 fox:*10-15'
 
 positions, player1, player2 = creature_turn(positions, creatures, player1, player2)
+
+print(positions)
+print(player1)
+print(player2)
