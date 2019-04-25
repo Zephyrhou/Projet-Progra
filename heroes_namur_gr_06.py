@@ -599,7 +599,7 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
-    hero: Name of the hero attacking (str)
+    character: Name of the hero attacking (str)
     coordinates: Coordinates where the hero wants to use his special capacity (tuple)
     capacity: Name of the special capacity (str)
     attack: Where the attack is made (tuple)

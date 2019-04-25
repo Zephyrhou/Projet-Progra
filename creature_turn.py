@@ -25,8 +25,19 @@ def creature_turn(positions, creatures, player1, player2):
     Version:
     --------
     specification: Aude Lekeux (v.5 10/04/19)
-    implementation: Manon Michaux (v.4 10/04/19)
+    implementation: Manon Michaux (v.5 25/04/19)
     """
+
+    # For each creature if its next to a hero it attacks
+    for hero, position in positions:
+        for creature in creatures:
+            for key, value in positions.item():
+                if value[0] == positions[creature][0]:
+                    if (hero in player1) or (hero in player2):
+                        if gap_calculator(key, position) < 1.5:
+                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0),
+                                                                            position, player1, player2,
+                                                                            creatures)
 
     smallest_gap = {}
 
