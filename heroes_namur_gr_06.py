@@ -300,7 +300,7 @@ def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
 
     player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
 
-    nb_spur_p1, nb_spur_p2 = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2, positions)
+    nb_spur_p1, nb_spur_p2, is_p1_on_spur, is_p2_on_spur = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2, positions)
 
     return nb_spur_p1, nb_spur_p2, positions
 
@@ -511,15 +511,18 @@ def players_choice(choice, positions, player1, player2, creatures):
             positions = move(positions, item, move_coordinates)
         elif result[item][0] == '*':
             attack_coordinates = (result[item][1:3], result[item][4:6])
-            positions, player1, player2, creatures = attack(positions, item, '', (0, 0), attack_coordinates, player1, player2, creatures)
+            positions, player1, player2, creatures = attack(positions, item, '', (0, 0), attack_coordinates, player1,
+                                                            player2, creatures)
         else:
             if type(result[item]) is tuple:
                 name_capacity = result[item][0]
                 coordinates = (result[item][1][0:2], result[item][1][3:5])
-                positions, player1, player2, creatures = attack(positions, item, name_capacity, coordinates, (0, 0), player1, player2, creatures)
+                positions, player1, player2, creatures = attack(positions, item, name_capacity, coordinates, (0, 0),
+                                                                player1, player2, creatures)
             else:
                 name_capacity = result[item]
-                positions, player1, player2, creatures = attack(positions, item, name_capacity, (0, 0), (0, 0), player1, player2, creatures)
+                positions, player1, player2, creatures = attack(positions, item, name_capacity, (0, 0), (0, 0), player1,
+                                                                player2, creatures)
 
     return positions, player1, player2, creatures
 
@@ -722,7 +725,7 @@ def special_capacity_available(player, hero):
             print('The hero ' + hero + ' can now use the capacity burst')
 
 
-def special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates):
+def special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates, creatures):
     """Verifies if a gero can use a special capacity or not.
 
     Parameters:
@@ -1247,7 +1250,7 @@ def is_on_spur(nb_spur_p1, nb_spur_p2, player1, player2, positions):
         nb_spur_p1 = 0
         nb_spur_p2 = 0
 
-    return nb_spur_p1, nb_spur_p2
+    return nb_spur_p1, nb_spur_p2, is_p1_on_spur, is_p2_on_spur
 
 
 def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_positions, positions, ROWS, COLUMNS, creatures):
