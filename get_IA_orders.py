@@ -65,9 +65,22 @@ def burst_available():
 
 
 def get_IA_orders(positions, player1, player2):
-    """
+    """Decides what each hero will do.
 
-    :return:
+    Parameters:
+    -----------
+    positions: Contains all the coordinates of the board (dict)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
+
+    Returns:
+    --------
+    choice: Orders for each hero (str)
+
+    Version:
+    --------
+    specification: Aude Lekeux (v.1 25/04/2019)
+    implementation: Aude Lekeux (v.1 25/04/2019)
     """
 
     # Choice of the IA built as you go
