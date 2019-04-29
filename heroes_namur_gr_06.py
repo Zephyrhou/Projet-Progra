@@ -629,7 +629,7 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
     """
 
     # If a hero wants to attack
-    if character in player1 or player2:
+    if (character in player1) or (character in player2):
         hero = character
         # If there's no capacity name then it's a simple attack
         if capacity == '':
@@ -680,12 +680,27 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
             else:
                 # If hero on level 2 to 5 he can use a special capacity
                 for level in range(2, 6):
-                    positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity, coordinates)
+                    positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity,
+                                                       coordinates)
                     return positions, player1, player2, creatures
 
     # If a creature wants to attack
+    damage_points = 0
+    for key, value in positions.items():
+        if value[0] == character:
+            damage_points = int(value[2])
+
     if character in creatures:
-        creature_turn(positions, creatures, player1, player2)
+        for key, value in positions.items():
+            if value == attack:
+                if key in player1:
+                    player1[key]['life_points'] -= damage_points
+                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points, he has '
+                          'now', player1[key]['life_points'], 'life points left')
+                elif key in player2:
+                    player2[key]['life_points'] -= damage_points
+                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points, he has '
+                          'now', player2[key]['life_points'], 'life points left')
 
     return positions, player1, player2, creatures
 

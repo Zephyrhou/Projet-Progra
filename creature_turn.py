@@ -29,63 +29,22 @@ def creature_turn(positions, creatures, player1, player2):
     """
 
     # For each creature if its next to a hero it attacks
-    for hero, position in positions:
-        for creature in creatures:
-            for key, value in positions.item():
-                if value[0] == positions[creature][0]:
+    for creature in creatures:
+        for key, value in positions.items():
+            if value[0] == creature:
+                for hero, position in positions.items():
                     if (hero in player1) or (hero in player2):
                         if gap_calculator(key, position) < 1.5:
-                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0),
-                                                                            position, player1, player2,
-                                                                            creatures)
-
-    smallest_gap = {}
-
-    # Gap calculating for player 1 and 2
-    for character in positions:
-        if positions[character][0] in creatures:
-            print('creature', character)
-            creature = character
-            if (character in player1) or (character in player2):
-                print('hero1', character)
-                hero = character
-                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
-    print('gap', smallest_gap)
-
-    # Gap calculating for player 2
-    # for character in positions:
-    #     if positions[character][0] in creatures:
-    #         creature = character
-    #         if character in player2:
-    #             hero = character
-    #             smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
-
-    evil = []
-
-    # Comparing the gap with each creature's wage
-    for creature in creatures:
-        for people in smallest_gap:
-            evil.append(smallest_gap[people][creature])
-        closest = evil.sort()
-        for people in smallest_gap:
-            if smallest_gap[people][creature] == closest[0]:
-                target = people
-                if smallest_gap[target] <= positions[creature][3]:
-                    attack_coord = positions[target]
-                    positions, player1, player2, creatures = attack(positions, creature, '', (0, 0), attack_coord,
-                                                                    player1, player2, creatures)
-                else:
-                    for item in positions:
-                        if gap_calculator(item, target) == (positions[creature][3] - 1):
-                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0),
-                                                                            item, player1, player2,
-                                                                            creatures)
+                            print(key, value, hero, position, creature)
+                            print(gap_calculator(key, position))
+                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0), position,
+                                                                            player1, player2, creatures)
 
     return positions, player1, player2
 
 
 positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('12', '20'),
-             'May': ('14', '10'), 'Rob': ('20', '17'), 'Buf': ('9', '10'), 'Lia': ('10', '7'), 'Mey': ('3', '3'),
+             'May': ('24', '10'), 'Rob': ('10', '21'), 'Buf': ('9', '10'), 'Lia': ('10', '7'), 'Mey': ('3', '3'),
              'Tob': ('2', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
              ('21', '39'): 'spur', ('10', '10'): ['fox', '20', '5', '3', '100'],
              ('10', '20'): ['arrack', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
@@ -101,7 +60,6 @@ player2 = {'Buf': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory
            'Tob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
 
 creatures = ['arrack', 'wolf', 'fox']
-# choice_creature = 'arrack:@30-31 wolf:@30-21 fox:*10-15'
 
 positions, player1, player2 = creature_turn(positions, creatures, player1, player2)
 
