@@ -247,6 +247,10 @@ def available_attack(name_attack, player, hero):
     implementation: Manon Michaux (v.2 26/04/19)
     """
 
+    # If player is on level 1 he can't use a special capacity yet
+    if player[hero]['level'] < 2:
+        return False
+
     # Checks whether the hero has a level high enough in order to use a special capacity
     if player[hero]['class'] == 'barbarian':
         if name_attack == 'energise':
@@ -303,4 +307,4 @@ player1 = {'Baz': {'class': 'barbarian', 'level': 4, 'life_points': 10, 'victory
            'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
            'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
 
-print(available_attack('energise', player1, 'Baz'))
+print(available_attack('invigorate', player1, 'Lee'))

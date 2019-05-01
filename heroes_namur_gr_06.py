@@ -300,7 +300,8 @@ def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
 
     player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
 
-    nb_spur_p1, nb_spur_p2, is_p1_on_spur, is_p2_on_spur = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2, positions)
+    nb_spur_p1, nb_spur_p2, is_p1_on_spur, is_p2_on_spur = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2,
+                                                                      positions)
 
     return nb_spur_p1, nb_spur_p2, positions
 
@@ -436,19 +437,19 @@ def actions_turn(positions, player1, player2, creatures):
         if character in creatures:
             hero_name = character
             movement_coord = positions[character]['where']
-            move(hero_name, positions, movement_coord)
+            move(hero_name, positions, movement_coord, player1, player2, creatures)
 
         # Then the heroes of the first player
         elif character in player1:
             hero_name = character
             movement_coord = positions[character]['where']
-            move(hero_name, positions, movement_coord)
+            move(hero_name, positions, movement_coord, player1, player2, creatures)
 
         # Finally the ones of the second player
         else:
             hero_name = character
             movement_coord = positions[character]['where']
-            move(hero_name, positions, movement_coord)
+            move(hero_name, positions, movement_coord, player1, player2, creatures)
 
     return player1, player2, positions, creatures
 
@@ -508,7 +509,7 @@ def players_choice(choice, positions, player1, player2, creatures):
     for item in result:
         if result[item][0] == '@':
             move_coordinates = (result[item][1:3], result[item][4:6])
-            positions = move(positions, item, move_coordinates)
+            positions = move(positions, item, move_coordinates, player1, player2, creatures)
         elif result[item][0] == '*':
             attack_coordinates = (result[item][1:3], result[item][4:6])
             positions, player1, player2, creatures = attack(positions, item, '', (0, 0), attack_coordinates, player1,
@@ -527,7 +528,7 @@ def players_choice(choice, positions, player1, player2, creatures):
     return positions, player1, player2, creatures
 
 
-def creature_turn(positions, creatures, player1, player2, nb_rows, nb_columns):
+def creature_turn(positions, creatures, player1, player2):
     """Checks where a creature should attack or move depending on it's surrounding.
 
     Parameters:
@@ -551,47 +552,29 @@ def creature_turn(positions, creatures, player1, player2, nb_rows, nb_columns):
     Version:
     --------
     specification: Aude Lekeux (v.5 10/04/19)
-    implementation: Manon Michaux (v.4 10/04/19)
+    implementation: Manon Michaux (v.6 29/04/19)
     """
 
-    smallest_gap = {}
+    all_gaps = {}
+    creature = ''
 
-    # Gap calculating for player 1
-    for character in positions:
-        if positions[character][0] in creatures:
-            creature = character
-            if character in player1:
-                hero = character
-                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
-
-    # Gap calculating for player 2
-    for character in positions:
-        if positions[character][0] in creatures:
-            creature = character
-            if character in player2:
-                hero = character
-                smallest_gap[hero][creature] = gap_calculator(positions[hero], creature)
-
-    evil = []
-
-    # Comparing the gap with each creature's wage
     for creature in creatures:
-        for people in smallest_gap:
-            evil.append(smallest_gap[people][creature])
-        closest = evil.sort()
-        for people in smallest_gap:
-            if smallest_gap[people][creature] == closest[0]:
-                target = people
-                if smallest_gap[target] <= positions[creature][3]:
-                    attack_coord = positions[target]
-                    positions, player1, player2, creatures = attack(positions, creature, '', (0, 0), attack_coord,
-                                                                    player1, player2, creatures)
-                else:
-                    for item in positions:
-                        if gap_calculator(item, target) == (positions[creature][3] - 1):
-                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0),
-                                                                            item, player1, player2,
-                                                                            creatures)
+        for key, value in positions.items():
+            if value[0] == creature:
+                for hero, position in positions.items():
+                    if (hero in player1) or (hero in player2):
+                        gap = gap_calculator(key, position)
+                        # If a hero is next to a creature it attacks
+                        if gap < int(value[3]):
+                            positions, player1, player2, creatures = attack(positions, creature, '', (0, 0), position,
+                                                                            player1, player2, creatures)
+                        # If no hero is in its influence zone
+                        else:
+                            all_gaps[hero] = round(gap, 2)
+
+    # If a creature can't attack it moves towards the closest hero
+    smallest_gap = min(all_gaps)
+    positions = move(positions, creature, positions[smallest_gap], player1, player2, creatures)
 
     return positions, player1, player2
 
@@ -678,11 +661,15 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
                 print('You cannot use a special capacity yet')
                 return positions, player1, player2, creatures
             else:
+                if hero in player1:
+                    player = player1
+                elif hero in player2:
+                    player = player2
                 # If hero on level 2 to 5 he can use a special capacity
                 for level in range(2, 6):
                     positions = special_capacity_usage(positions, hero, player, hero_level, hero_class, capacity,
-                                                       coordinates)
-                    return positions, player1, player2, creatures
+                                                       coordinates, creatures)
+                return positions, player1, player2, creatures
 
     # If a creature wants to attack
     damage_points = 0
@@ -695,11 +682,11 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
             if value == attack:
                 if key in player1:
                     player1[key]['life_points'] -= damage_points
-                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points, he has '
+                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points and has '
                           'now', player1[key]['life_points'], 'life points left')
                 elif key in player2:
                     player2[key]['life_points'] -= damage_points
-                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points, he has '
+                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points and has '
                           'now', player2[key]['life_points'], 'life points left')
 
     return positions, player1, player2, creatures
@@ -845,7 +832,7 @@ def special_capacity_usage(positions, hero, player, hero_level, hero_class, capa
                 return positions
 
 
-def move(positions, hero, movement):
+def move(positions, character, movement, player1, player2, creatures):
     """Checks if the position he will end on is allowed. Do it if it is allowed.
 
     Parameters:
@@ -867,29 +854,65 @@ def move(positions, hero, movement):
     Version:
     --------
     specification: Zephyr Houyoux (v.5 04/04/19)
-    implementation: Zephyr Houyoux (v.4 06/04/19)
+    implementation: Zephyr Houyoux (v.6 01/05/19)
     """
 
-    # Computes the gap between the position of the hero and where he wants to go
-    gap = gap_calculator(positions[hero], movement)
+    if (character in player1) or (character in player2):
+        hero = character
+        # Computes the gap between the position of the hero and where he wants to go
+        gap = gap_calculator(positions[hero], movement)
 
-    # If the hero is already on the position he wants to go on
-    if movement[0] == positions[hero][0] and movement[1] == positions[hero][1]:
-        print('Your are already in this position', hero)
-        return positions
-    # If the position the hero wants to go on is already taken
-    for key in positions:
-        if positions[key][0] == movement[0] and positions[key][1] == movement[1]:
-            print('This position is already taken', key)
+        # If the hero is already on the position he wants to go on
+        if movement[0] == positions[hero][0] and movement[1] == positions[hero][1]:
+            print('Your are already in this position', hero)
             return positions
-    else:
-        # If the gap is less than 1.5 he can move
-        if gap < 1.5:
-            positions = move_hero(hero, movement, positions)
-            return positions
+        # If the position the hero wants to go on is already taken
+        for key in positions:
+            if positions[key][0] == movement[0] and positions[key][1] == movement[1]:
+                print('This position is already taken', key)
+                return positions
         else:
-            print('This position is too far from where you are ' + hero)
-            return positions
+            # If the gap is less than 1.5 he can move
+            if gap < 1.5:
+                positions = move_hero(hero, movement, positions)
+                return positions
+            else:
+                print('This position is too far from where you are ' + hero)
+                return positions
+
+    # Now movement if the position of the hero closest to the creature
+    elif character in creatures:
+        for key, value in positions.copy().items():
+            if value[0] == character:
+                x_creature = int(key[0])
+                y_creature = int(key[1])
+                x_hero = int(movement[0])
+                y_hero = int(movement[1])
+                previous_key = key
+                key = list(key)
+                # gap_x will be positive, negative or zero
+                if (x_creature - x_hero) == 0:
+                    # Moves y
+                    if y_creature < y_hero:
+                        y_creature += 1
+                        key[1] = str(y_creature)
+                    elif y_creature > y_hero:
+                        y_creature -= 1
+                        key[1] = str(y_creature)
+                else:
+                    # Moves x
+                    if x_creature < x_hero:
+                        x_creature += 1
+                        key[0] = str(x_creature)
+                    elif x_creature > x_hero:
+                        x_creature -= 1
+                        key[0] = str(x_creature)
+
+                # Deletes the previous one and replaces it by the new position
+                new_key = tuple(key)
+                positions[new_key] = value
+                del positions[previous_key]
+                return positions
 
 
 def move_hero(hero, new_position, positions):
