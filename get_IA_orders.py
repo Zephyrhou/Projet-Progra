@@ -244,11 +244,15 @@ def available_attack(name_attack, player, hero):
     Version:
     --------
     specification: Manon Michaux (v.2 26/04/19)
-    implementation: Manon Michaux (v.2 26/04/19)
+    implementation: Manon Michaux (v.3 01/05/19)
     """
 
     # If player is on level 1 he can't use a special capacity yet
     if player[hero]['level'] < 2:
+        return False
+
+    # Checks whether the cool down is at 0 or not
+    if player[hero]['cooldown'] != 0:
         return False
 
     # Checks whether the hero has a level high enough in order to use a special capacity
@@ -292,19 +296,14 @@ def available_attack(name_attack, player, hero):
         else:
             return False
 
-    # # Cooldown ok ?
-    # if used == 1:
-    #     if good[hero_name][cooldown][name_attack] == 0:
-    #         return True
-    #     else:
-    #         return False
-    # else:
-    #     return False
 
-
-player1 = {'Baz': {'class': 'barbarian', 'level': 4, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
-           'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
+player1 = {'Baz': {'class': 'barbarian', 'level': 4, 'life_points': 10, 'victory_points': 0, 'damage_points': 2,
+                   'cooldown': 0},
+           'Lee': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2,
+                   'cooldown': 0},
+           'May': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2,
+                   'cooldown': 0},
+           'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2,
+                   'cooldown': 0}}
 
 print(available_attack('invigorate', player1, 'Lee'))
