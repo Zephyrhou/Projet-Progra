@@ -22,15 +22,15 @@ def infighting(character, positions, player1, player2):
     implementation: Aude Lekeux (v.2 03/05/2019)
     """
 
-    for character, value in positions.items():
-        if type(positions[character]) is tuple:
+    for key, value in positions.items():
+        if type(positions[key]) is tuple:
             if type(positions[character]) is tuple:
-                if character in player1 and character in player2:
-                    if gap_calculator(positions[character], positions[character]) < 2:
-                        return True, character
-                elif character in player2 and character in player1:
-                    if gap_calculator(positions[character], positions[character]) < 2:
-                        return True, character
+                if character in player1 and key in player2:
+                    if gap_calculator(positions[key], positions[character]) < 2:
+                        return True, key
+                elif character in player2 and key in player1:
+                    if gap_calculator(positions[key], positions[character]) < 2:
+                        return True, key
         else:
             return False, ''
 
@@ -473,7 +473,3 @@ positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz
 # print(available_attack('invigorate', player1, 'Lee'))
 positions, player1, player2, creatures = get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns,
                                                        creatures)
-print(positions)
-print(player1)
-print(player2)
-print(creatures)
