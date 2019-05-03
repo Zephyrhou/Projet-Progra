@@ -192,14 +192,16 @@ def create_heroes():
         for key, value in player.items():
             if value == 'barbarian':
                 player[key] = {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0,
-                               'damage_points': 2}
+                               'damage_points': 2, 'cooldown': 0}
             elif value == 'rogue':
-                player[key] = {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+                player[key] = {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2,
+                               'cooldown': 0}
             elif value == 'healer':
                 player[key] = {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0,
-                               'damage_points': 2}
+                               'damage_points': 2, 'cooldown': 0}
             elif value == 'mage':
-                player[key] = {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}
+                player[key] = {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2,
+                               'cooldown': 0}
 
     return player
 
@@ -890,7 +892,7 @@ def move(positions, character, movement, player1, player2, creatures):
                 y_hero = int(movement[1])
                 previous_key = key
                 key = list(key)
-                # gap_x will be positive, negative or zero
+                # The result will be positive, negative or zero
                 if (x_creature - x_hero) == 0:
                     # Moves y
                     if y_creature < y_hero:

@@ -1,7 +1,7 @@
 from heroes_namur_gr_06 import *
 
 
-def infighting(hero):
+def infighting(character, positions):
     """Verifies if a hero is next to another hero or a creature.
 
     Parameters:
@@ -15,9 +15,16 @@ def infighting(hero):
 
     Version:
     --------
-    specification:
-    implementation:
+    specification: Aude Lekeux (v.2 03/05/2019)
+    implementation: Aude Lekeux (v.2 03/05/2019)
     """
+
+    for position in positions:
+        if position != character:
+            if type(positions[position]) is tuple:
+                if type(positions[character]) is tuple:
+                    if gap_calculator(positions[position], positions[character]) < 2:
+                        return True
 
 
 def ally_in_zone(hero):
@@ -34,8 +41,8 @@ def ally_in_zone(hero):
 
     Version:
     --------
-    specification:
-    implementation:
+    specification: Aude Lekeux (v.1 03/05/2019)
+    implementation: Aude Lekeux (v.1 03/05/2019)
     """
 
 
@@ -53,8 +60,8 @@ def enemy_in_zone(hero):
 
     Version:
     --------
-    specification:
-    implementation:
+    specification: Aude Lekeux (v.1 03/05/2019)
+    implementation: Aude Lekeux (v.1 03/05/2019)
     """
 
 
@@ -71,9 +78,47 @@ def spur_available():
 
     Version:
     --------
-    specification:
-    implementation:
+    specification: Aude Lekeux (v.1 03/05/2019)
+    implementation: Aude Lekeux (v.1 03/05/2019)
     """
+
+
+def move_towards(hero, position, positions):
+    """
+
+    specification: Aude Lekeux (v.2 03/05/2019)
+    implementation: Aude Lekeux (v.2 03/05/2019)
+    """
+
+    for key, value in positions.copy().items():
+        if key == hero:
+            if type(position) is tuple:
+                x_hero = int(value[0])
+                y_hero = int(value[1])
+                x_position = int(position[0])
+                y_position = int(position[1])
+                previous_value = value
+                value = list(previous_value)
+                # The result will be positive, negative or zero
+                if (x_hero - x_position) == 0:
+                    # Moves y
+                    if y_hero < y_position:
+                        y_hero += 1
+                        value[1] = str(y_hero)
+                    elif y_hero > y_position:
+                        y_hero -= 1
+                        value[1] = str(y_hero)
+                else:
+                    # Moves x
+                    if x_hero < x_position:
+                        x_hero += 1
+                        value[0] = str(x_hero)
+                    elif x_hero > x_position:
+                        x_hero -= 1
+                        value[0] = str(x_hero)
+
+            new_value = tuple(value)
+            return new_value
 
 
 def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2):
@@ -91,8 +136,8 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2):
 
     Version:
     --------
-    specification: Aude Lekeux (v.1 25/04/2019)
-    implementation: Aude Lekeux (v.1 25/04/2019)
+    specification: Aude Lekeux (v.3 03/05/2019)
+    implementation: Aude Lekeux (v.3 03/05/2019)
     """
 
     # Choice of the IA is built as you go
@@ -106,122 +151,141 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2):
 
     # Initialises the variables needed for the rest of the function
     for hero in positions:
-        if hero in player1:
-            hero_class = player1[hero]['class']
-            player = player1
-            choice += str(hero)
-        elif hero in player2:
-            hero_class = player2[hero]['class']
-            player = player2
-            choice += str(hero)
+        if hero in player1 or hero in player2:
+            if hero in player1:
+                hero_class = player1[hero]['class']
+                player = player1
+                choice += str(hero)
+            elif hero in player2:
+                hero_class = player2[hero]['class']
+                player = player2
+                choice += str(hero)
 
-        # Depending on the class of the hero
-        # If hero is a barbarian
-        if hero_class == 'barbarian':
-            if infighting(hero):
-                if available_attack('stun', player, hero):
-                    choice += ':stun '
-                elif ally_in_zone(hero):
-                    if available_attack('energise', player, hero):
-                        choice += ':energise '
+            # Depending on the class of the hero
+            # If hero is a barbarian
+            if hero_class == 'barbarian':
+                if infighting(hero, positions):
+                    if available_attack('stun', player, hero):
+                        choice += ':stun '
+                    elif ally_in_zone(hero):
+                        if available_attack('energise', player, hero):
+                            choice += ':energise '
+                    else:
+                        # If no special capacity is available; do a simple attack
+                        for position in positions:
+                            if type(positions[position]) is tuple:
+                                if gap_calculator(positions[hero], positions[position]) < 2:
+                                    if hero != position:
+                                        choice += ':*' + positions[position][0] + '-' + positions[position][1] + ' '
                 else:
-                    # If no special capacity if available; do a simple attack
-                    choice += ':*'
-            else:
-                if spur_available():
+                    if spur_available():
+                        if hero in player1:
+                            if is_p1_on_spur:
+                                # Do nothing
+                                choice += ': '
+                        elif hero in player2:
+                            if is_p2_on_spur:
+                                # Do nothing
+                                choice += ': '
+                        else:
+                            # Move towards spur
+                            for key, value in positions.items():
+                                if value == 'spur':
+                                    new_position = move_towards(hero, key, positions)
+                                    choice += ':@' + new_position[0] + '-' + new_position[1] + ' '
+                    else:
+                        # Move towards enemy
+                        all_gaps = {}
+                        for key, value in positions.items():
+                            if key not in player:
+                                if type(value) is tuple:
+                                    all_gaps[value] = round(gap_calculator(positions[hero], value), 2)
+
+                        smallest_gap = min(all_gaps)
+                        new_position = move_towards(hero, smallest_gap, positions)
+                        choice += ':@' + new_position[0] + '-' + new_position[1] + ' '
+
+            # If hero is a healer
+            elif hero_class == 'healer':
+                if ally_in_zone(hero):
+                    if enemy_in_zone(hero):
+                        if available_attack('immunise', player, hero):
+                            choice += ':immunise '
+                    elif available_attack('invigorate', player, hero):
+                        choice += ':invigorate '
+                elif enemy_in_zone(hero):
+                    # If no special capacity is available; do a simple attack
+                    choice += ':* '
+                else:
+                    if spur_available():
+                        if hero in player1:
+                            if is_p1_on_spur:
+                                # Do nothing
+                                choice += ':@ '
+                        elif hero in player2:
+                            if is_p2_on_spur:
+                                # Do nothing
+                                choice += ':@ '
+                        else:
+                            # Move towards spur
+                            choice += ':@ '
+                    else:
+                        # Move towards enemy
+                        choice += ':@ '
+
+            # If hero is a mage
+            elif hero_class == 'mage':
+                if infighting(hero, positions) or enemy_in_zone(hero):
+                    if available_attack('ovibus', player, hero):
+                        choice += ':ovibus '
+                    elif available_attack('fulgura', player, hero):
+                        choice += ':fulgura '
+                    else:
+                        # If no special capacity is available; do a simple attack
+                        choice += ':* '
+                elif spur_available():
                     if hero in player1:
                         if is_p1_on_spur:
                             # Do nothing
-                            choice += ':@'
+                            choice += ':@ '
                     elif hero in player2:
                         if is_p2_on_spur:
                             # Do nothing
-                            choice += ':@'
+                            choice += ':@ '
                     else:
                         # Move towards spur
-                        choice += ':@'
+                        choice += ':@ '
                 else:
                     # Move towards enemy
-                    choice += ':@'
+                    choice += ':@ '
 
-        # If hero is a healer
-        elif hero_class == 'healer':
-            if ally_in_zone(hero):
-                if enemy_in_zone(hero):
-                    if available_attack('immunise', player, hero):
-                        choice += ':immunise '
-                elif available_attack('invigorate', player, hero):
-                    choice += ':invigorate '
-            elif enemy_in_zone(hero):
-                # If no special capacity if available; do a simple attack
-                choice += ':*'
-            else:
-                if spur_available():
+            # If hero is a rogue
+            elif hero_class == 'rogue':
+                if infighting(hero, positions) or enemy_in_zone(hero):
+                    if available_attack('burst', player, hero):
+                        choice += ':burst '
+                    elif available_attack('reach', player, hero):
+                        choice += ':reach '
+                    else:
+                        # If no special capacity is available; do a simple attack
+                        choice += ':* '
+                elif spur_available():
                     if hero in player1:
                         if is_p1_on_spur:
                             # Do nothing
-                            choice += ':@'
+                            choice += ':@ '
                     elif hero in player2:
                         if is_p2_on_spur:
                             # Do nothing
-                            choice += ':@'
+                            choice += ':@ '
                     else:
                         # Move towards spur
-                        choice += ':@'
+                        choice += ':@ '
                 else:
                     # Move towards enemy
-                    choice += ':@'
+                    choice += ':@ '
 
-        # If hero is a mage
-        elif hero_class == 'mage':
-            if infighting(hero) or enemy_in_zone(hero):
-                if available_attack('ovibus', player, hero):
-                    choice += ':ovibus '
-                elif available_attack('fulgura', player, hero):
-                    choice += ':fulgura '
-                else:
-                    # If no special capacity if available; do a simple attack
-                    choice += ':*'
-            elif spur_available():
-                if hero in player1:
-                    if is_p1_on_spur:
-                        # Do nothing
-                        choice += ':@'
-                elif hero in player2:
-                    if is_p2_on_spur:
-                        # Do nothing
-                        choice += ':@'
-                else:
-                    # Move towards spur
-                    choice += ':@'
-            else:
-                # Move towards enemy
-                choice += ':@'
-
-        # If hero is a rogue
-        elif hero_class == 'rogue':
-            if infighting(hero) or enemy_in_zone(hero):
-                if available_attack('burst', player, hero):
-                    choice += ':burst '
-                else:
-                    # If no special capacity if available; do a simple attack
-                    choice += ':*'
-            elif available_attack('reach', player, hero):
-                choice += ':reach '
-            elif spur_available():
-                if hero in player1:
-                    if is_p1_on_spur:
-                        # Do nothing
-                        choice += ':@'
-                elif hero in player2:
-                    if is_p2_on_spur:
-                        # Do nothing
-                        choice += ':@'
-                else:
-                    # Move towards spur
-                    choice += ':@'
-
-    return choice
+    return choice, positions
 
 
 def available_attack(name_attack, player, hero):
@@ -306,4 +370,19 @@ player1 = {'Baz': {'class': 'barbarian', 'level': 4, 'life_points': 10, 'victory
            'Rob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2,
                    'cooldown': 0}}
 
-print(available_attack('invigorate', player1, 'Lee'))
+player2 = {'Buf': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Lia': {'class': 'healer', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Mey': {'class': 'mage', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2},
+           'Tob': {'class': 'rogue', 'level': 1, 'life_points': 10, 'victory_points': 0, 'damage_points': 2}}
+
+nb_spur_p1 = 0
+nb_spur_p2 = 0
+
+positions = {('20', '3'): 'spawn_player_1', ('20', '37'): 'spawn_player_2', 'Baz': ('10', '3'), 'Lee': ('24', '3'),
+             'May': ('14', '6'), 'Rob': ('20', '17'), 'Buf': ('21', '18'), 'Lia': ('19', '7'), 'Mey': ('3', '3'),
+             'Tob': ('2', '37'), ('20', '38'): 'spur', ('20', '39'): 'spur', ('21', '38'): 'spur',
+             ('21', '39'): 'spur', ('10', '10'): ['bear', '20', '5', '3', '100'],
+             ('10', '20'): ['bear', '20', '5', '3', '100'], ('15', '10'): ['wolf', '10', '3', '2', '50']}
+
+# print(available_attack('invigorate', player1, 'Lee'))
+print(get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2))
