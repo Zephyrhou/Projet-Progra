@@ -694,7 +694,7 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
     return positions, player1, player2, creatures
 
 
-def special_capacity_available(player, hero):
+def special_capacity_display(player, hero):
     """Whenever a hero reaches level 2 or 3 he can start using special capacities.
 
     Parameters:
@@ -1328,10 +1328,10 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_posi
     # Whenever a hero leveled up he can use a special capacity
     for hero1 in player_1:
         if get_level(hero1, player_1) != get_level(hero1, initial_p1):
-            special_capacity_available(player_1, hero1)
+            special_capacity_display(player_1, hero1)
     for hero2 in player_2:
         if get_level(hero2, player_2) != get_level(hero2, initial_p2):
-            special_capacity_available(player_2, hero2)
+            special_capacity_display(player_2, hero2)
 
     # print('Creatures = ' + str(creatures))
     # print('Positions = ' + str(positions))
