@@ -1,232 +1,100 @@
-from heroes_namur_gr_06 import *
-
-
-def fulgura(coordinates, player1, player2, creatures, hero_name, positions):
-    """ The creature / ennemy on the target coordinates loses a given number of health points.
+def fulgura(positions, hero, player1, player2, creatures, coordinates):
+    """ The creature/enemy on the target coordinates loses a given number of health points.
 
     Parameters:
     -----------
-    coordinates: Where the hero wants to use ovibus(tupl)
-    player1: Level, number of point, etc. of the heroes of player1 (dict)
-    player2: Level, number of point, etc. of the heroes of player2 (dict)
-    creatures: Has every information of each creature (list)
-    hero_name: Name of the hero (str)
     positions: Contains all the coordinates of the board (dict)
+    hero: Name of the hero (str)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
+    creatures: Has every information of each creature (list)
+    coordinates: Where the special capacity 'immunise' is being used (tuple)
 
     Returns:
     --------
-    creatures: Has every information of each creature updated (list)
     positions: Contains all the coordinates of the board updated (dict)
+    player1: Level, number of point, etc. of the heroes of player 1 updated (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 updated (dict)
 
     Version:
     --------
-    specification: Manon Michaux (v.2 31/03/19)
-    implementation: Manon Michaux (v.2 31/03/19)
+    specification: Manon Michaux (v.3 05/05/19)
+    implementation: Manon Michaux (v.2 05/05/19)
     """
 
-    good, updated = good(hero_name)
-    used = 0
+    # If hero in player1
+    if hero in player1:
+        for character in positions:
+            if character in player2:
+                if positions[character] == coordinates:
+                    player2[character]['life_points'] -= 2
+            elif positions[character][0] in creatures:
+                if character == coordinates:
+                    positions[character][1] -= 2
+        # Adding the cooldown to the dictionary of the player if he attack has been used
+        player1[hero]['cooldown'] += 1
 
-    # Level of the hero = 2
-    if good[hero_name]['level'] == 2:
-        if gap_calculator(positions, hero_name, coordinates) == 1:
-            # For the heroes of the other player
-            for heroes in updated:
-                if gap_calculator(positions, coordinates, heroes) == 0:
-                    updated[heroes]['life_points'] -= 3
-                    used += 1
-                    print(" %s 's health points have been decreased by 3 " % heroes)
-                else:
-                    print("%s 's damage points haven't been modified " % heroes)
-            # For the creatures
-            for enemies in creatures:
-                if gap_calculator(positions, hero_name, enemies) == 0:
-                    creatures[enemies]['life_points'] -= 3
-                    used += 1
-                    print(" %s 's health points have been decreased by 3" % enemies)
-                else:
-                    print("%s 's damage points haven't been modified " % enemies)
+    # If hero in player2
+    if hero in player2:
+        for character in positions:
+            if character in player2:
+                if positions[character] == coordinates:
+                    player2[character]['life_points'] -= 2
+            elif positions[character][0] in creatures:
+                if character == coordinates:
+                    positions[character][1] -= 2
+        # Adding the cooldown to the dictionary of the player if he attack has been used
+        player2[hero]['cooldown'] += 1
 
-            else:
-                print("%s 's damage points haven't been modified " % enemies)
-
-    # Level of the hero = 3
-    elif good[hero_name][level] == 3:
-        if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the heroes of the other player
-            for heroes in updated:
-                if gap_calculator(positions, coordinates, heroes) == 0:
-                    updated[heroes][h_points] -= 3
-                    used += 1
-                    print(" %s 's health points have been decreased by 3 " % heroes)
-                else:
-                    print("%s 's damage points haven't been modified " % heroes)
-            # For the creatures
-            for enemies in creatures:
-                if gap_calculator(positions, hero_name, enemies) == 0:
-                    creatures[enemies][h_points] -= 3
-                    used += 1
-                    print(" %s 's health points have been decreased by 3" % enemies)
-                else:
-                    print("%s 's damage points haven't been modified " % enemies)
-
-            else:
-                print("%s 's damage points haven't been modified " % enemies)
-
-    # Level of the hero = 4
-    elif good[hero_name][level] == 4:
-        if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the heroes of the other player
-            for heroes in updated:
-                if gap_calculator(positions, coordinates, heroes) == 0:
-                    updated[heroes][h_points] -= 4
-                    used += 1
-                    print(" %s 's health points have been decreased by 4 " % heroes)
-                else:
-                    print("%s 's damage points haven't been modified " % heroes)
-            # For the creatures
-            for enemies in creatures:
-                if gap_calculator(positions, hero_name, enemies) == 0:
-                    creatures[enemies][h_points] -= 4
-                    used += 1
-                    print(" %s 's health points have been decreased by 4" % enemies)
-                else:
-                    print("%s 's damage points haven't been modified " % enemies)
-
-            else:
-                print("%s 's damage points haven't been modified " % enemies)
-
-    # Level of the hero = 5
-    elif good[hero_name][level] == 5:
-        if gap_calculator(positions, hero_name, coordinates) <= 4:  # For the heroes of the other player
-            for heroes in updated:
-                if gap_calculator(positions, coordinates, heroes) == 0:
-                    updated[heroes][h_points] -= 4
-                    used += 1
-                    print(" %s 's health points have been decreased by 4 " % heroes)
-                else:
-                    print("%s 's damage points haven't been modified " % heroes)
-            # For the creatures
-            for enemies in creatures:
-                if gap_calculator(positions, hero_name, enemies) == 0:
-                    creatures[enemies][h_points] -= 4
-                    used += 1
-                    print(" %s 's health points have been decreased by 4" % enemies)
-                else:
-                    print("%s 's damage points haven't been modified " % enemies)
-
-            else:
-                print("%s 's damage points haven't been modified " % enemies)
-
-    # Level of the hero = 1 or = 2
-    else:
-        print(" You can't use this attack yet")
-
-    # Adding the cooldown to the dictionary of the player if he attack has been used
-    if used >= 1:
-        good[hero_name][cooldown][fulgura] += 1
-    else:
-        print("You used stun but nothing happened ")
-
-    return updated, creatures, good
+    return positions, player1, player2
 
 
-def ovibus(positions, hero_name, coordinates, creatures):
-    """The creature/ennemy on the target coordinates is unable to act during a given number of turn.
+def ovibus(positions, hero, player1, player2, creatures, coordinates):
+    """The creature/enemy on the target coordinates is unable to act during a given number of turn.
 
     Parameters:
     -----------
     positions: Contains all the coordinates of the board (dict)
-    hero_name: Name of the hero (str)
-    coordinates: Where the hero wants to use ovibus(tupl)
-    player1: Level, number of point, etc. of the heroes of player1 (dict)
-    player2: Level, number of point, etc. of the heroes of player2 (dict)
+    hero: Name of the hero (str)
+    player1: Level, number of point, etc. of the heroes of player 1 (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 (dict)
     creatures: Has every information of each creature (list)
+    coordinates: Where the special capacity 'ovibus' is being used (tuple)
 
     Returns:
     --------
-    updated: Updated dictionary of the player which hero isn't using this attack.
-    good: Updated dictionary of the player which hero is using this attack.
-    creatures: Has every information of each creature updated(list)
+    positions: Contains all the coordinates of the board updated (dict)
+    player1: Level, number of point, etc. of the heroes of player 1 updated (dict)
+    player2: Level, number of point, etc. of the heroes of player 2 updated (dict)
 
     Version:
     --------
-    specification: Manon Michaux (v.1 29/03/19)
-    implementation: Manon Michaux (v.1 29/03/19)
+    specification: Manon Michaux (v.2 05/05/19)
+    implementation: Manon Michaux (v.2 05/05/19)
     """
 
-    good, updated = good(hero_name)
+    # If hero in player1
+    if hero in player1:
+        for character in positions:
+            if character in player2:
+                if positions[character] == coordinates:
+                    print()
+            elif positions[character][0] in creatures:
+                if character == coordinates:
+                    print()
+        # Adding the cooldown to the dictionary of the player if he attack has been used
+        player1[hero]['cooldown'] += 1
 
-    # Level of the hero = 3
-    if good[hero_name][level] == 3:
-        if gap_calculator(positions, hero_name, coordinates) == 1:
-            # For the heroes of the player
-            for heroes in updated:
-                if gap_calculator(positions, coordinates, heroes) == 0:
-                    used += 1
-                    print("%s is confused for one turn" % heroes)
+    # If hero in player2
+    if hero in player2:
+        for character in positions:
+            if character in player2:
+                if positions[character] == coordinates:
+                    print()
+            elif positions[character][0] in creatures:
+                if character == coordinates:
+                    print()
+        # Adding the cooldown to the dictionary of the player if he attack has been used
+        player2[hero]['cooldown'] += 1
 
-                else:
-                    print("Those coordinates don't belong to %s" % heroes)
-
-            # For the creatures
-            for ennemy in creatures:
-                if gap_calculator(positions, coordinates, ennemy) == 0:
-                    used += 1
-                    print("%s is confused for one turn" % heroes)
-                else:
-                    print("Those coordinates don't belong to %s" % heroes)
-
-            print("The coordinates you tried to reach are too far away right now")
-
-    # Level of the hero = 4
-    elif good[hero_name][level] == 4:
-        if gap_calculator(positions, hero_name, coordinates) <= 2:  # For the heroes of the player
-            for heroes in updated:
-                if gap_calculator(positions, coordinates, heroes) == 0:
-                    used += 1
-                    print("%s is confused for one turn" % heroes)
-
-                else:
-                    print("Those coordinates don't belong to %s" % heroes)
-
-            # For the creatures
-            for ennemy in creatures:
-                if gap_calculator(positions, coordinates, ennemy) == 0:
-                    used += 1
-                    print("%s is confused for one turn" % heroes)
-                else:
-                    print("Those coordinates don't belong to %s" % heroes)
-
-            print("The coordinates you tried to reach are too far away right now")
-
-    # Level of the hero = 5
-    elif good[hero_name][level] == 5:
-        if gap_calculator(positions, hero_name, coordinates) <= 3:  # For the heroes of the player
-            for heroes in updated:
-                if gap_calculator(positions, coordinates, heroes) == 0:
-                    used += 1
-                    print("%s is confused for one turn" % heroes)
-
-                else:
-                    print("Those coordinates don't belong to %s" % heroes)
-
-            # For the creatures
-            for ennemy in creatures:
-                if gap_calculator(positions, coordinates, ennemy) == 0:
-                    used += 1
-                    print("%s is confused for one turn" % heroes)
-                else:
-                    print("Those coordinates don't belong to %s" % heroes)
-
-            print("The coordinates you tried to reach are too far away right now")
-
-    # Level of the hero = 1 or = 2
-    else:
-        print("You can't use this attack yet")
-
-    # Adding the cooldown to the dictionary of the player if he attack has been used
-    if used >= 1:
-        good[hero_name][cooldown][ovibus] += 3
-    else:
-        print("You used stun but nothing happened ")
-
-    return updated, good, creatures
+    return positions, player1, player2
