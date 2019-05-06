@@ -195,4 +195,4 @@ def display_board(ROWS, COLUMNS, positions):
 # Billy:@20-36 Hans:@21-37 Maya:@20-38 Ruben:@21-36
 # Bernard:@21-4 Heidi:@19-4 Marguerite:@21-3 Robert:*21-36
 # Billy:@21-36 Hans:*21-37 Maya:@20-38 Ruben:*21-3
-launch("board2")
+# launch("board2")

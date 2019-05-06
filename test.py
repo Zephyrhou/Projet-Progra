@@ -43,3 +43,35 @@ player2 = {'Buf': {'class': 'barbarian', 'level': 1, 'life_points': 10, 'victory
 # Baz:barbarian Lee:healer May:mage Rob:rogue
 # Buf:barbarian Lia:rogue Mey:mage Tob:rogue
 
+choice = 'Bernard:@20-4 Heidi:*20-37 Marguerite:*20-37 Robert:fulgura:20-37 Billy:@20-36 Hans:*20-3 Maya:*20-3 Ruben:*20-3'
+
+choice = choice.split(' ')
+temp = []
+result = {}
+
+for items in choice:
+    temp += items.split(':')
+
+print(temp)
+
+# Puts the input of the player in a dictionary
+for item in range(len(choice)):
+    temp[item] = choice[item].split(':')
+    name = temp[item][0]
+    action = temp[item][1]
+    result[name] = action
+    if len(temp[item]) == 3:
+        pos = temp[item][2]
+        result[name] = (action, pos)
+
+print(result)
+
+for item in range(len(choice)):
+    temp[item] = choice[item].split(':')
+    name = temp[item][0]
+    action = temp[item][1]
+    result[name] = action
+    if len(temp[item]) == 3:
+        pos = temp[item][2]
+        result[name] = (action, pos)
+print(result)

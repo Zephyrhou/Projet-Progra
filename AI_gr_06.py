@@ -22,7 +22,7 @@ def launch(board_file):
 
     # While the game is not over the next turn begins
     while not is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
-        nb_spur_p1, nb_spur_p2, positions = game(nb_spur_p1, nb_spur_p2, player1, player2, positions, creatures)
+        nb_spur_p1, nb_spur_p2, positions, nb_turns = game(nb_spur_p1, nb_spur_p2, player1, player2, positions, creatures, nb_turn)
         display_board(ROWS, COLUMNS, positions)
         nb_turn += 1
 
@@ -173,18 +173,15 @@ def create_heroes():
             name, type = sp.split(":")
 
             if not name.isalpha():
-                print('The name ' + name + ' is not appropriated, it should contain only letters!')
                 invalid_syntax = True
 
             elif type not in classes:
-                print('The type ' + type + ' of your hero is unknown!')
                 invalid_syntax = True
 
             elif name not in player:
                 player[name] = type
 
             elif name in player:
-                print('The name ' + name + ' is already taken!')
                 player = {}
                 invalid_syntax = True
 
@@ -270,7 +267,7 @@ def display_board(ROWS, COLUMNS, positions):
         print(display_line)
 
 
-def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
+def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures, nb_turns):
     """Starts a new turn if the game is not finished.
 
     Parameters:
@@ -294,18 +291,16 @@ def game(nb_spur_p1, nb_spur_p2, player_1, player_2, positions, creatures):
     implementation: Aude Lekeux (v.1 08/04/19)
     """
 
-    choice1 = input('Player 1: Enter your orders for your heroes: ')
-    choice2 = input('Player 2: Enter your orders for your heroes: ')
+    choice1 = str(get_ia_orders(positions, player_1, player_2, nb_spur_p1, nb_spur_p2, nb_turns))
 
     positions, player_1, player_2, creatures = players_choice(choice1, positions, player_1, player_2, creatures)
-    positions, player_1, player_2, creatures = players_choice(choice2, positions, player_1, player_2, creatures)
 
     player_1, player_2, positions, creatures = defeated(player_1, player_2, positions, creatures)
 
     nb_spur_p1, nb_spur_p2, is_p1_on_spur, is_p2_on_spur = is_on_spur(nb_spur_p1, nb_spur_p2, player_1, player_2,
                                                                       positions)
 
-    return nb_spur_p1, nb_spur_p2, positions
+    return nb_spur_p1, nb_spur_p2, positions, nb_turns
 
 
 def is_game_over(nb_turns_wanted, nb_spur_p1, nb_spur_p2):
@@ -434,7 +429,6 @@ def actions_turn(positions, player1, player2, creatures):
             attack(positions, hero_name, name_attack, (0, 0), attack_coord, player1, player2, creatures)
 
     for character in moving:
-        print(character, moving)
         # First moving : the creatures
         if character in creatures:
             hero_name = character
@@ -608,7 +602,7 @@ def move_towards(hero, position, positions):
             return new_value
 
 
-def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns, creatures):
+def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns):
     """Decides what each hero will do.
 
     Parameters:
@@ -619,7 +613,6 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns,
     nb_spur_p1: Number of turns a hero from player 1 is on spur (int)
     nb_spur_p2: Number of turns a hero from player 2 is on spur (int)
     nb_turns: Number of turns played (int)
-    creatures: Has every information of each creature (list)
 
     Returns:
     --------
@@ -659,33 +652,46 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns,
                 if is_infighting:
                     if available_attack('stun', player, hero):
                         choice += ':stun '
+                    else:
+                        choice += ':@' + (positions[hero][0] + 1) + '-' + (positions[hero][1] - 1) + ' '
                     ally_is_in_zone, ally = ally_in_zone(hero, positions, player1, player2)
                     if ally_is_in_zone:
                         if available_attack('energise', player, hero):
                             choice += ':energise '
+                        else:
+                            choice += ':@' + str((int(positions[hero][0]) - 1)) + '-' + positions[hero][1] + ' '
                     else:
                         # If no special capacity is available; do a simple attack
                         for position in positions:
-                            if type(positions[position]) is tuple:
-                                if gap_calculator(positions[hero], positions[position]) < 2:
-                                    if hero != position:
-                                        choice += ':*' + positions[position][0] + '-' + positions[position][1] + ' '
+                            if nb_turns >= 5:
+                                if type(positions[position]) is tuple:
+                                    if gap_calculator(positions[hero], positions[position]) < 2:
+                                        if hero != position:
+                                            choice += ':*' + positions[position][0] + '-' + positions[position][1] + ' '
+                            else:
+                                choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                 else:
                     if nb_turns >= 20:
                         if hero in player1:
                             if is_p1_on_spur:
                                 # Do nothing
-                                choice += ': '
+                                choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                            else:
+                                choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                         elif hero in player2:
                             if is_p2_on_spur:
                                 # Do nothing
-                                choice += ': '
+                                choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                            else:
+                                choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                         else:
                             # Move towards spur
                             for key, value in positions.items():
                                 if value == 'spur':
                                     new_position = move_towards(hero, key, positions)
                                     choice += ':@' + new_position[0] + '-' + new_position[1] + ' '
+                                else:
+                                    choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                     else:
                         # Move towards enemy
                         all_gaps = {}
@@ -706,28 +712,39 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns,
                     if enemy_is_in_zone:
                         if available_attack('immunise', player, hero):
                             choice += ':immunise' + positions[ally][0] + '-' + positions[ally][1] + ' '
+                        else:
+                            choice += ':@' + str(int(positions[hero][0]) - 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                     elif available_attack('invigorate', player, hero):
                         choice += ':invigorate '
                 enemy_is_in_zone, enemy = enemy_in_zone(hero, positions, player1, player2)
                 if enemy_is_in_zone:
                     # If no special capacity is available; do a simple attack
-                    choice += ':*' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
+                    if nb_turns >= 5:
+                        choice += ':*' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
+                    else:
+                        choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                 else:
                     if nb_turns >= 20:
                         if hero in player1:
                             if is_p1_on_spur:
                                 # Do nothing
-                                choice += ': '
+                                choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                            else:
+                                choice += ':@' + str(int(positions[hero][0]) - 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                         elif hero in player2:
                             if is_p2_on_spur:
                                 # Do nothing
-                                choice += ': '
+                                choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                            else:
+                                choice += ':@' + str(int(positions[hero][0]) - 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                         else:
                             # Move towards spur
                             for key, value in positions.items():
                                 if value == 'spur':
                                     new_position = move_towards(hero, key, positions)
                                     choice += ':@' + new_position[0] + '-' + new_position[1] + ' '
+                                else:
+                                    choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                     else:
                         # Move towards enemy
                         all_gaps = {}
@@ -751,22 +768,31 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns,
                         choice += ':fulgura' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
                     else:
                         # If no special capacity is available; do a simple attack
-                        choice += ':*' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
+                        if nb_turns >= 5:
+                            choice += ':*' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
+                        else:
+                            choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                 elif nb_turns >= 20:
                     if hero in player1:
                         if is_p1_on_spur:
                             # Do nothing
-                            choice += ': '
+                            choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                        else:
+                            choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                     elif hero in player2:
                         if is_p2_on_spur:
                             # Do nothing
-                            choice += ': '
+                            choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                        else:
+                            choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                     else:
                         # Move towards spur
                         for key, value in positions.items():
                             if value == 'spur':
                                 new_position = move_towards(hero, key, positions)
                                 choice += ':@' + new_position[0] + '-' + new_position[1] + ' '
+                            else:
+                                choice += ':@' + str(int(positions[hero][0]) - 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                 else:
                     # Move towards enemy
                     all_gaps = {}
@@ -790,22 +816,31 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns,
                         choice += ':reach' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
                     else:
                         # If no special capacity is available; do a simple attack
-                        choice += ':*' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
+                        if nb_turns >= 5:
+                            choice += ':*' + positions[enemy][0] + '-' + positions[enemy][1] + ' '
+                        else:
+                            choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) + 1) + ' '
                 elif nb_turns >= 20:
                     if hero in player1:
                         if is_p1_on_spur:
                             # Do nothing
-                            choice += ': '
+                            choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                        else:
+                            choice += ':@' + str(int(positions[hero][0]) + 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                     elif hero in player2:
                         if is_p2_on_spur:
                             # Do nothing
-                            choice += ': '
+                            choice += ':@' + positions[hero][0] + '-' + positions[hero][1] + ' '
+                        else:
+                            choice += ':@' + str(int(positions[hero][0]) - 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                     else:
                         # Move towards spur
                         for key, value in positions.items():
                             if value == 'spur':
                                 new_position = move_towards(hero, key, positions)
                                 choice += ':@' + new_position[0] + '-' + new_position[1] + ' '
+                            else:
+                                choice += ':@' + str(int(positions[hero][0]) - 1) + '-' + str(int(positions[hero][1]) - 1) + ' '
                 else:
                     # Move towards enemy
                     all_gaps = {}
@@ -820,10 +855,8 @@ def get_ia_orders(positions, player1, player2, nb_spur_p1, nb_spur_p2, nb_turns,
 
     # Removes the last char which is a space
     choice = choice[0:-1]
-    print(choice)
-    positions, player1, player2, creatures = players_choice(choice, positions, player1, player2, creatures)
 
-    return positions, player1, player2, creatures
+    return choice
 
 
 def available_attack(name_attack, player, hero):
@@ -938,27 +971,26 @@ def players_choice(choice, positions, player1, player2, creatures):
         temp += items.split(':')
 
     # Puts the input of the player in a dictionary
-    for index in range(len(choice)):
-        temp[index] = choice[index].split(':')
-        if temp[index][1] != temp[index][-1]:
-            name = temp[index][0]
-            action = temp[index][1]
-            pos = temp[index][2]
+    for item in range(len(choice)):
+        temp[item] = choice[item].split(':')
+        name = temp[item][0]
+        action = temp[item][1]
+        result[name] = action
+        if len(temp[item]) == 3:
+            pos = temp[item][2]
             result[name] = (action, pos)
-        else:
-            name = temp[index][0]
-            action = temp[index][1]
-            result[name] = action
+    print(result)
 
     # Reads the dictionary and calls the right function (move or attack)
     for item in result:
-        if result[item][0] == '@':
+        if item == '':
+            del item
+        elif result[item][0] == '@':
             move_coordinates = (result[item][1:3], result[item][4:6])
             positions = move(positions, item, move_coordinates, player1, player2, creatures)
         elif result[item][0] == '*':
             attack_coordinates = (result[item][1:3], result[item][4:6])
-            positions, player1, player2, creatures = attack(positions, item, '', (0, 0), attack_coordinates, player1,
-                                                            player2, creatures)
+            positions, player1, player2, creatures = attack(positions, item, '', (0, 0), attack_coordinates, player1, player2, creatures)
         else:
             if type(result[item]) is tuple:
                 name_capacity = result[item][0]
@@ -1053,7 +1085,7 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
     Version:
     --------
     specification: Zephyr Houyoux (v.5 09/04/19)
-    implementation: Manon Michaux (v.3 09/04/19)
+    implementation: Manon Michaux (v.4 05/05/19)
     """
 
     # If a hero wants to attack
@@ -1074,17 +1106,22 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
 
                 # If the hero attacks a creature
                 elif key == attack:
-                    if hero in player1:
-                        positions[key][1] = int(positions[key][1]) - get_damage_points(hero, player1)
+                    if positions[key][0] in creatures:
+                        if hero in player1:
+                            if type(positions[key]) is tuple:
+                                positions[key][1] = int(positions[key][1]) - get_damage_points(hero, player1)
 
-                    elif hero in player2:
-                        positions[key][1] = int(positions[key][1]) - get_damage_points(hero, player2)
+                        elif hero in player2:
+                            if type(positions[key]) is tuple:
+                                positions[key][1] = int(positions[key][1]) - get_damage_points(hero, player2)
 
-                    print('Hero', hero, 'has attacked', positions[key][0])
+                        print('Hero', hero, 'has attacked', positions[key][0])
+                        return positions, player1, player2, creatures
 
                     # If the creature doesn't have enough life points left it's defeated
-                    if int(positions[key][1]) <= 0:
-                        print(positions[key][0], 'has been defeated')
+                    if type(positions[key]) is tuple:
+                        if int(positions[key][1]) <= 0:
+                            print(positions[key][0], 'has been defeated')
 
                     return positions, player1, player2, creatures
 
@@ -1121,12 +1158,12 @@ def attack(positions, character, capacity, coordinates, attack, player1, player2
             if value == attack:
                 if key in player1:
                     player1[key]['life_points'] -= damage_points
-                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points and has '
-                          'now', player1[key]['life_points'], 'life points left')
+                    print('Hero lost', damage_points, 'life points and has now', player1[key]['life_points'],
+                          'life points left')
                 elif key in player2:
                     player2[key]['life_points'] -= damage_points
-                    print('Hero', key, 'was attacked by', character, 'and lost', damage_points, 'life points and has '
-                          'now', player2[key]['life_points'], 'life points left')
+                    print('Hero lost', damage_points, 'life points and has now', player2[key]['life_points'],
+                          'life points left')
 
     return positions, player1, player2, creatures
 
@@ -1194,11 +1231,20 @@ def move(positions, character, movement, player1, player2, creatures):
     if (character in player1) or (character in player2):
         hero = character
         # Computes the gap between the position of the hero and where he wants to go
+        # if positions[hero][1] == '-':
+        #     if movement[1] == '-':
+        #         movement = '0' + movement[0]
+        #         gap = gap_calculator(positions[hero], movement)
+        #     else:
+        #         positions[hero] = '0' + positions[hero][1]
+        #         gap = gap_calculator(positions[hero], movement)
+        # else:
+        #     if movement[1] == '-':
+        #         movement = '0' + movement[1]
         gap = gap_calculator(positions[hero], movement)
 
         # If the hero is already on the position he wants to go on
         if movement[0] == positions[hero][0] and movement[1] == positions[hero][1]:
-            print('Your are already in this position', hero)
             return positions
         # If the position the hero wants to go on is already taken
         for key in positions:
@@ -1334,8 +1380,14 @@ def gap_calculator(position_1, position_2):
 
     pos1c = int(position_1[0])
     pos1r = int(position_1[1])
-    pos2c = int(position_2[0])
-    pos2r = int(position_2[1])
+    if position_2[0].isdigit():
+        pos2c = int(position_2[0])
+    else:
+        pos2c = 0
+    if position_2[1].isdigit():
+        pos2r = int(position_2[1])
+    else:
+        pos2r = 0
 
     gap = ((pos1r - pos2r) ** 2 + (pos1c - pos2c) ** 2) ** 0.5
 
@@ -1487,8 +1539,7 @@ def defeated(player1, player2, positions, creatures):
                     positions[hero] = key
                     # Reset life points of the hero depending on his class and level
                     player2 = reset(hero, player2)
-
-    print('The hero', hero, 'is respawning')
+                    print('The hero', hero, 'is respawning')
 
     # Delete a creature when it's defeated
     for key, value in positions.copy().items():
@@ -1500,7 +1551,6 @@ def defeated(player1, player2, positions, creatures):
                 hero_list = []
                 for hero in positions:
                     if type(positions[hero]) is tuple:
-                        print(positions[hero], key)
                         if gap_calculator(positions[hero], key) < 1.5:
                             hero_count += 1
                             hero_list.append(hero)
@@ -1665,10 +1715,6 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_posi
         if get_level(hero2, player_2) != get_level(hero2, initial_p2):
             special_capacity_display(player_2, hero2)
 
-    # print('Creatures = ' + str(creatures))
-    # print('Positions = ' + str(positions))
-    # print('Number of turns played = ' + str(nb_turns))
-    # print('Number of turns player is on spur = ' + str(nb_turns_player))
     display_board(ROWS, COLUMNS, positions)
 
     # Resets initial positions to positions
@@ -2196,4 +2242,4 @@ def burst(positions, hero, player1, player2, creatures):
     return positions, player1, player2
 
 
-# launch('board.txt')
+launch('board.txt')
