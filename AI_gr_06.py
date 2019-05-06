@@ -1230,17 +1230,6 @@ def move(positions, character, movement, player1, player2, creatures):
 
     if (character in player1) or (character in player2):
         hero = character
-        # Computes the gap between the position of the hero and where he wants to go
-        # if positions[hero][1] == '-':
-        #     if movement[1] == '-':
-        #         movement = '0' + movement[0]
-        #         gap = gap_calculator(positions[hero], movement)
-        #     else:
-        #         positions[hero] = '0' + positions[hero][1]
-        #         gap = gap_calculator(positions[hero], movement)
-        # else:
-        #     if movement[1] == '-':
-        #         movement = '0' + movement[1]
         gap = gap_calculator(positions[hero], movement)
 
         # If the hero is already on the position he wants to go on
@@ -1714,6 +1703,8 @@ def summarize(player_1, initial_p1, player_2, initial_p2, nb_turns, initial_posi
     for hero2 in player_2:
         if get_level(hero2, player_2) != get_level(hero2, initial_p2):
             special_capacity_display(player_2, hero2)
+
+    print(nb_turns)
 
     display_board(ROWS, COLUMNS, positions)
 
